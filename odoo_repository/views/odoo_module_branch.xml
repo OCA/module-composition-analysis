@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_module_branch_view_form" model="ir.ui.view">
+    <field name="name">odoo.module.branch.form</field>
+    <field name="model">odoo.module.branch</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <group name="manifest" string="Manifest">
+              <field name="title"/>
+              <field name="summary"/>
+              <field name="author_ids" widget="many2many_tags"/>
+              <field name="maintainer_ids" widget="many2many_tags"/>
+              <field name="category_id" options="{'no_open': True}"/>
+              <field name="license_id" options="{'no_open': True}"/>
+              <field name="version"/>
+              <field name="development_status_id" options="{'no_open': True}"/>
+              <field name="application"/>
+              <field name="installable"/>
+              <field name="auto_install"/>
+            </group>
+            <group col="1">
+              <group name="others" string="Others">
+                <field name="module_id"/>
+                <field name="branch_id" options="{'no_open': True}"/>
+                <field name="repository_branch_id"/>
+                <field name="pr_url" widget="url"
+                  attrs="{'invisible': [('pr_url', '=', False)]}"/>
+                <field name="last_scanned_commit"/>
+                <field name="is_standard"/>
+                <field name="is_enterprise"/>
+                <field name="is_community"/>
+              </group>
+              <group name="code" string="Code analysis">
+                <field name="sloc_python"/>
+                <field name="sloc_xml"/>
+                <field name="sloc_js"/>
+                <field name="sloc_css"/>
+              </group>
+            </group>
+          </group>
+          <notebook>
+            <page name="dependencies" string="Dependencies">
+              <field name="dependency_ids" nolabel="1">
+                <tree>
+                  <field name="module_id"/>
+                  <field name="repository_branch_id"/>
+                  <field name="version"/>
+                  <field name="license_id"/>
+                  <field name="development_status_id"/>
+                </tree>
+              </field>
+            </page>
+            <page name="reverse_dependencies" string="Reverse Dependencies">
+              <field name="reverse_dependency_ids" nolabel="1">
+                <tree>
+                  <field name="module_id"/>
+                  <field name="repository_branch_id"/>
+                  <field name="version"/>
+                  <field name="license_id"/>
+                  <field name="development_status_id"/>
+                </tree>
+              </field>
+            </page>
+            <page name="python_dependency_ids" string="Python Dependencies">
+              <field name="python_dependency_ids" nolabel="1"/>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="odoo_module_branch_view_tree" model="ir.ui.view">
+    <field name="name">odoo.module.branch.tree</field>
+    <field name="model">odoo.module.branch</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="module_id"/>
+        <field name="repository_id"/>
+        <field name="branch_id"/>
+        <field name="is_standard" optional="hide"/>
+        <field name="is_enterprise" optional="hide"/>
+        <field name="title" optional="show"/>
+        <field name="summary" optional="hide"/>
+        <field name="author_ids" widget="many2many_tags" optional="show"/>
+        <field name="category_id" optional="hide"/>
+        <field name="maintainer_ids" widget="many2many_tags" optional="hide"/>
+        <field name="dependency_ids" optional="hide"/>
+        <field name="license_id" optional="show"/>
+        <field name="version" optional="hide"/>
+        <field name="development_status_id" optional="hide"/>
+        <field name="python_dependency_ids" optional="hide"/>
+        <field name="application" optional="hide"/>
+        <field name="installable" optional="hide"/>
+        <field name="auto_install" optional="hide"/>
+        <field name="last_scanned_commit" optional="hide"/>
+        <field name="sloc_python" sum="Python"/>
+        <field name="sloc_xml" sum="XML"/>
+        <field name="sloc_js" sum="JS"/>
+        <field name="sloc_css" sum="CSS"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="odoo_module_branch_view_search" model="ir.ui.view">
+    <field name="name">odoo.module.branch.search</field>
+    <field name="model">odoo.module.branch</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="module_id"/>
+        <field name="repository_id"/>
+        <field name="org_id"/>
+        <field name="branch_id"/>
+        <field name="title"/>
+        <field name="author_ids"/>
+        <field name="maintainer_ids"/>
+        <field name="dependency_ids"/>
+        <field name="license_id"/>
+        <separator />
+        <filter name="is_standard" string="Standard"
+          domain="[('is_standard', '=', True)]"/>
+        <filter name="is_enterprise" string="Enterprise"
+          domain="[('is_enterprise', '=', True)]"/>
+        <filter name="is_community" string="Community Contribution"
+          domain="[('is_community', '=', True)]"/>
+        <separator/>
+        <filter name="application" string="Application"
+          domain="[('application', '=', True)]"/>
+        <filter name="installable" string="Installable"
+          domain="[('installable', '=', True)]"/>
+        <filter name="auto_install" string="Auto-Install"
+          domain="[('auto_install', '=', True)]"/>
+        <separator/>
+        <filter name="unmerged_pr" string="Unmerged PR"
+          domain="[('pr_url', '!=', False)]"/>
+        <filter name="no_repository" string="No Repository"
+          domain="[('repository_branch_id', '=', False)]"/>
+        <group expand="0" name="group_by" string="Group By">
+          <filter name="group_by_org_id" string="Organization"
+            context="{'group_by': 'org_id'}"/>
+          <filter name="group_by_repository_id" string="Repository"
+            context="{'group_by': 'repository_id'}"/>
+          <filter name="group_by_branch_id" string="Branch"
+            context="{'group_by': 'branch_id'}"/>
+          <filter name="group_by_author_ids" string="Author"
+            context="{'group_by': 'author_ids'}"/>
+          <filter name="group_by_license_id" string="License"
+            context="{'group_by': 'license_id'}"/>
+          <filter name="group_by_development_status_id" string="Development Status"
+            context="{'group_by': 'development_status_id'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <record id="odoo_module_branch_action" model="ir.actions.act_window">
+    <field name="name">Modules</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.module.branch</field>
+    <field name="view_id" ref="odoo_module_branch_view_tree"/>
+    <field name="context">{'search_default_installable': 1}</field>
+  </record>
+
+  <menuitem id="odoo_module_branch_menu"
+    parent="main_odoo_repository_menu"
+    action="odoo_module_branch_action"/>
+
+</odoo>

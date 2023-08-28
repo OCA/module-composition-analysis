@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+
+  <record id="odoo_repository_odoo_odoo" model="odoo.repository">
+    <field name="org_id" ref="odoo_repository_org_odoo"/>
+    <field name="name">odoo</field>
+    <field name="repo_url">https://github.com/odoo/odoo</field>
+    <field name="clone_url">https://github.com/odoo/odoo</field>
+    <field name="repo_type">github</field>
+    <field name="addons_path_ids" eval="
+      [
+        (4, ref('odoo_repository.odoo_repository_addons_path_odoo_sa_base')),
+        (4, ref('odoo_repository.odoo_repository_addons_path_odoo_sa_addons')),
+      ]
+    "/>
+  </record>
+
+</odoo>

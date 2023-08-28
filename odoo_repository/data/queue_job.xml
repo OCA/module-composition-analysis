@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+
+  <record id="queue_job_channel_scan" model="queue.job.channel">
+      <field name="name">odoo_repository_scan</field>
+      <field name="parent_id" ref="queue_job.channel_root" />
+  </record>
+
+  <record id="queue_job_function_odoo_repository_scan" model="queue.job.function">
+      <field name="model_id" ref="model_odoo_repository" />
+      <field name="method">_scan_branch</field>
+      <field name="channel_id" ref="queue_job_channel_scan" />
+      <field name="retry_pattern" eval="{1: 1, 5: 5, 10: 10, 15: 30}" />
+  </record>
+
+  <record id="queue_job_channel_find_pr_url" model="queue.job.channel">
+      <field name="name">odoo_repository_find_pr_url</field>
+      <field name="parent_id" ref="queue_job.channel_root" />
+  </record>
+
+  <record id="queue_job_function_odoo_module_branch_action_find_pr_url" model="queue.job.function">
+      <field name="model_id" ref="model_odoo_module_branch" />
+      <field name="method">action_find_pr_url</field>
+      <field name="channel_id" ref="queue_job_channel_find_pr_url" />
+      <field name="retry_pattern" eval="{1: 1, 5: 5, 10: 10, 15: 30}" />
+  </record>
+
+</odoo>
