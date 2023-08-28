@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_module_dev_status_view_tree" model="ir.ui.view">
+    <field name="name">odoo.module.dev.status.tree</field>
+    <field name="model">odoo.module.dev.status</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="odoo_module_dev_status_view_search" model="ir.ui.view">
+    <field name="name">odoo.module.dev.status.search</field>
+    <field name="model">odoo.module.dev.status</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="name"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="odoo_module_dev_status_action" model="ir.actions.act_window">
+    <field name="name">Development Status</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.module.dev.status</field>
+    <field name="view_id" ref="odoo_module_dev_status_view_tree"/>
+  </record>
+
+  <menuitem id="odoo_module_dev_status_menu"
+    parent="misc_odoo_repository_menu"
+    action="odoo_module_dev_status_action"/>
+
+</odoo>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_module_view_form" model="ir.ui.view">
+    <field name="name">odoo.module.form</field>
+    <field name="model">odoo.module</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <field name="name"/>
+          </group>
+          <group name="branch_modules" string="Exist on repositories/branches:">
+            <field name="module_branch_ids" nolabel="1" colspan="2">
+              <tree>
+                <field name="repository_branch_id"/>
+                <field name="version"/>
+                <field name="author_ids" widget="many2many_tags"/>
+                <field name="license_id"/>
+                <field name="sloc_python"/>
+                <field name="sloc_xml"/>
+                <field name="sloc_js"/>
+                <field name="sloc_css"/>
+              </tree>
+            </field>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="odoo_module_view_tree" model="ir.ui.view">
+    <field name="name">odoo.module.tree</field>
+    <field name="model">odoo.module</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="odoo_module_view_search" model="ir.ui.view">
+    <field name="name">odoo.module.search</field>
+    <field name="model">odoo.module</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="name"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="odoo_module_action" model="ir.actions.act_window">
+    <field name="name">Module Technical Names</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.module</field>
+    <field name="view_id" ref="odoo_module_view_tree"/>
+  </record>
+
+  <menuitem id="odoo_module_menu"
+    parent="misc_odoo_repository_menu"
+    action="odoo_module_action"/>
+
+</odoo>
