@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_license_view_tree" model="ir.ui.view">
+    <field name="name">odoo.license.tree</field>
+    <field name="model">odoo.license</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="odoo_license_view_search" model="ir.ui.view">
+    <field name="name">odoo.license.search</field>
+    <field name="model">odoo.license</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="name"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="odoo_license_action" model="ir.actions.act_window">
+    <field name="name">Licenses</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.license</field>
+    <field name="view_id" ref="odoo_license_view_tree"/>
+  </record>
+
+  <menuitem id="odoo_license_menu"
+    parent="misc_odoo_repository_menu"
+    action="odoo_license_action"/>
+
+</odoo>
