@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_odoo_migration_path_user,odoo_migration_path_user,model_odoo_migration_path,base.group_user,1,0,0,0
+access_odoo_migration_path_manager,odoo_migration_path_manager,model_odoo_migration_path,base.group_system,1,0,1,1
+access_odoo_module_branch_migration_user,odoo_module_branch_migration_user,model_odoo_module_branch_migration,base.group_user,1,0,0,0
