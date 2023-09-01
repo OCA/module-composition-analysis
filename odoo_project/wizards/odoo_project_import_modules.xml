@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_project_import_modules_view_form" model="ir.ui.view">
+    <field name="name">odoo.project.import.modules.form</field>
+    <field name="model">odoo.project.import.modules</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <field name="odoo_project_id" invisible="1"/>
+            <field name="modules_list"/>
+          </group>
+        </sheet>
+        <footer>
+          <button string="Import" name="action_import" type="object" class="btn-primary"/>
+          <button string="Cancel" class="btn btn-default" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="odoo_project_import_modules_action" model="ir.actions.act_window">
+    <field name="name">Import Project Modules</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.project.import.modules</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+</odoo>
