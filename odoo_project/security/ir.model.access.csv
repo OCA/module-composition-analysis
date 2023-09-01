@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_odoo_project_user,odoo_project_user,model_odoo_project,base.group_user,1,1,1,0
+access_odoo_project_manager_manager,odoo_project_manager,model_odoo_project,base.group_system,1,1,1,1
+access_odoo_project_import_modules_user,odoo_project_import_modules_user,model_odoo_project_import_modules,base.group_user,1,1,1,1
