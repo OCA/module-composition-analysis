@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_project_generate_migration_data_view_form" model="ir.ui.view">
+    <field name="name">odoo.project.generate.migration.data.form</field>
+    <field name="model">odoo.project.generate.migration.data</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <field name="odoo_project_id" invisible="1"/>
+            <field name="odoo_version_id" invisible="1"/>
+            <field name="migration_path_id" domain="[('source_branch_id', '=', odoo_version_id)]"/>
+          </group>
+          <div class="alert alert-warning" role="alert">Existing data for the selected migration path will be removed.</div>
+        </sheet>
+        <footer>
+          <button string="Generate" name="action_generate_data" type="object" class="btn-primary"/>
+          <button string="Cancel" class="btn btn-default" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="odoo_project_generate_migration_data_action" model="ir.actions.act_window">
+    <field name="name">Generate migration data</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.project.generate.migration.data</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+</odoo>
