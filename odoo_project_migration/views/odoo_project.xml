@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_project_view_form" model="ir.ui.view">
+    <field name="name">odoo.project.form.inherit</field>
+    <field name="model">odoo.project</field>
+    <field name="inherit_id" ref="odoo_project.odoo_project_view_form"/>
+    <field name="arch" type="xml">
+      <header position="inside">
+        <field name="module_migration_ids" invisible="1"/>
+        <button name="open_generate_migration_data" type="object"
+          string="Generate migration data" class="btn-secondary"/>
+        <button name="open_create_migration_report" type="object"
+          string="Create migration report" class="btn-secondary"
+          attrs="{'invisible': [('module_migration_ids', '=', [])]}"/>
+      </header>
+      <div name="button_box">
+        <button name="open_migration_data" type="object"
+          string="Migrations" class="oe_stat_button" icon="fa-th-list">
+          <div class="o_field_widget o_stat_info">
+              <span class="o_stat_value"><field name="migrations_count"/></span>
+              <span class="o_stat_text"> Migration Data</span>
+          </div>
+        </button>
+      </div>
+    </field>
+  </record>
+
+</odoo>
