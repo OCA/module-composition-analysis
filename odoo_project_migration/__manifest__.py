@@ -17,6 +17,7 @@
     "installable": True,
     "depends": [
         "odoo_project",
+        "odoo_repository_migration",
     ],
     "license": "AGPL-3",
 }
