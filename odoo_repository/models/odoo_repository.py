@@ -1,6 +1,7 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+import os
 import pathlib
 
 from odoo import _, api, fields, models
@@ -18,7 +19,7 @@ class OdooRepository(models.Model):
     _description = "Odoo Modules Repository"
     _order = "display_name"
 
-    _repositories_path_key = "odoo_repository.repositories_storage_path"
+    _repositories_path_key = "odoo_repository_storage_path"
 
     display_name = fields.Char(compute="_compute_display_name", store=True)
     active = fields.Boolean(default=True)
@@ -213,8 +214,12 @@ class OdooRepository(models.Model):
             raise RetryableJobError("Scanner error") from exc
 
     def _prepare_scanner_parameters(self, branch):
-        key = self._repositories_path_key
-        repositories_path = self.env["ir.config_parameter"].get_param(key)
+        ir_config = self.env["ir.config_parameter"]
+        repositories_path = ir_config.get_param(self._repositories_path_key)
+        github_token = ir_config.get_param(
+            "odoo_repository_github_token",
+            os.environ.get("GITHUB_TOKEN")
+        )
         return {
             "org": self.org_id.name,
             "name": self.name,
@@ -230,6 +235,7 @@ class OdooRepository(models.Model):
             ),
             "repositories_path": repositories_path,
             "ssh_key": self.ssh_key_id.private_key,
+            "github_token": github_token,
             "env": self.env
         }
 
