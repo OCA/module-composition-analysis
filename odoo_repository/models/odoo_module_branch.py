@@ -385,3 +385,76 @@ class OdooModuleBranch(models.Model):
         if not module:
             module = self.env["odoo.module"].sudo().create({"name": name})
         return module
+
+    # TODO adds ormcache
+    def _get_modules_data(self, orgs=None, repositories=None, branches=None):
+        """Returns modules data matching the criteria.
+
+        E.g.:
+
+            >>> self._get_modules_data(
+            ...     orgs=['OCA'],
+            ...     repositories=['server-env'],
+            ...     branches=['15.0', '16.0'],
+            ... )
+
+        """
+        domain = self._get_modules_domain(orgs, repositories, branches)
+        modules = self.search(domain)
+        data = []
+        for module in modules:
+            data.append(module._to_dict())
+        return data
+
+    def _get_modules_domain(self, orgs=None, repositories=None, branches=None):
+        domain = [
+            # Do not return orphans modules
+            ("org_id", "!=", False),
+            ("repository_id", "!=", False),
+            ("branch_id", "!=", False),
+        ]
+        if orgs:
+            domain.append(("org_id", "in", orgs))
+        if repositories:
+            domain.append(("repository_id", "in", repositories))
+        if branches:
+            domain.append(("branch_id", "in", branches))
+        return domain
+
+    def _to_dict(self):
+        """Convert module data to a dictionary."""
+        self.ensure_one()
+        return {
+            "module": self.module_name,
+            "branch": self.branch_id.name,
+            "repository": {
+                "org": self.repository_id.org_id.name,
+                "name": self.repository_id.name,
+                "repo_url": self.repository_id.repo_url,
+                "repo_type": self.repository_id.repo_type,
+                "active": self.repository_id.active,
+                "last_scanned_commit": self.repository_branch_id.last_scanned_commit,
+            },
+            "title": self.title,
+            "summary": self.summary,
+            "authors": self.author_ids.mapped("name"),
+            "maintainers": self.maintainer_ids.mapped("name"),
+            "depends": self.dependency_ids.mapped("module_name"),
+            "category": self.category_id.name,
+            "license": self.license_id.name,
+            "version": self.version,
+            "development_status": self.development_status_id.name,
+            "application": self.application,
+            "installable": self.installable,
+            "auto_install": self.auto_install,
+            "external_dependencies": self.external_dependencies,
+            "is_standard": self.is_standard,
+            "is_enterprise": self.is_enterprise,
+            "is_community": self.is_community,
+            "sloc_python": self.sloc_python,
+            "sloc_xml": self.sloc_xml,
+            "sloc_js": self.sloc_js,
+            "sloc_css": self.sloc_css,
+            "last_scanned_commit": self.last_scanned_commit,
+            "pr_url": self.pr_url,
+        }
