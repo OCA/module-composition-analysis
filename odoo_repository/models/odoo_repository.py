@@ -1,10 +1,13 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+import json
 import os
 import pathlib
 
-from odoo import _, api, fields, models
+import requests
+
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError
 
 from odoo.addons.queue_job.delay import chain
@@ -242,3 +245,163 @@ class OdooRepository(models.Model):
         """
         self.ensure_one()
         return self.action_scan(branches=branches, force=True)
+
+    @api.model
+    def cron_fetch_data(self, branches=None, force=False):
+        """Fetch Odoo repositories data from the main node (if any)."""
+        main_node_url = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("odoo_repository_main_node_url")
+        )
+        if not main_node_url:
+            return False
+        branches = self.env["odoo.branch"].search([("odoo_version", "=", True)])
+        branch_names = ",".join(branches.mapped("name"))
+        url = f"{main_node_url}?branches=%s" % branch_names
+        try:
+            response = requests.get(url, timeout=60)
+        except Exception as exc:
+            raise UserError(_("Unable to fetch data from %s") % main_node_url) from exc
+        else:
+            if response.status_code == 200:
+                try:
+                    data = json.loads(response.text)
+                except json.decoder.JSONDecodeError as exc:
+                    raise UserError(
+                        _("Unable to decode data received from %s") % main_node_url
+                    ) from exc
+                else:
+                    self._import_data(data)
+
+    def _import_data(self, data):
+        for module_data in data:
+            # TODO Move these methods to 'odoo.module.branch'?
+            values = self._prepare_module_branch_values(module_data)
+            self._create_or_update_module_branch(values)
+
+    def _prepare_module_branch_values(self, data):
+        # Get branch, repository and technical module
+        branch = self.env["odoo.branch"].search(
+            [("odoo_version", "=", True), ("name", "=", data["branch"])]
+        )
+        org = self._get_repository_org(data["repository"]["org"])
+        repository = self._get_repository(
+            org.id, data["repository"]["name"], data["repository"]
+        )
+        repository_branch = self._get_repository_branch(
+            org.id, repository.id, branch.id, data["repository"]
+        )
+
+        mb_model = self.env["odoo.module.branch"]
+        module = mb_model._get_module(data["module"])
+        # Prepare values
+        category_id = mb_model._get_module_category_id(data["category"])
+        author_ids = mb_model._get_author_ids(tuple(data["authors"]))
+        maintainer_ids = mb_model._get_maintainer_ids(tuple(data["maintainers"]))
+        dev_status_id = mb_model._get_dev_status_id(data["development_status"])
+        dependency_ids = mb_model._get_dependency_ids(
+            repository_branch, data["depends"]
+        )
+        external_dependencies = data["external_dependencies"]
+        python_dependency_ids = mb_model._get_python_dependency_ids(
+            tuple(external_dependencies.get("python", []))
+        )
+        license_id = mb_model._get_license_id(data["license"])
+        values = {
+            "repository_branch_id": repository_branch.id,
+            "branch_id": repository_branch.branch_id.id,
+            "module_id": module.id,
+            "title": data["title"],
+            "summary": data["summary"],
+            "category_id": category_id,
+            "author_ids": [(6, 0, author_ids)],
+            "maintainer_ids": [(6, 0, maintainer_ids)],
+            "dependency_ids": [(6, 0, dependency_ids)],
+            "external_dependencies": external_dependencies,
+            "python_dependency_ids": [(6, 0, python_dependency_ids)],
+            "license_id": license_id,
+            "version": data["version"],
+            "development_status_id": dev_status_id,
+            "installable": data["installable"],
+            "auto_install": data["auto_install"],
+            "application": data["application"],
+            "is_standard": data["is_standard"],
+            "is_enterprise": data["is_enterprise"],
+            "is_community": data["is_community"],
+            "sloc_python": data["sloc_python"],
+            "sloc_xml": data["sloc_xml"],
+            "sloc_js": data["sloc_js"],
+            "sloc_css": data["sloc_css"],
+            "last_scanned_commit": data["last_scanned_commit"],
+            "pr_url": data["pr_url"],
+        }
+        return values
+
+    def _create_or_update_module_branch(self, values):
+        mb_model = self.env["odoo.module.branch"]
+        rec = mb_model.search(
+            [
+                ("module_id", "=", values["module_id"]),
+                # Module could have been already created to satisfy dependencies
+                # (without 'repository_branch_id' set)
+                "|",
+                ("repository_branch_id", "=", values["repository_branch_id"]),
+                ("branch_id", "=", values["branch_id"]),
+            ],
+            limit=1,
+        )
+        if rec:
+            rec.sudo().write(values)
+        else:
+            rec = mb_model.sudo().create(values)
+        return rec
+
+    @tools.ormcache("name")
+    def _get_repository_org(self, name):
+        rec = self.env["odoo.repository.org"].search([("name", "=", name)], limit=1)
+        if not rec:
+            rec = self.env["odoo.repository.org"].sudo().create({"name": name})
+        return rec
+
+    @tools.ormcache("org_id", "name")
+    def _get_repository(self, org_id, name, data):
+        rec = self.env["odoo.repository"].search(
+            [
+                ("org_id", "=", org_id),
+                ("name", "=", name),
+            ],
+            limit=1,
+        )
+        values = {
+            "org_id": org_id,
+            "name": name,
+            "repo_url": data["repo_url"],
+            "repo_type": data["repo_type"],
+            "active": data["active"],
+        }
+        if rec:
+            rec.sudo().write(values)
+        else:
+            rec = self.env["odoo.repository"].sudo().create(values)
+        return rec
+
+    @tools.ormcache("org_id", "repository_id", "branch_id")
+    def _get_repository_branch(self, org_id, repository_id, branch_id, data):
+        rec = self.env["odoo.repository.branch"].search(
+            [
+                ("repository_id", "=", repository_id),
+                ("branch_id", "=", branch_id),
+            ],
+            limit=1,
+        )
+        values = {
+            "repository_id": repository_id,
+            "branch_id": branch_id,
+            "last_scanned_commit": data["last_scanned_commit"],
+        }
+        if rec:
+            rec.sudo().write(values)
+        else:
+            rec = self.env["odoo.repository.branch"].sudo().create(values)
+        return rec

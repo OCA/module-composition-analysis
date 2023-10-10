@@ -13,3 +13,6 @@ class ResConfigSettings(models.TransientModel):
     config_odoo_repository_github_token = fields.Char(
         string="GitHub Token", config_parameter="odoo_repository_github_token"
     )
+    config_odoo_repository_main_node_url = fields.Char(
+        string="Endpoint URL", config_parameter="odoo_repository_main_node_url"
+    )
