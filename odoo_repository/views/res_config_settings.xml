@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="res_config_settings_view_form" model="ir.ui.view">
+    <field name="name">res.config.settings.form.inherit</field>
+    <field name="model">res.config.settings</field>
+    <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//div[hasclass('settings')]" position="inside">
+        <div class="app_settings_block"
+            string="Odoo Repositories"
+            data-string="Odoo Repositories"
+            data-key="odoo_repository"
+            groups="base.group_system">
+          <div id="odoo_repository">
+            <h2>Odoo Repositories</h2>
+            <div class="row mt16 o_settings_container" name="odoo_repository_storage_path">
+              <div class="o_setting_right_pane">
+                <span class="o_form_label">Storage local path</span>
+                <div class="text-muted">
+                  Where to clone repositories on the local filesystem.
+                </div>
+                <div class="content-group">
+                  <div class="mt16">
+                    <field name="config_odoo_repository_storage_path"
+                      colspan="2"
+                      placeholder="/var/lib/odoo-repository/"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt16 o_settings_container" name="odoo_repository_github_token">
+              <div class="o_setting_right_pane">
+                <span class="o_form_label">GitHub token (API)</span>
+                <div class="text-muted">
+                  GitHub token used to request the API.
+                </div>
+                <div class="content-group">
+                  <div class="mt16">
+                    <field name="config_odoo_repository_github_token"
+                      password="True"
+                      colspan="2"/>
+                  </div>
+                </div>
+                <div class="text-muted">
+                  Another way is to define the <strong>GITHUB_TOKEN</strong> environment variable on your system.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </xpath>
+    </field>
+  </record>
+
+  <record id="action_odoo_repository_config_settings" model="ir.actions.act_window">
+    <field name="name">Settings</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">res.config.settings</field>
+    <field name="view_id" ref="res_config_settings_view_form"/>
+    <field name="view_mode">form</field>
+    <field name="target">inline</field>
+    <field name="context">{'module' : 'odoo_repository', 'bin_size': False}</field>
+  </record>
+
+  <menuitem id="settings_odoo_repository_menu"
+      name="Settings"
+      sequence="1"
+      action="action_odoo_repository_config_settings"
+      parent="config_odoo_repository_menu"
+      groups="base.group_system"/>
+
+</odoo>

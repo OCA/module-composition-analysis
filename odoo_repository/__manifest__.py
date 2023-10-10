@@ -9,7 +9,6 @@
     "website": "https://github.com/OCA/TODO",
     "data": [
         "security/ir.model.access.csv",
-        "data/ir_config_parameter.xml",
         "data/ir_cron.xml",
         "data/odoo_repository_org.xml",
         "data/odoo_repository_addons_path.xml",
@@ -31,6 +30,7 @@
         "views/odoo_repository_addons_path.xml",
         "views/odoo_repository_branch.xml",
         "views/odoo_repository_org.xml",
+        "views/res_config_settings.xml",
     ],
     "installable": True,
     "application": True,

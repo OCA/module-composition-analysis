@@ -38,6 +38,7 @@ class BaseScanner:
         branches: list,
         repositories_path: str = None,
         ssh_key: str = None,
+        github_token: str = None,
     ):
         self.org = org
         self.name = name
@@ -49,6 +50,7 @@ class BaseScanner:
         self.path = self.repositories_path.joinpath(self.org, self.name)
         self._apply_git_config()
         self.ssh_key = ssh_key
+        self.github_token = github_token
 
     def scan(self):
         # Clone or update the repository
@@ -267,10 +269,11 @@ class MigrationScanner(BaseScanner):
         migration_paths: list[tuple[str]],
         repositories_path: str = None,
         ssh_key: str = None,
+        github_token: str = None,
     ):
         branches = sorted(set(sum([tuple(mp) for mp in migration_paths], ())))
         super().__init__(
-            org, name, clone_url, branches, repositories_path, ssh_key
+            org, name, clone_url, branches, repositories_path, ssh_key, github_token
         )
         self.migration_paths = migration_paths
 
@@ -385,6 +388,7 @@ class MigrationScanner(BaseScanner):
             "repo_name": self.name,
             "output": "json",
             "fetch": False,
+            "github_token": self.github_token,
         }
         scan = oca_port.App(**params)
         try:
@@ -442,9 +446,10 @@ class RepositoryScanner(BaseScanner):
         addons_paths_data: list,
         repositories_path: str = None,
         ssh_key: str = None,
+        github_token: str = None,
     ):
         super().__init__(
-            org, name, clone_url, branches, repositories_path, ssh_key
+            org, name, clone_url, branches, repositories_path, ssh_key, github_token
         )
         self.addons_paths_data = addons_paths_data
 

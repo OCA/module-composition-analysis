@@ -202,7 +202,7 @@ class OdooModuleBranch(models.Model):
                 # Mitigate 'API rate limit exceeded' GitHub API error
                 # by adding a random waiting time of 1-4s
                 time.sleep(random.randrange(1, 5))
-                prs = github.request(url)
+                prs = github.request(self.env, url)
             except RuntimeError as exc:
                 raise RetryableJobError(
                     "Error while looking for PR URL") from exc

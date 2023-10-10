@@ -9,12 +9,15 @@ GITHUB_URL = "https://github.com"
 GITHUB_API_URL = "https://api.github.com"
 
 
-def request(url, method="get", params=None, json=None):
+def request(env, url, method="get", params=None, json=None):
     """Request GitHub API."""
     headers = {"Accept": "application/vnd.github.groot-preview+json"}
-    # TODO store a GITHUB_TOKEN in Odoo config
-    if os.environ.get("GITHUB_TOKEN"):
-        token = os.environ.get("GITHUB_TOKEN")
+    key = "odoo_repository_github_token"
+    token = (
+        env["ir.config_parameter"].get_param(key, "")
+        or os.environ.get("GITHUB_TOKEN")
+    )
+    if token:
         headers.update({"Authorization": f"token {token}"})
     full_url = "/".join([GITHUB_API_URL, url])
     kwargs = {"headers": headers}
