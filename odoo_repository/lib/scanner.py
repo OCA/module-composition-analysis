@@ -12,7 +12,7 @@ import time
 
 import git
 import oca_port
-from odoo_addons_analyzer import ModuleAnalysis
+from .odoo_addons_analyzer import ModuleAnalysis
 
 
 # Disable logging from 'pygount' (used by odoo_addons_analyzer)
