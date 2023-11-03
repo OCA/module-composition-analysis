@@ -75,7 +75,7 @@ class OdooModuleBranchMigration(models.Model):
         (
             "module_migration_path_uniq",
             "UNIQUE (module_branch_id, migration_path_id)",
-            "This module migration path already exists."
+            "This module migration path already exists.",
         ),
     ]
 

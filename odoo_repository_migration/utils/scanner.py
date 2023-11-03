@@ -17,9 +17,11 @@ class MigrationScannerOdooEnv(MigrationScanner):
         super().__init__(*args, **kwargs)
 
     def _get_odoo_repository_id(self) -> int:
-        return self.env["odoo.repository"].search(
-            [("name", "=", self.name), ("org_id", "=", self.org)]
-        ).id
+        return (
+            self.env["odoo.repository"]
+            .search([("name", "=", self.name), ("org_id", "=", self.org)])
+            .id
+        )
 
     def _get_odoo_repository_branches(self, repo_id) -> list[str]:
         args = [
@@ -48,7 +50,8 @@ class MigrationScannerOdooEnv(MigrationScanner):
         return self.env["odoo.module.branch"].search(args).id
 
     def _get_odoo_module_branch_migration_id(
-            self, module_branch_id: int, source_branch: str, target_branch: str) -> int:
+        self, module_branch_id: int, source_branch: str, target_branch: str
+    ) -> int:
         args = [
             ("module_branch_id", "=", module_branch_id),
             ("source_branch_id", "=", source_branch),
@@ -59,7 +62,8 @@ class MigrationScannerOdooEnv(MigrationScanner):
             return migration.id
 
     def _get_odoo_module_branch_migration_data(
-            self, module: str, source_branch: str, target_branch: str) -> dict:
+        self, module: str, source_branch: str, target_branch: str
+    ) -> dict:
         args = [
             ("module_id", "=", module),
             ("source_branch_id", "=", source_branch),
@@ -75,5 +79,5 @@ class MigrationScannerOdooEnv(MigrationScanner):
             module_branch_id, data
         )
         # Commit after each scan
-        self.env.cr.commit()
+        self.env.cr.commit()  # pylint: disable=invalid-commit
         return res

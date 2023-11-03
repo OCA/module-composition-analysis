@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -10,8 +10,8 @@
       <form>
         <sheet>
           <group>
-            <field name="source_branch_id"/>
-            <field name="target_branch_id"/>
+            <field name="source_branch_id" />
+            <field name="target_branch_id" />
           </group>
         </sheet>
       </form>
@@ -23,8 +23,8 @@
     <field name="model">odoo.migration.path</field>
     <field name="arch" type="xml">
       <tree editable="bottom">
-        <field name="source_branch_id"/>
-        <field name="target_branch_id"/>
+        <field name="source_branch_id" />
+        <field name="target_branch_id" />
       </tree>
     </field>
   </record>
@@ -33,11 +33,13 @@
     <field name="name">Migration Paths</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.migration.path</field>
-    <field name="view_id" ref="odoo_migration_path_view_tree"/>
+    <field name="view_id" ref="odoo_migration_path_view_tree" />
   </record>
 
-  <menuitem id="odoo_migration_path_menu"
-    parent="odoo_repository.config_odoo_repository_menu"
-    action="odoo_migration_path_action"/>
+  <menuitem
+        id="odoo_migration_path_menu"
+        parent="odoo_repository.config_odoo_repository_menu"
+        action="odoo_migration_path_action"
+    />
 
 </odoo>

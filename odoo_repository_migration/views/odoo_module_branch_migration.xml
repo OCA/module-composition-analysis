@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -10,19 +10,19 @@
       <form>
         <sheet>
           <div class="oe_title">
-            <h1><field name="display_name"/></h1>
+            <h1><field name="display_name" /></h1>
           </div>
           <group>
-            <field name="module_branch_id"/>
-            <field name="module_id"/>
-            <field name="migration_path_id" options="{'no_open': True}"/>
-            <field name="last_source_scanned_commit"/>
-            <field name="last_target_scanned_commit"/>
+            <field name="module_branch_id" />
+            <field name="module_id" />
+            <field name="migration_path_id" options="{'no_open': True}" />
+            <field name="last_source_scanned_commit" />
+            <field name="last_target_scanned_commit" />
           </group>
           <group name="data" string="Data">
-            <field name="state"/>
-            <field name="pr_url" widget="url"/>
-            <field name="results_text"/>
+            <field name="state" />
+            <field name="pr_url" widget="url" />
+            <field name="results_text" />
           </group>
         </sheet>
       </form>
@@ -34,11 +34,11 @@
     <field name="model">odoo.module.branch.migration</field>
     <field name="arch" type="xml">
       <tree>
-        <field name="module_branch_id"/>
-        <field name="migration_path_id"/>
-        <field name="state"/>
-        <field name="pr_url" widget="url"/>
-        <field name="results_text" optional="hide"/>
+        <field name="module_branch_id" />
+        <field name="migration_path_id" />
+        <field name="state" />
+        <field name="pr_url" widget="url" />
+        <field name="results_text" optional="hide" />
       </tree>
     </field>
   </record>
@@ -49,38 +49,71 @@
     <field name="type">search</field>
     <field name="arch" type="xml">
       <search>
-        <field name="module_id"/>
-        <field name="org_id"/>
-        <field name="repository_id"/>
-        <field name="migration_path_id"/>
-        <field name="source_branch_id"/>
-        <field name="target_branch_id"/>
-        <field name="author_ids"/>
-        <field name="maintainer_ids"/>
-        <field name="results"/>
-        <filter name="fully_ported" string="Fully Ported"
-          domain="[('state', '=', 'fully_ported')]"/>
-        <filter name="migrate" string="To Migrate"
-          domain="[('state', '=', 'migrate')]"/>
-        <filter name="migrate" string="Migration to review"
-          domain="[('state', '=', 'review_migration')]"/>
-        <filter name="port_commits" string="Commits to Port"
-          domain="[('state', '=', 'port_commits')]"/>
+        <field name="module_id" />
+        <field name="org_id" />
+        <field name="repository_id" />
+        <field name="migration_path_id" />
+        <field name="source_branch_id" />
+        <field name="target_branch_id" />
+        <field name="author_ids" />
+        <field name="maintainer_ids" />
+        <field name="results" />
+        <filter
+                    name="fully_ported"
+                    string="Fully Ported"
+                    domain="[('state', '=', 'fully_ported')]"
+                />
+        <filter
+                    name="migrate"
+                    string="To Migrate"
+                    domain="[('state', '=', 'migrate')]"
+                />
+        <filter
+                    name="migrate"
+                    string="Migration to review"
+                    domain="[('state', '=', 'review_migration')]"
+                />
+        <filter
+                    name="port_commits"
+                    string="Commits to Port"
+                    domain="[('state', '=', 'port_commits')]"
+                />
         <group expand="0" string="Group By">
-          <filter name="group_by_org_id" string="Organization"
-            context="{'group_by': 'org_id'}"/>
-          <filter name="group_by_repository_id" string="Repository"
-            context="{'group_by': 'repository_id'}"/>
-          <filter name="group_by_migration_path_id" string="Migration Path"
-            context="{'group_by': 'migration_path_id'}"/>
-          <filter name="group_by_source_branch_id" string="Source Branch"
-            context="{'group_by': 'source_branch_id'}"/>
-          <filter name="group_by_target_branch_id" string="Target Branch"
-            context="{'group_by': 'target_branch_id'}"/>
-          <filter name="group_by_module_id" string="Module"
-            context="{'group_by': 'module_id'}"/>
-          <filter name="group_by_state" string="Migration Status"
-            context="{'group_by': 'state'}"/>
+          <filter
+                        name="group_by_org_id"
+                        string="Organization"
+                        context="{'group_by': 'org_id'}"
+                    />
+          <filter
+                        name="group_by_repository_id"
+                        string="Repository"
+                        context="{'group_by': 'repository_id'}"
+                    />
+          <filter
+                        name="group_by_migration_path_id"
+                        string="Migration Path"
+                        context="{'group_by': 'migration_path_id'}"
+                    />
+          <filter
+                        name="group_by_source_branch_id"
+                        string="Source Branch"
+                        context="{'group_by': 'source_branch_id'}"
+                    />
+          <filter
+                        name="group_by_target_branch_id"
+                        string="Target Branch"
+                        context="{'group_by': 'target_branch_id'}"
+                    />
+          <filter
+                        name="group_by_module_id"
+                        string="Module"
+                        context="{'group_by': 'module_id'}"
+                    />
+          <filter
+                        name="group_by_state"
+                        string="Migration Status"
+                        context="{'group_by': 'state'}"
+                    />
         </group>
       </search>
     </field>
@@ -90,11 +123,13 @@
     <field name="name">Migrations</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.module.branch.migration</field>
-    <field name="view_id" ref="odoo_module_branch_migration_view_tree"/>
+    <field name="view_id" ref="odoo_module_branch_migration_view_tree" />
   </record>
 
-  <menuitem id="odoo_module_branch_migration_menu"
-    parent="odoo_repository.main_odoo_repository_menu"
-    action="odoo_module_branch_migration_action"/>
+  <menuitem
+        id="odoo_module_branch_migration_menu"
+        parent="odoo_repository.main_odoo_repository_menu"
+        action="odoo_module_branch_migration_action"
+    />
 
 </odoo>
