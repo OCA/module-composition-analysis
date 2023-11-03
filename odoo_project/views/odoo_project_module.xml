@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -6,11 +6,11 @@
   <record id="odoo_project_module_view_form" model="ir.ui.view">
     <field name="name">odoo.project.module.form.inherit</field>
     <field name="model">odoo.project.module</field>
-    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form"/>
+    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form" />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
       <field name="version" position="before">
-        <field name="installed_version"/>
+        <field name="installed_version" />
       </field>
       <field name="version" position="attributes">
         <attribute name="string">Last Version</attribute>
@@ -21,7 +21,7 @@
   <record id="odoo_project_module_view_tree" model="ir.ui.view">
     <field name="name">odoo.project.module.tree.inherit</field>
     <field name="model">odoo.project.module</field>
-    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_tree"/>
+    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_tree" />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
       <tree position="attributes">
@@ -32,12 +32,12 @@
         <attribute name="optional">hide</attribute>
       </field>
       <field name="version" position="before">
-        <field name="installed_version"/>
-        <field name="to_upgrade" invisible="1"/>
+        <field name="installed_version" />
+        <field name="to_upgrade" invisible="1" />
       </field>
       <field name="version" position="attributes">
         <attribute name="string">Last Version</attribute>
-        <attribute name="optional"></attribute>
+        <attribute name="optional" />
       </field>
       <field name="pr_url" position="attributes">
         <attribute name="optional">show</attribute>
@@ -48,15 +48,18 @@
   <record id="odoo_project_module_view_search" model="ir.ui.view">
     <field name="name">odoo.project.module.search.inherit</field>
     <field name="model">odoo.project.module</field>
-    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search"/>
+    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
       <field name="license_id" position="after">
-        <field name="odoo_project_id"/>
+        <field name="odoo_project_id" />
       </field>
       <filter name="unmerged_pr" position="before">
-        <filter name="to_upgrade" string="To Upgrade"
-          domain="[('to_upgrade', '=', True)]"/>
+        <filter
+                    name="to_upgrade"
+                    string="To Upgrade"
+                    domain="[('to_upgrade', '=', True)]"
+                />
       </filter>
     </field>
   </record>
@@ -65,11 +68,13 @@
     <field name="name">Installed Modules</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.project.module</field>
-    <field name="view_id" ref="odoo_project_module_view_tree"/>
+    <field name="view_id" ref="odoo_project_module_view_tree" />
   </record>
 
-  <menuitem id="odoo_project_module_menu"
-    parent="odoo_project_main_menu"
-    action="odoo_project_module_action"/>
+  <menuitem
+        id="odoo_project_module_menu"
+        parent="odoo_project_main_menu"
+        action="odoo_project_module_action"
+    />
 
 </odoo>

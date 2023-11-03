@@ -15,7 +15,8 @@ class OdooModuleBranch(models.Model):
     odoo_project_ids = fields.Many2many(
         comodel_name="odoo.project",
         relation="odoo_project_module_branch_rel",
-        column1="module_branch_id", column2="odoo_project_id",
+        column1="module_branch_id",
+        column2="odoo_project_id",
         string="Projects",
         compute="_compute_module_ids",
         store=True,

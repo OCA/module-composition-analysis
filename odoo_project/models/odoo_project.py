@@ -32,7 +32,8 @@ class OdooProject(models.Model):
     module_ids = fields.Many2many(
         comodel_name="odoo.module",
         relation="odoo_project_module_rel",
-        column1="odoo_project_id", column2="module_id",
+        column1="odoo_project_id",
+        column2="module_id",
         string="Modules",
         compute="_compute_module_ids",
         store=True,
@@ -67,7 +68,9 @@ class OdooProject(models.Model):
         for rec in self:
             rec.modules_count = len(rec.project_module_ids)
 
-    @api.depends("repository_id.branch_ids.module_ids", "project_module_ids.module_branch_id")
+    @api.depends(
+        "repository_id.branch_ids.module_ids", "project_module_ids.module_branch_id"
+    )
     def _compute_module_not_installed_ids(self):
         for rec in self:
             all_module_ids = set(rec.repository_id.branch_ids.module_ids.ids)
@@ -77,19 +80,15 @@ class OdooProject(models.Model):
     @api.depends("project_module_ids.pr_url")
     def _compute_unmerged_module_ids(self):
         for rec in self:
-            rec.unmerged_module_ids = (
-                rec.project_module_ids.module_branch_id.filtered(
-                    lambda module: module.pr_url
-                )
+            rec.unmerged_module_ids = rec.project_module_ids.module_branch_id.filtered(
+                lambda module: module.pr_url
             )
 
     @api.depends("project_module_ids.repository_id")
     def _compute_unknown_module_ids(self):
         for rec in self:
-            rec.unknown_module_ids = (
-                rec.project_module_ids.module_branch_id.filtered(
-                    lambda module: not module.repository_id
-                )
+            rec.unknown_module_ids = rec.project_module_ids.module_branch_id.filtered(
+                lambda module: not module.repository_id
             )
 
     def open_import_modules(self):

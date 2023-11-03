@@ -16,7 +16,6 @@ class OdooProjectImportModules(models.TransientModel):
         required=True,
     )
     modules_list = fields.Text(
-        string="Modules List",
         help=(
             "Copy/paste your list of technical module names here.\n"
             "One module per line, with an optional version number placed "
@@ -42,7 +41,7 @@ class OdooProjectImportModules(models.TransientModel):
                 module_name, version = data
             else:
                 module_name, version = data[0], False
-        # for module_name in module_names:
+            # for module_name in module_names:
             module = self._get_module(module_name)
             module_branch = self._get_module_branch(module)
             project_module = self._get_project_module(module_branch, version)
