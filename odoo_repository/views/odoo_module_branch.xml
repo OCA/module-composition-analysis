@@ -99,6 +99,7 @@
         <field name="installable" optional="hide"/>
         <field name="auto_install" optional="hide"/>
         <field name="last_scanned_commit" optional="hide"/>
+        <field name="pr_url" optional="hide" widget="url"/>
         <field name="sloc_python" sum="Python"/>
         <field name="sloc_xml" sum="XML"/>
         <field name="sloc_js" sum="JS"/>
