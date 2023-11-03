@@ -67,11 +67,11 @@ class OdooProject(models.Model):
         for rec in self:
             rec.modules_count = len(rec.project_module_ids)
 
-    @api.depends("repository_id.branch_ids.module_ids", "project_module_ids")
+    @api.depends("repository_id.branch_ids.module_ids", "project_module_ids.module_branch_id")
     def _compute_module_not_installed_ids(self):
         for rec in self:
             all_module_ids = set(rec.repository_id.branch_ids.module_ids.ids)
-            installed_module_ids = set(rec.project_module_ids.ids)
+            installed_module_ids = set(rec.project_module_ids.module_branch_id.ids)
             rec.module_not_installed_ids = list(all_module_ids - installed_module_ids)
 
     @api.depends("project_module_ids.pr_url")
