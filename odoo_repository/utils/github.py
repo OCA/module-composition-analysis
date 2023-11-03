@@ -13,9 +13,8 @@ def request(env, url, method="get", params=None, json=None):
     """Request GitHub API."""
     headers = {"Accept": "application/vnd.github.groot-preview+json"}
     key = "odoo_repository_github_token"
-    token = (
-        env["ir.config_parameter"].get_param(key, "")
-        or os.environ.get("GITHUB_TOKEN")
+    token = env["ir.config_parameter"].get_param(key, "") or os.environ.get(
+        "GITHUB_TOKEN"
     )
     if token:
         headers.update({"Authorization": f"token {token}"})

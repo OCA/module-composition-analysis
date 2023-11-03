@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -10,10 +10,10 @@
       <form>
         <sheet>
           <group>
-            <field name="relative_path"/>
-            <field name="is_standard"/>
-            <field name="is_enterprise"/>
-            <field name="is_community"/>
+            <field name="relative_path" />
+            <field name="is_standard" />
+            <field name="is_enterprise" />
+            <field name="is_community" />
           </group>
         </sheet>
       </form>
@@ -25,10 +25,10 @@
     <field name="model">odoo.repository.addons_path</field>
     <field name="arch" type="xml">
       <tree editable="bottom">
-          <field name="relative_path"/>
-          <field name="is_standard"/>
-          <field name="is_enterprise"/>
-          <field name="is_community"/>
+          <field name="relative_path" />
+          <field name="is_standard" />
+          <field name="is_enterprise" />
+          <field name="is_community" />
       </tree>
     </field>
   </record>
@@ -37,11 +37,13 @@
     <field name="name">Addons Path</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.repository.addons_path</field>
-    <field name="view_id" ref="odoo_repository_addons_path_view_tree"/>
+    <field name="view_id" ref="odoo_repository_addons_path_view_tree" />
   </record>
 
-  <menuitem id="odoo_repository_addons_path_menu"
-    parent="config_odoo_repository_menu"
-    action="odoo_repository_addons_path_action"/>
+  <menuitem
+        id="odoo_repository_addons_path_menu"
+        parent="config_odoo_repository_menu"
+        action="odoo_repository_addons_path_action"
+    />
 
 </odoo>

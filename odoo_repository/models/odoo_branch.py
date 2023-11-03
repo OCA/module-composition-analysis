@@ -10,16 +10,9 @@ class OdooBranch(models.Model):
     _order = "name"
 
     name = fields.Char(required=True, index=True)
-    odoo_version = fields.Boolean(
-        string="Odoo Version",
-        default=True,
-    )
-    active = fields.Boolean(string="Active", default=True)
+    odoo_version = fields.Boolean(default=True)
+    active = fields.Boolean(default=True)
 
     _sql_constraints = [
-        (
-            "name_uniq",
-            "UNIQUE (name)",
-            "This branch already exists."
-        ),
+        ("name_uniq", "UNIQUE (name)", "This branch already exists."),
     ]

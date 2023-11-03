@@ -9,7 +9,4 @@ class SSHKey(models.Model):
     _description = "SSH private key"
 
     name = fields.Char(required=True)
-    private_key = fields.Text(
-        required=True,
-        help="SSH private key without passphrase."
-    )
+    private_key = fields.Text(required=True, help="SSH private key without passphrase.")

@@ -37,7 +37,7 @@ class OdooRepositoryBranch(models.Model):
         (
             "repository_id_branch_id_uniq",
             "UNIQUE (repository_id, branch_id)",
-            "This branch already exists for this repository."
+            "This branch already exists for this repository.",
         ),
     ]
 

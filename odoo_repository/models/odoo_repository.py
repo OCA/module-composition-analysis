@@ -7,8 +7,8 @@ import pathlib
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from odoo.addons.queue_job.exception import RetryableJobError
 from odoo.addons.queue_job.delay import chain
+from odoo.addons.queue_job.exception import RetryableJobError
 from odoo.addons.queue_job.job import identity_exact
 
 from ..utils.scanner import RepositoryScannerOdooEnv
@@ -37,7 +37,6 @@ class OdooRepository(models.Model):
         required=True,
     )
     to_scan = fields.Boolean(
-        string="To Scan",
         default=True,
         help="Scan this repository to collect data.",
     )
@@ -50,14 +49,13 @@ class OdooRepository(models.Model):
             ("github", "GitHub"),
             ("gitlab", "GitLab"),
         ],
-        string="Repo Type",
         required=True,
     )
     ssh_key_id = fields.Many2one(
         comodel_name="ssh.key",
         ondelete="restrict",
         string="SSH Key",
-        help="SSH key used to clone/fetch this repository."
+        help="SSH key used to clone/fetch this repository.",
     )
     clone_branch_id = fields.Many2one(
         comodel_name="odoo.branch",
@@ -72,11 +70,11 @@ class OdooRepository(models.Model):
         string="Odoo Version",
         domain=[("odoo_version", "=", True)],
     )
-    active = fields.Boolean(string="Active", default=True)
+    active = fields.Boolean(default=True)
     addons_path_ids = fields.Many2many(
         comodel_name="odoo.repository.addons_path",
         string="Addons Path",
-        help="Relative path of folders in this repository hosting Odoo modules"
+        help="Relative path of folders in this repository hosting Odoo modules",
     )
     branch_ids = fields.One2many(
         comodel_name="odoo.repository.branch",
@@ -95,7 +93,7 @@ class OdooRepository(models.Model):
                     4,
                     self.env.ref(
                         "odoo_repository.odoo_repository_addons_path_community"
-                    ).id
+                    ).id,
                 )
             ]
         return res
@@ -109,7 +107,7 @@ class OdooRepository(models.Model):
         (
             "org_id_name_repository_id_uniq",
             "UNIQUE (org_id, name, odoo_version_id)",
-            "This repository already exists."
+            "This repository already exists.",
         ),
     ]
 
@@ -156,9 +154,7 @@ class OdooRepository(models.Model):
             raise UserError(
                 _(
                     "Please define the '{key}' system parameter to "
-                    "clone repositories in the folder of your choice.".format(
-                        key=key
-                    )
+                    "clone repositories in the folder of your choice.".format(key=key)
                 )
             )
         # Ensure the folder exists
@@ -198,7 +194,7 @@ class OdooRepository(models.Model):
         for branch in branches:
             delayable = self.delayable(
                 description=f"Scan {self.display_name}#{branch}",
-                identity_key=identity_exact
+                identity_key=identity_exact,
             )
             job = delayable._scan_branch(branch)
             jobs.append(job)
@@ -217,8 +213,7 @@ class OdooRepository(models.Model):
         ir_config = self.env["ir.config_parameter"]
         repositories_path = ir_config.get_param(self._repositories_path_key)
         github_token = ir_config.get_param(
-            "odoo_repository_github_token",
-            os.environ.get("GITHUB_TOKEN")
+            "odoo_repository_github_token", os.environ.get("GITHUB_TOKEN")
         )
         return {
             "org": self.org_id.name,
@@ -236,7 +231,7 @@ class OdooRepository(models.Model):
             "repositories_path": repositories_path,
             "ssh_key": self.ssh_key_id.private_key,
             "github_token": github_token,
-            "env": self.env
+            "env": self.env,
         }
 
     def action_force_scan(self, branches=None):

@@ -22,7 +22,7 @@ class OdooModuleBranch(models.Model):
         ondelete="restrict",
         string="Technical name",
         required=True,
-        index=True
+        index=True,
     )
     module_name = fields.Char(
         string="Module Technical Name", related="module_id.name", store=True
@@ -31,7 +31,7 @@ class OdooModuleBranch(models.Model):
         comodel_name="odoo.repository.branch",
         ondelete="set null",
         string="Repository Branch",
-        index=True
+        index=True,
     )
     repository_id = fields.Many2one(
         related="repository_branch_id.repository_id",
@@ -79,7 +79,7 @@ class OdooModuleBranch(models.Model):
         store=True,
         index=True,
     )
-    summary = fields.Char(string="Summary", index=True)
+    summary = fields.Char(index=True)
     category_id = fields.Many2one(
         comodel_name="odoo.module.category",
         ondelete="restrict",
@@ -93,19 +93,22 @@ class OdooModuleBranch(models.Model):
     maintainer_ids = fields.Many2many(
         comodel_name="odoo.maintainer",
         relation="module_branch_maintainer_rel",
-        column1="module_branch_id", column2="maintainer_id",
+        column1="module_branch_id",
+        column2="maintainer_id",
         string="Maintainers",
     )
     dependency_ids = fields.Many2many(
         comodel_name="odoo.module.branch",
         relation="module_branch_dependency_rel",
-        column1="module_branch_id", column2="dependency_id",
+        column1="module_branch_id",
+        column2="dependency_id",
         string="Dependencies",
     )
     reverse_dependency_ids = fields.Many2many(
         comodel_name="odoo.module.branch",
         relation="module_branch_dependency_rel",
-        column1="dependency_id", column2="module_branch_id",
+        column1="dependency_id",
+        column2="module_branch_id",
         string="Reverse Dependencies",
     )
     license_id = fields.Many2one(
@@ -114,9 +117,7 @@ class OdooModuleBranch(models.Model):
         string="License",
         index=True,
     )
-    version = fields.Char(
-        string="Version",
-    )
+    version = fields.Char()
     development_status_id = fields.Many2one(
         comodel_name="odoo.module.dev.status",
         ondelete="restrict",
@@ -128,14 +129,8 @@ class OdooModuleBranch(models.Model):
         comodel_name="odoo.python.dependency",
         string="Python Dependencies",
     )
-    application = fields.Boolean(
-        string="Application",
-        default=False,
-    )
-    installable = fields.Boolean(
-        string="Installable",
-        default=True,
-    )
+    application = fields.Boolean(default=False)
+    installable = fields.Boolean(default=True)
     auto_install = fields.Boolean(
         string="Auto-Install",
         default=False,
@@ -144,13 +139,13 @@ class OdooModuleBranch(models.Model):
     sloc_xml = fields.Integer("XML", help="XML source lines of code")
     sloc_js = fields.Integer("JS", help="JavaScript source lines of code")
     sloc_css = fields.Integer("CSS", help="CSS source lines of code")
-    last_scanned_commit = fields.Char(string="Last Scanned Commit")
+    last_scanned_commit = fields.Char()
 
     _sql_constraints = [
         (
             "module_id_branch_id_uniq",
             "UNIQUE (module_id, branch_id)",
-            "This module already exists for this branch."
+            "This module already exists for this branch.",
         ),
     ]
 
@@ -158,8 +153,7 @@ class OdooModuleBranch(models.Model):
     def _compute_name(self):
         for rec in self:
             rec.name = (
-                f"{rec.repository_branch_id.name or '?'}"
-                f" - {rec.module_id.name}"
+                f"{rec.repository_branch_id.name or '?'}" f" - {rec.module_id.name}"
             )
 
     def action_find_pr_url(self):
@@ -168,9 +162,7 @@ class OdooModuleBranch(models.Model):
         if self.pr_url or self.repository_branch_id:
             return False
         values = {"pr_url": False}
-        pr_urls = self._find_pr_urls_from_github(
-            self.branch_id, self.module_id
-        )
+        pr_urls = self._find_pr_urls_from_github(self.branch_id, self.module_id)
         for pr_url in pr_urls:
             values["pr_url"] = pr_url
             # Get the relevant repository from PR URL if not yet defined
@@ -195,8 +187,8 @@ class OdooModuleBranch(models.Model):
         # Look for an open PR first, then unmerged (which includes closed ones)
         for pr_state in ("open", "unmerged"):
             url = (
-                f'search/issues?q=is:pr+is:{pr_state}+base:{branch.name}'
-                f'+in:title+{module.name}'
+                f"search/issues?q=is:pr+is:{pr_state}+base:{branch.name}"
+                f"+in:title+{module.name}"
             )
             try:
                 # Mitigate 'API rate limit exceeded' GitHub API error
@@ -204,21 +196,16 @@ class OdooModuleBranch(models.Model):
                 time.sleep(random.randrange(1, 5))
                 prs = github.request(self.env, url)
             except RuntimeError as exc:
-                raise RetryableJobError(
-                    "Error while looking for PR URL") from exc
+                raise RetryableJobError("Error while looking for PR URL") from exc
             for pr in prs.get("items", []):
                 yield pr["html_url"]
 
     def _find_repository_from_pr_url(self, pr_url):
         """Return the repository corresponding to `pr_url`."""
         # Extract organization and repository name from PR url
-        path_parts = list(
-            filter(None, urlparse(pr_url).path.split('/'))
-        )
+        path_parts = list(filter(None, urlparse(pr_url).path.split("/")))
         org, repository = path_parts[:2]
-        repository_model = self.env["odoo.repository"].with_context(
-            active_test=False
-        )
+        repository_model = self.env["odoo.repository"].with_context(active_test=False)
         return repository_model.search(
             [
                 ("org_id", "=", org),
@@ -233,16 +220,12 @@ class OdooModuleBranch(models.Model):
         manifest = data["manifest"]
         module = self._get_module(module)
         repo_branch = self.env["odoo.repository.branch"].browse(repo_branch_id)
-        category_id = self._get_module_category_id(
-            manifest.get("category", "")
-        )
+        category_id = self._get_module_category_id(manifest.get("category", ""))
         author_ids = self._get_author_ids(manifest.get("author", ""))
         maintainer_ids = self._get_maintainer_ids(
             tuple(manifest.get("maintainers", []))
         )
-        dev_status_id = self._get_dev_status_id(
-            manifest.get("development_status", "")
-        )
+        dev_status_id = self._get_dev_status_id(manifest.get("development_status", ""))
         dependency_ids = self._get_dependency_ids(
             repo_branch, manifest.get("depends", [])
         )
@@ -256,9 +239,7 @@ class OdooModuleBranch(models.Model):
             "branch_id": repo_branch.branch_id.id,
             "module_id": module.id,
             "title": manifest.get("name", False),
-            "summary": manifest.get(
-                "summary", manifest.get("description", False)
-            ),
+            "summary": manifest.get("summary", manifest.get("description", False)),
             "category_id": category_id,
             "author_ids": [(6, 0, author_ids)],
             "maintainer_ids": [(6, 0, maintainer_ids)],
@@ -303,8 +284,10 @@ class OdooModuleBranch(models.Model):
                 [("name", "=", category_name)], limit=1
             )
             if not rec:
-                rec = self.env["odoo.module.category"].sudo().create(
-                    {"name": category_name}
+                rec = (
+                    self.env["odoo.module.category"]
+                    .sudo()
+                    .create({"name": category_name})
                 )
             return rec.id
         return False
@@ -319,8 +302,10 @@ class OdooModuleBranch(models.Model):
             missing_author_names = set(names) - set(authors.mapped("name"))
             missing_authors = self.env["odoo.author"]
             if missing_author_names:
-                missing_authors = self.env["odoo.author"].sudo().create(
-                    [{"name": name} for name in missing_author_names]
+                missing_authors = (
+                    self.env["odoo.author"]
+                    .sudo()
+                    .create([{"name": name} for name in missing_author_names])
                 )
             return (authors | missing_authors).ids
         return []
@@ -328,12 +313,8 @@ class OdooModuleBranch(models.Model):
     @tools.ormcache("names")
     def _get_maintainer_ids(self, names):
         if names:
-            maintainers = self.env["odoo.maintainer"].search(
-                [("name", "in", names)]
-            )
-            missing_maintainer_names = (
-                set(names) - set(maintainers.mapped("name"))
-            )
+            maintainers = self.env["odoo.maintainer"].search([("name", "in", names)])
+            missing_maintainer_names = set(names) - set(maintainers.mapped("name"))
             created = self.env["odoo.maintainer"]
             if missing_maintainer_names:
                 created = created.sudo().create(
@@ -349,9 +330,7 @@ class OdooModuleBranch(models.Model):
                 [("name", "=", name)], limit=1
             )
             if not rec:
-                rec = self.env["odoo.module.dev.status"].sudo().create(
-                    {"name": name}
-                )
+                rec = self.env["odoo.module.dev.status"].sudo().create({"name": name})
             return rec.id
         return False
 
@@ -381,9 +360,7 @@ class OdooModuleBranch(models.Model):
             dependencies = self.env["odoo.python.dependency"].search(
                 [("name", "in", packages)]
             )
-            missing_dependencies = (
-                set(packages) - set(dependencies.mapped("name"))
-            )
+            missing_dependencies = set(packages) - set(dependencies.mapped("name"))
             created = self.env["odoo.python.dependency"]
             if missing_dependencies:
                 created = created.sudo().create(

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -10,19 +10,19 @@
       <form>
         <sheet>
           <group>
-            <field name="name"/>
+            <field name="name" />
           </group>
           <group string="Modules maintained">
             <field name="module_branch_ids" nolabel="1" colspan="2">
               <tree>
-                <field name="repository_branch_id"/>
-                <field name="version"/>
-                <field name="author_ids" widget="many2many_tags"/>
-                <field name="license_id"/>
-                <field name="sloc_python"/>
-                <field name="sloc_xml"/>
-                <field name="sloc_js"/>
-                <field name="sloc_css"/>
+                <field name="repository_branch_id" />
+                <field name="version" />
+                <field name="author_ids" widget="many2many_tags" />
+                <field name="license_id" />
+                <field name="sloc_python" />
+                <field name="sloc_xml" />
+                <field name="sloc_js" />
+                <field name="sloc_css" />
               </tree>
             </field>
           </group>
@@ -36,8 +36,8 @@
     <field name="model">odoo.maintainer</field>
     <field name="arch" type="xml">
       <tree>
-        <field name="name"/>
-        <field name="github_url" widget="url"/>
+        <field name="name" />
+        <field name="github_url" widget="url" />
       </tree>
     </field>
   </record>
@@ -48,7 +48,7 @@
     <field name="type">search</field>
     <field name="arch" type="xml">
       <search>
-        <field name="name"/>
+        <field name="name" />
       </search>
     </field>
   </record>
@@ -57,11 +57,13 @@
     <field name="name">Maintainers</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.maintainer</field>
-    <field name="view_id" ref="odoo_maintainer_view_tree"/>
+    <field name="view_id" ref="odoo_maintainer_view_tree" />
   </record>
 
-  <menuitem id="odoo_maintainer_menu"
-    parent="misc_odoo_repository_menu"
-    action="odoo_maintainer_action"/>
+  <menuitem
+        id="odoo_maintainer_menu"
+        parent="misc_odoo_repository_menu"
+        action="odoo_maintainer_action"
+    />
 
 </odoo>

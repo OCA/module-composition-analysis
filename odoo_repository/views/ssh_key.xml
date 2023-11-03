@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -6,13 +6,13 @@
   <record id="ssh_key_view_form" model="ir.ui.view">
     <field name="name">ssh.key.form</field>
     <field name="model">ssh.key</field>
-    <field name="groups_id" eval="[(4,ref('base.group_system'))]"/>
+    <field name="groups_id" eval="[(4,ref('base.group_system'))]" />
     <field name="arch" type="xml">
       <form>
         <sheet>
           <group>
-            <field name="name"/>
-            <field name="private_key"/>
+            <field name="name" />
+            <field name="private_key" />
           </group>
         </sheet>
       </form>
@@ -24,7 +24,7 @@
     <field name="model">ssh.key</field>
     <field name="arch" type="xml">
       <tree>
-        <field name="name"/>
+        <field name="name" />
       </tree>
     </field>
   </record>
@@ -35,7 +35,7 @@
     <field name="type">search</field>
     <field name="arch" type="xml">
       <search>
-        <field name="name"/>
+        <field name="name" />
       </search>
     </field>
   </record>
@@ -44,12 +44,14 @@
     <field name="name">SSH Keys</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">ssh.key</field>
-    <field name="view_id" ref="ssh_key_view_tree"/>
-    <field name="groups_id" eval="[(4,ref('base.group_system'))]"/>
+    <field name="view_id" ref="ssh_key_view_tree" />
+    <field name="groups_id" eval="[(4,ref('base.group_system'))]" />
   </record>
 
-  <menuitem id="ssh_key_menu"
-    parent="config_odoo_repository_menu"
-    action="ssh_key_action"/>
+  <menuitem
+        id="ssh_key_menu"
+        parent="config_odoo_repository_menu"
+        action="ssh_key_action"
+    />
 
 </odoo>

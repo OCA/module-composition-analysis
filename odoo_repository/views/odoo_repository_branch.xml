@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -9,20 +9,23 @@
     <field name="arch" type="xml">
       <form>
         <header>
-          <button name="action_scan" type="object"
-            string="Scan" class="btn-primary"/>
-          <button name="action_force_scan" type="object"
-            string="Force Scan" class="btn-secondary"
-            confirm="This operation will restart the scan from the beginning. Are you sure?"/>
+          <button name="action_scan" type="object" string="Scan" class="btn-primary" />
+          <button
+                        name="action_force_scan"
+                        type="object"
+                        string="Force Scan"
+                        class="btn-secondary"
+                        confirm="This operation will restart the scan from the beginning. Are you sure?"
+                    />
         </header>
         <sheet>
           <group>
-            <field name="repository_id"/>
-            <field name="branch_id" options="{'no_open': True}"/>
-            <field name="last_scanned_commit"/>
+            <field name="repository_id" />
+            <field name="branch_id" options="{'no_open': True}" />
+            <field name="last_scanned_commit" />
           </group>
           <group name="modules" string="Modules">
-            <field name="module_ids" nolabel="1" colspan="2"/>
+            <field name="module_ids" nolabel="1" colspan="2" />
           </group>
         </sheet>
       </form>
@@ -34,8 +37,8 @@
     <field name="model">odoo.repository.branch</field>
     <field name="arch" type="xml">
       <tree>
-        <field name="repository_id"/>
-        <field name="branch_id"/>
+        <field name="repository_id" />
+        <field name="branch_id" />
       </tree>
     </field>
   </record>
@@ -46,8 +49,8 @@
     <field name="type">search</field>
     <field name="arch" type="xml">
       <search>
-        <field name="repository_id"/>
-        <field name="branch_id"/>
+        <field name="repository_id" />
+        <field name="branch_id" />
       </search>
     </field>
   </record>
