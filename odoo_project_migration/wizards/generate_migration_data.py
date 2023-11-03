@@ -38,9 +38,7 @@ class OdooProjectGenerateMigrationData(models.TransientModel):
         module_migration_model.sudo().create(values_list)
         # Open the generated migration data
         action = self.odoo_project_id.open_migration_data()
-        action["domain"].append(
-            ("migration_path_id", "=", self.migration_path_id.id)
-        )
+        action["domain"].append(("migration_path_id", "=", self.migration_path_id.id))
         action["display_name"] = _("Migration") + f" {self.migration_path_id.name}"
         return action
 

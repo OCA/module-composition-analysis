@@ -9,13 +9,15 @@ class OdooProjectModuleMigration(models.Model):
     # TODO test to inherit from 'module_migration_id' field too
     _inherits = {"odoo.module.branch": "source_module_branch_id"}
     _description = "Module migration line of an Odoo Project"
-    _order = "is_standard DESC, is_enterprise, is_community DESC, repository_id, module_name"
+    _order = (
+        "is_standard DESC, is_enterprise, is_community DESC, repository_id, module_name"
+    )
 
     _sql_constraints = [
         (
             "uniq",
             "UNIQUE (odoo_project_id, migration_path_id, source_module_branch_id)",
-            "This module migration path already exists."
+            "This module migration path already exists.",
         ),
     ]
 

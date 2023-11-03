@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -10,15 +10,15 @@
       <form>
         <sheet>
           <group>
-            <field name="odoo_project_id"/>
-            <field name="migration_path_id" options="{'no_open': True}"/>
-            <field name="module_id"/>
-            <field name="source_module_branch_id"/>
-            <field name="target_module_branch_id"/>
-            <field name="module_migration_id"/>
-            <field name="state"/>
-            <field name="results_text"/>
-            <field name="pr_url" widget="url"/>
+            <field name="odoo_project_id" />
+            <field name="migration_path_id" options="{'no_open': True}" />
+            <field name="module_id" />
+            <field name="source_module_branch_id" />
+            <field name="target_module_branch_id" />
+            <field name="module_migration_id" />
+            <field name="state" />
+            <field name="results_text" />
+            <field name="pr_url" widget="url" />
           </group>
         </sheet>
       </form>
@@ -30,19 +30,19 @@
     <field name="model">odoo.project.module.migration</field>
     <field name="arch" type="xml">
       <tree>
-        <field name="migration_path_id" optional="hide"/>
-        <field name="org_id"/>
-        <field name="repository_id"/>
-        <field name="module_id"/>
-        <field name="is_standard"/>
-        <field name="is_enterprise"/>
-        <field name="is_community"/>
-        <field name="auto_install"/>
-        <field name="sloc_python" sum="Python"/>
-        <field name="sloc_xml" sum="XML"/>
-        <field name="sloc_js" sum="JS"/>
-        <field name="sloc_css" sum="CSS"/>
-        <field name="state"/>
+        <field name="migration_path_id" optional="hide" />
+        <field name="org_id" />
+        <field name="repository_id" />
+        <field name="module_id" />
+        <field name="is_standard" />
+        <field name="is_enterprise" />
+        <field name="is_community" />
+        <field name="auto_install" />
+        <field name="sloc_python" sum="Python" />
+        <field name="sloc_xml" sum="XML" />
+        <field name="sloc_js" sum="JS" />
+        <field name="sloc_css" sum="CSS" />
+        <field name="state" />
       </tree>
     </field>
   </record>
@@ -50,14 +50,20 @@
   <record id="odoo_project_module_migration_view_search" model="ir.ui.view">
     <field name="name">odoo.project.module.migration.search</field>
     <field name="model">odoo.project.module.migration</field>
-    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search"/>
+    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
         <group name="group_by" position="inside">
-          <filter name="group_by_migration_path_id" string="Migration Path"
-            context="{'group_by': 'migration_path_id'}"/>
-          <filter name="group_by_state" string="Migration Status"
-            context="{'group_by': 'state'}"/>
+          <filter
+                    name="group_by_migration_path_id"
+                    string="Migration Path"
+                    context="{'group_by': 'migration_path_id'}"
+                />
+          <filter
+                    name="group_by_state"
+                    string="Migration Status"
+                    context="{'group_by': 'state'}"
+                />
         </group>
     </field>
   </record>
@@ -66,7 +72,7 @@
     <field name="name">Migrations</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.project.module.migration</field>
-    <field name="view_id" ref="odoo_project_module_migration_view_tree"/>
+    <field name="view_id" ref="odoo_project_module_migration_view_tree" />
   </record>
 
 </odoo>
