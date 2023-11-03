@@ -19,8 +19,9 @@ class OdooProjectImportModules(models.TransientModel):
         string="Modules List",
         help=(
             "Copy/paste your list of technical module names here.\n"
-            "They can be separated by spaces, tabulations, comma or any other "
-            "special characters."
+            "One module per line, with an optional version number placed "
+            "after the module name separated by any special character "
+            "(space, tabulation, comma...)."
         ),
         required=True,
     )
@@ -28,17 +29,25 @@ class OdooProjectImportModules(models.TransientModel):
     def action_import(self):
         """Import the modules for the given Odoo project."""
         self.ensure_one()
-        self.odoo_project_id.module_branch_ids = False
-        module_names = (
-            re.split(r"\W+", self.modules_list) if self.modules_list else []
-        )
-        module_names = list(filter(None, module_names))
-        module_branch_ids = []
-        for module_name in module_names:
+        self.odoo_project_id.sudo().project_module_ids = False
+        module_lines = list(filter(None, self.modules_list.split("\n")))
+        # module_names = (
+        #     re.split(r"\W+", self.modules_list) if self.modules_list else []
+        # )
+        # module_names = list(filter(None, module_names))
+        project_module_ids = []
+        for line in module_lines:
+            data = re.split(r"\W+", line, maxsplit=1)
+            if len(data) > 1:
+                module_name, version = data
+            else:
+                module_name, version = data[0], False
+        # for module_name in module_names:
             module = self._get_module(module_name)
             module_branch = self._get_module_branch(module)
-            module_branch_ids.append(module_branch.id)
-        self.odoo_project_id.module_branch_ids = module_branch_ids
+            project_module = self._get_project_module(module_branch, version)
+            project_module_ids.append(project_module.id)
+        self.odoo_project_id.sudo().project_module_ids = project_module_ids
         return True
 
     def _get_module(self, module_name):
@@ -53,7 +62,7 @@ class OdooProjectImportModules(models.TransientModel):
         return module
 
     def _get_module_branch(self, module):
-        """Return a `odoo.module.branch` record for the project.
+        """Return a `odoo.module.branch` record.
 
         If it doesn't exist it'll be automatically created.
         """
@@ -64,7 +73,7 @@ class OdooProjectImportModules(models.TransientModel):
         ]
         module_branch = module_branch_model.search(args)
         if not module_branch:
-            # Create the module to make it available for the project
+            # Create the module
             branch = self.odoo_project_id.odoo_version_id
             values = {
                 "module_id": module.id,
@@ -77,3 +86,26 @@ class OdooProjectImportModules(models.TransientModel):
             # to identity its repository
             module_branch.with_delay().action_find_pr_url()
         return module_branch
+
+    def _get_project_module(self, module_branch, version):
+        """Return a `odoo.project.module` record for the project.
+
+        If it doesn't exist it'll be automatically created.
+        """
+        project_module_model = self.env["odoo.project.module"]
+        args = [
+            ("module_branch_id", "=", module_branch.id),
+            ("odoo_project_id", "=", self.odoo_project_id.id),
+        ]
+        project_module = project_module_model.search(args)
+        values = {
+            "module_branch_id": module_branch.id,
+            "odoo_project_id": self.odoo_project_id.id,
+            "installed_version": version,
+        }
+        if project_module:
+            project_module.sudo().write(values)
+        else:
+            # Create the module to make it available for the project
+            project_module = project_module_model.sudo().create(values)
+        return project_module

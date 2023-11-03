@@ -23,7 +23,7 @@
     <field name="arch" type="xml">
       <filter name="no_repository" position="after">
         <filter name="no_project" string="Installed in projects"
-          domain="[('odoo_project_ids', '=', False)]"/>
+          domain="[('odoo_project_ids', '!=', False)]"/>
         <filter name="no_project" string="No project"
           domain="[('odoo_project_ids', '=', False)]"/>
       </filter>

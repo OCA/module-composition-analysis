@@ -13,7 +13,7 @@
             string="Import modules" class="btn-primary"/>
         </header>
         <sheet>
-          <field name="module_branch_ids" invisible="1"/>
+          <field name="project_module_ids" invisible="1"/>
           <div class="oe_button_box" name="button_box">
             <button name="open_modules" type="object"
               string="Modules" class="oe_stat_button" icon="fa-th-list">
@@ -27,7 +27,7 @@
             <h1><field name="name" placeholder="Project Name"/></h1>
           </div>
           <group>
-            <field name="repository_id" attrs="{'readonly': [('module_branch_ids', '!=', [])]}" />
+            <field name="repository_id" attrs="{'readonly': [('project_module_ids', '!=', [])]}" />
             <field name="odoo_version_id" readonly="1" options="{'no_open': True}" />
           </group>
           <group name="modules_unmerged" string="Modules to merge">
@@ -70,7 +70,7 @@
       <tree>
         <field name="name"/>
         <field name="odoo_version_id"/>
-        <field name="module_branch_ids"/>
+        <field name="project_module_ids"/>
       </tree>
     </field>
   </record>
@@ -83,13 +83,12 @@
       <search>
         <field name="name"/>
         <field name="odoo_version_id"/>
+        <field name="module_ids"/>
         <group expand="0" string="Group By">
           <filter name="group_by_odoo_version_id" string="Odoo Version"
             context="{'group_by': 'odoo_version_id'}"/>
           <filter name="group_by_module_ids" string="Module"
             context="{'group_by': 'module_ids'}"/>
-          <filter name="group_by_module_branch_ids" string="Module/Branch"
-            context="{'group_by': 'module_branch_ids'}"/>
         </group>
       </search>
     </field>
@@ -103,8 +102,7 @@
   </record>
 
   <menuitem id="odoo_project_menu"
-    parent="odoo_repository.main_odoo_repository_menu"
-    action="odoo_project_action"
-    sequence="5"/>
+    parent="odoo_project_main_menu"
+    action="odoo_project_action"/>
 
 </odoo>

@@ -9,8 +9,10 @@
     "website": "https://github.com/OCA/TODO",
     "data": [
         "security/ir.model.access.csv",
+        "views/menu.xml",
         "views/odoo_module_branch.xml",
         "views/odoo_project.xml",
+        "views/odoo_project_module.xml",
         "wizards/odoo_project_import_modules.xml",
     ],
     "installable": True,
