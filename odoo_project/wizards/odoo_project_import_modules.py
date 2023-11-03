@@ -30,10 +30,6 @@ class OdooProjectImportModules(models.TransientModel):
         self.ensure_one()
         self.odoo_project_id.sudo().project_module_ids = False
         module_lines = list(filter(None, self.modules_list.split("\n")))
-        # module_names = (
-        #     re.split(r"\W+", self.modules_list) if self.modules_list else []
-        # )
-        # module_names = list(filter(None, module_names))
         project_module_ids = []
         for line in module_lines:
             data = re.split(r"\W+", line, maxsplit=1)
