@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -9,67 +9,100 @@
     <field name="arch" type="xml">
       <form>
         <header>
-          <button name="action_scan" type="object"
-            string="Scan" class="btn-primary"
-            groups="base.group_system"
-            attrs="{'invisible': [('to_scan', '=', False)]}"/>
-          <button name="action_force_scan" type="object"
-            string="Force Scan" class="btn-secondary"
-            confirm="This operation will restart the scan from the beginning. Are you sure?"
-            groups="base.group_system"
-            attrs="{'invisible': [('to_scan', '=', False)]}"/>
+          <button
+                        name="action_scan"
+                        type="object"
+                        string="Scan"
+                        class="btn-primary"
+                        groups="base.group_system"
+                        attrs="{'invisible': [('to_scan', '=', False)]}"
+                    />
+          <button
+                        name="action_force_scan"
+                        type="object"
+                        string="Force Scan"
+                        class="btn-secondary"
+                        confirm="This operation will restart the scan from the beginning. Are you sure?"
+                        groups="base.group_system"
+                        attrs="{'invisible': [('to_scan', '=', False)]}"
+                    />
         </header>
         <sheet>
           <group>
             <group name="repository" string="Repository">
               <group colspan="2">
-                <field name="org_id" attrs="{'readonly': [('branch_ids', '!=', [])]}"/>
-                <field name="name" attrs="{'readonly': [('branch_ids', '!=', [])]}"/>
-                <field name="repo_url" widget="url" attrs="{'readonly': [('branch_ids', '!=', [])]}"/>
-                <field name="to_scan"/>
+                <field name="org_id" attrs="{'readonly': [('branch_ids', '!=', [])]}" />
+                <field name="name" attrs="{'readonly': [('branch_ids', '!=', [])]}" />
+                <field
+                                    name="repo_url"
+                                    widget="url"
+                                    attrs="{'readonly': [('branch_ids', '!=', [])]}"
+                                />
+                <field name="to_scan" />
               </group>
               <group attrs="{'invisible': [('to_scan', '=', False)]}" colspan="2">
-                <field name="clone_url" attrs="{'readonly': [('branch_ids', '!=', [])]}"/>
-                <field name="repo_type" attrs="{'readonly': [('branch_ids', '!=', [])]}"/>
-                <field name="ssh_key_id"
-                  options="{'no_open': True}"
-                  groups="base.group_system"
-                  />
+                <field
+                                    name="clone_url"
+                                    attrs="{'readonly': [('branch_ids', '!=', [])]}"
+                                />
+                <field
+                                    name="repo_type"
+                                    attrs="{'readonly': [('branch_ids', '!=', [])]}"
+                                />
+                <field
+                                    name="ssh_key_id"
+                                    options="{'no_open': True}"
+                                    groups="base.group_system"
+                                />
               </group>
             </group>
-            <group name="options" string="Options" attrs="{'invisible': [('to_scan', '=', False)]}">
-              <field name="clone_branch_id"
-                context="{'default_odoo_version': False}"
-                options="{'no_open': True}"
-                attrs="{'readonly': [('branch_ids', '!=', [])]}"/>
-              <field name="odoo_version_id"
-                options="{'no_open': True}"
-                attrs="{
+            <group
+                            name="options"
+                            string="Options"
+                            attrs="{'invisible': [('to_scan', '=', False)]}"
+                        >
+              <field
+                                name="clone_branch_id"
+                                context="{'default_odoo_version': False}"
+                                options="{'no_open': True}"
+                                attrs="{'readonly': [('branch_ids', '!=', [])]}"
+                            />
+              <field
+                                name="odoo_version_id"
+                                options="{'no_open': True}"
+                                attrs="{
                 'required': [('clone_branch_id' , '!=', False)],
                 'invisible': [('clone_branch_id', '=', False)],
                 'readonly': [('branch_ids', '!=', [])]
-                }"/>
+                }"
+                            />
             </group>
           </group>
           <group>
-            <group name="addons_path" string="Addons Path"
-              attrs="{'invisible': [('to_scan', '=', False)]}">
+            <group
+                            name="addons_path"
+                            string="Addons Path"
+                            attrs="{'invisible': [('to_scan', '=', False)]}"
+                        >
               <field name="addons_path_ids" nolabel="1" colspan="2">
                 <tree editable="bottom">
-                  <field name="relative_path" readonly="1"/>
-                  <field name="is_standard" readonly="1"/>
-                  <field name="is_enterprise" readonly="1"/>
-                  <field name="is_community" readonly="1"/>
+                  <field name="relative_path" readonly="1" />
+                  <field name="is_standard" readonly="1" />
+                  <field name="is_enterprise" readonly="1" />
+                  <field name="is_community" readonly="1" />
                 </tree>
               </field>
             </group>
-            <group name="branches" string="Branches"
-              attrs="{'invisible': [('clone_branch_id', '!=', False)]}">
+            <group
+                            name="branches"
+                            string="Branches"
+                            attrs="{'invisible': [('clone_branch_id', '!=', False)]}"
+                        >
               <field name="branch_ids" nolabel="1" colspan="2">
                 <tree>
-                  <field name="branch_id"/>
-                  <field name="module_ids"/>
-                  <field name="last_scanned_commit"/>
+                  <field name="branch_id" />
+                  <field name="module_ids" />
+                  <field name="last_scanned_commit" />
                 </tree>
               </field>
             </group>
@@ -84,11 +117,11 @@
     <field name="model">odoo.repository</field>
     <field name="arch" type="xml">
       <tree>
-        <field name="org_id"/>
-        <field name="name"/>
-        <field name="repo_url" widget="url"/>
-        <field name="to_scan"/>
-        <field name="repo_type"/>
+        <field name="org_id" />
+        <field name="name" />
+        <field name="repo_url" widget="url" />
+        <field name="to_scan" />
+        <field name="repo_type" />
       </tree>
     </field>
   </record>
@@ -99,13 +132,16 @@
     <field name="type">search</field>
     <field name="arch" type="xml">
       <search>
-        <field name="name"/>
-        <field name="org_id"/>
-        <filter name="to_scan" string="To scan" domain="[('to_scan', '=', True)]"/>
-        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+        <field name="name" />
+        <field name="org_id" />
+        <filter name="to_scan" string="To scan" domain="[('to_scan', '=', True)]" />
+        <filter name="archived" string="Archived" domain="[('active', '=', False)]" />
         <group expand="0" string="Group By">
-          <filter name="group_by_org_id" string="Organization"
-            context="{'group_by': 'org_id'}"/>
+          <filter
+                        name="group_by_org_id"
+                        string="Organization"
+                        context="{'group_by': 'org_id'}"
+                    />
         </group>
       </search>
     </field>
@@ -115,11 +151,13 @@
     <field name="name">Repositories</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.repository</field>
-    <field name="view_id" ref="odoo_repository_view_tree"/>
+    <field name="view_id" ref="odoo_repository_view_tree" />
   </record>
 
-  <menuitem id="odoo_repository_menu"
-    parent="config_odoo_repository_menu"
-    action="odoo_repository_action"/>
+  <menuitem
+        id="odoo_repository_menu"
+        parent="config_odoo_repository_menu"
+        action="odoo_repository_action"
+    />
 
 </odoo>

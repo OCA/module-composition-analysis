@@ -4,27 +4,21 @@
 import contextlib
 import json
 import logging
-import pathlib
 import os
+import pathlib
 import subprocess
 import tempfile
 import time
 
 import git
 import oca_port
-from .odoo_addons_analyzer import ModuleAnalysis
 
+from .odoo_addons_analyzer import ModuleAnalysis
 
 # Disable logging from 'pygount' (used by odoo_addons_analyzer)
 logging.getLogger("pygount").setLevel(logging.ERROR)
 
 _logger = logging.getLogger(__name__)
-
-# TODO handle Git clone/fetch through SSH:
-#   https://gitpython.readthedocs.io/en/stable/tutorial.html#handling-remotes
-# ssh_cmd = 'ssh -i id_deployment_key'
-# with repo.git.custom_environment(GIT_SSH_COMMAND=ssh_cmd):
-#         repo.remotes.origin.fetch()
 
 
 class BaseScanner:
@@ -44,9 +38,7 @@ class BaseScanner:
         self.name = name
         self.clone_url = clone_url
         self.branches = branches
-        self.repositories_path = self._prepare_repositories_path(
-            repositories_path
-        )
+        self.repositories_path = self._prepare_repositories_path(repositories_path)
         self.path = self.repositories_path.joinpath(self.org, self.name)
         self._apply_git_config()
         self.ssh_key = ssh_key
@@ -64,7 +56,7 @@ class BaseScanner:
         git_env = {}
         if self.ssh_key:
             with self._get_ssh_key() as ssh_key_path:
-                ssh_key_path = "/home/salix/.ssh/testing"   # FIXME test
+                ssh_key_path = "/home/salix/.ssh/testing"  # FIXME test
                 git_ssh_cmd = f"ssh -o StrictHostKeyChecking=no -i {ssh_key_path}"
                 git_env.update(GIT_SSH_COMMAND=git_ssh_cmd, GIT_TRACE="true")
                 yield git_env
@@ -96,9 +88,7 @@ class BaseScanner:
     def _apply_git_config(self):
         # This avoids too high memory consumption (default git config could
         # crash the Odoo workers when the scanner is run by Odoo itself).
-        subprocess.run(
-            ["git", "config", "--global", "core.packedGitLimit", "256m"]
-        )
+        subprocess.run(["git", "config", "--global", "core.packedGitLimit", "256m"])
         # self.repo.config_writer().set_value(
         #     "core", "packedGitLimit", "256m").release()
 
@@ -170,12 +160,12 @@ class BaseScanner:
         ]
 
     def _get_module_paths_updated(
-            self,
-            relative_path,
-            from_commit,
-            to_commit,
-            branch,
-            ):
+        self,
+        relative_path,
+        from_commit,
+        to_commit,
+        branch,
+    ):
         """Return modules updated between `from_commit` and `to_commit`.
 
         It returns a list of tuples `[(module, last_commit), ...]`.
@@ -206,17 +196,12 @@ class BaseScanner:
             # Remove the relative_path (e.g. 'addons/') from the diff path
             rel_path = pathlib.Path(relative_path)
             diff_path = pathlib.Path(diff.a_path)
-            module_path = pathlib.Path(
-                *diff_path.parts[:len(rel_path.parts) + 1]
-            )
+            module_path = pathlib.Path(*diff_path.parts[: len(rel_path.parts) + 1])
             tree = to_commit.tree / str(module_path)
             if self._odoo_module(tree):
                 module_paths.add(
                     # FIXME: should we return pathlib.Path objects?
-                    (
-                        tree.path,
-                        self._get_commit_of_git_tree(f"origin/{branch}", tree)
-                    )
+                    (tree.path, self._get_commit_of_git_tree(f"origin/{branch}", tree))
                 )
         return module_paths
 
@@ -227,9 +212,7 @@ class BaseScanner:
         return True
 
     def _get_commit_of_git_tree(self, ref, tree):
-        return tree.repo.git.log(
-            "--pretty=%H", "-n 1", ref, "--", tree.path
-        )
+        return tree.repo.git.log("--pretty=%H", "-n 1", ref, "--", tree.path)
 
     def _odoo_module(self, tree):
         """Check if the `git.Tree` object is an Odoo module."""
@@ -255,12 +238,11 @@ class BaseScanner:
         """Return the subtree `tree / path` if it exists, or `None`."""
         try:
             return tree / path
-        except KeyError:
+        except KeyError:  # pylint: disable=except-pass
             pass
 
 
 class MigrationScanner(BaseScanner):
-
     def __init__(
         self,
         org: str,
@@ -278,17 +260,17 @@ class MigrationScanner(BaseScanner):
         self.migration_paths = migration_paths
 
     def scan(self):
-        super().scan()
+        res = super().scan()
         repo_id = self._get_odoo_repository_id()
         # Get the repository branches from Odoo as the ones we got as parameter
         # could not exist in the repository
-        branches = self._get_odoo_repository_branches(repo_id)
+        self._get_odoo_repository_branches(repo_id)
         for source_branch, target_branch in self.migration_paths:
-            if (
-                self._branch_exists(source_branch)
-                and self._branch_exists(target_branch)
+            if self._branch_exists(source_branch) and self._branch_exists(
+                target_branch
             ):
                 self._scan_migration_path(source_branch, target_branch)
+        return res
 
     def _scan_migration_path(self, source_branch, target_branch):
         repo = self.repo
@@ -300,9 +282,8 @@ class MigrationScanner(BaseScanner):
             if not module_branch_id:
                 _logger.warning(
                     "Module '%s' for branch %s does not exist on Odoo, "
-                    "a new scan of the repository is required. Aborted" % (
-                        module, source_branch
-                    )
+                    "a new scan of the repository is required. Aborted"
+                    % (module, source_branch)
                 )
                 continue
             # For each module and source/target branch:
@@ -318,9 +299,9 @@ class MigrationScanner(BaseScanner):
                 repo_source_commit, module_source_tree
             )
             module_target_commit = (
-                module_target_tree and self._get_commit_of_git_tree(
-                    repo_target_commit, module_target_tree
-                ) or False
+                module_target_tree
+                and self._get_commit_of_git_tree(repo_target_commit, module_target_tree)
+                or False
             )
             # Retrieve existing migration data if any and check if it is outdated
             data = self._get_odoo_module_branch_migration_data(
@@ -346,7 +327,7 @@ class MigrationScanner(BaseScanner):
         source_branch: str,
         target_branch: str,
         source_commit: str,
-        target_commit: str
+        target_commit: str,
     ):
         """Collect the migration data of a module."""
         # TODO if all the diffs from 'source_commit' to 'target_commit'
@@ -417,12 +398,14 @@ class MigrationScanner(BaseScanner):
         raise NotImplementedError
 
     def _get_odoo_module_branch_migration_id(
-            self, module, source_branch, target_branch) -> int:
+        self, module, source_branch, target_branch
+    ) -> int:
         """Return the ID of 'odoo.module.branch.migration' record."""
         raise NotImplementedError
 
     def _get_odoo_module_branch_migration_data(
-            self, module, source_branch, target_branch) -> dict:
+        self, module, source_branch, target_branch
+    ) -> dict:
         """Return the 'odoo.module.branch.migration' data."""
         raise NotImplementedError
 
@@ -436,7 +419,6 @@ class MigrationScanner(BaseScanner):
 
 
 class RepositoryScanner(BaseScanner):
-
     def __init__(
         self,
         org: str,
@@ -454,11 +436,12 @@ class RepositoryScanner(BaseScanner):
         self.addons_paths_data = addons_paths_data
 
     def scan(self):
-        super().scan()
+        res = super().scan()
         repo_id = self._get_odoo_repository_id()
         branches_scanned = {}
         for branch in self.branches:
             branches_scanned[branch] = self._scan_branch(repo_id, branch)
+        return res
 
     def _scan_branch(self, repo_id, branch):
         if not self._branch_exists(branch):
@@ -475,8 +458,11 @@ class RepositoryScanner(BaseScanner):
             # Scan relevant subfolders of the repository
             for addons_path_data in self.addons_paths_data:
                 self._scan_addons_path(
-                    addons_path_data, branch, repo_branch_id,
-                    last_fetched_commit, last_scanned_commit
+                    addons_path_data,
+                    branch,
+                    repo_branch_id,
+                    last_fetched_commit,
+                    last_scanned_commit,
                 )
             # Flag this repository/branch as scanned
             self._update_last_scanned_commit(repo_branch_id, last_fetched_commit)
@@ -484,8 +470,12 @@ class RepositoryScanner(BaseScanner):
         return False
 
     def _scan_addons_path(
-        self, addons_path_data, branch, repo_branch_id,
-        last_fetched_commit, last_scanned_commit
+        self,
+        addons_path_data,
+        branch,
+        repo_branch_id,
+        last_fetched_commit,
+        last_scanned_commit,
     ):
         if not last_scanned_commit:
             module_paths = sorted(

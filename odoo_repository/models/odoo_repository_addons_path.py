@@ -35,6 +35,6 @@ class OdooRepositoryAddonsPath(models.Model):
         (
             "addons_path_uniq",
             "UNIQUE (relative_path, is_standard, is_enterprise, is_community)",
-            "This addons-path already exists."
+            "This addons-path already exists.",
         ),
     ]

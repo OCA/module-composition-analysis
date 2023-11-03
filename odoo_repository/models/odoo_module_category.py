@@ -11,9 +11,5 @@ class OdooModuleCategory(models.Model):
     name = fields.Char(required=True, index=True)
 
     _sql_constraints = [
-        (
-            "name_uniq",
-            "UNIQUE (name)",
-            "This module category already exists."
-        ),
+        ("name_uniq", "UNIQUE (name)", "This module category already exists."),
     ]

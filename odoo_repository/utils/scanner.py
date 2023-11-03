@@ -17,9 +17,11 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
         super().__init__(*args, **kwargs)
 
     def _get_odoo_repository_id(self):
-        return self.env["odoo.repository"].search(
-            [("name", "=", self.name), ("org_id", "=", self.org)]
-        ).id
+        return (
+            self.env["odoo.repository"]
+            .search([("name", "=", self.name), ("org_id", "=", self.org)])
+            .id
+        )
 
     def _get_odoo_branch_id(self, repo_id, branch):
         repo = self.env["odoo.repository"].browse(repo_id)
@@ -40,9 +42,7 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
             return repo_branch.id
 
     def _create_odoo_repository_branch(self, repo_id, branch_id):
-        repo_branch_id = self._get_odoo_repository_branch_id(
-            repo_id, branch_id
-        )
+        repo_branch_id = self._get_odoo_repository_branch_id(repo_id, branch_id)
         if not repo_branch_id:
             values = {
                 "repository_id": repo_id,
@@ -71,7 +71,7 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
             repo_branch_id, module, data
         )
         # Commit after each module
-        self.env.cr.commit()
+        self.env.cr.commit()  # pylint: disable=invalid-commit
         return res
 
     def _update_last_scanned_commit(self, repo_branch_id, last_fetched_commit):
@@ -79,5 +79,5 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
         repo_branch = repo_branch_model.browse(repo_branch_id)
         repo_branch.last_scanned_commit = last_fetched_commit
         # Commit after each repository/branch
-        self.env.cr.commit()
+        self.env.cr.commit()  # pylint: disable=invalid-commit
         return True

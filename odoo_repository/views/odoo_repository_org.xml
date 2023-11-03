@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -10,7 +10,7 @@
       <form>
         <sheet>
           <group>
-            <field name="name"/>
+            <field name="name" />
           </group>
         </sheet>
       </form>
@@ -22,7 +22,7 @@
     <field name="model">odoo.repository.org</field>
     <field name="arch" type="xml">
       <tree editable="bottom">
-        <field name="name"/>
+        <field name="name" />
       </tree>
     </field>
   </record>
@@ -33,7 +33,7 @@
     <field name="type">search</field>
     <field name="arch" type="xml">
       <search>
-        <field name="name"/>
+        <field name="name" />
       </search>
     </field>
   </record>
@@ -42,11 +42,13 @@
     <field name="name">Repository Organizations</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.repository.org</field>
-    <field name="view_id" ref="odoo_repository_org_view_tree"/>
+    <field name="view_id" ref="odoo_repository_org_view_tree" />
   </record>
 
-  <menuitem id="odoo_repository_org_menu"
-    parent="config_odoo_repository_menu"
-    action="odoo_repository_org_action"/>
+  <menuitem
+        id="odoo_repository_org_menu"
+        parent="config_odoo_repository_menu"
+        action="odoo_repository_org_action"
+    />
 
 </odoo>

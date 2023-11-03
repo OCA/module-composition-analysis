@@ -16,7 +16,8 @@ class OdooMaintainer(models.Model):
     module_branch_ids = fields.Many2many(
         comodel_name="odoo.module.branch",
         relation="module_branch_maintainer_rel",
-        column1="maintainer_id", column2="module_branch_id",
+        column1="maintainer_id",
+        column2="module_branch_id",
         string="Maintainers",
     )
 
@@ -26,9 +27,5 @@ class OdooMaintainer(models.Model):
             rec.github_url = f"{GITHUB_URL}/{rec.name}"
 
     _sql_constraints = [
-        (
-            "name_uniq",
-            "UNIQUE (name)",
-            "This maintainer already exists."
-        ),
+        ("name_uniq", "UNIQUE (name)", "This maintainer already exists."),
     ]

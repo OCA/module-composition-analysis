@@ -16,9 +16,5 @@ class OdooModule(models.Model):
     )
 
     _sql_constraints = [
-        (
-            "name_uniq",
-            "UNIQUE (name)",
-            "This module technical name already exists."
-        ),
+        ("name_uniq", "UNIQUE (name)", "This module technical name already exists."),
     ]
