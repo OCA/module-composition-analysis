@@ -16,7 +16,7 @@ class OdooProject(models.Model):
     )
     migrations_count = fields.Integer(compute="_compute_migrations_count")
 
-    @api.depends("module_branch_ids")
+    @api.depends("module_migration_ids")
     def _compute_migrations_count(self):
         for rec in self:
             rec.migrations_count = len(rec.module_migration_ids)
