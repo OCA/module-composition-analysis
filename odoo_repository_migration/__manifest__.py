@@ -6,7 +6,7 @@
     "version": "16.0.1.0.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/TODO",
+    "website": "https://github.com/camptocamp/odoo-repository",
     "data": [
         "security/ir.model.access.csv",
         "data/queue_job.xml",

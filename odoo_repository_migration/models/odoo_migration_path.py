@@ -28,13 +28,11 @@ class OdooMigrationPath(models.Model):
         (
             "migration_path_uniq",
             "UNIQUE (source_branch_id, target_branch_id)",
-            "This migration path already exists."
+            "This migration path already exists.",
         ),
     ]
 
     @api.depends("source_branch_id.name", "target_branch_id.name")
     def _compute_name(self):
         for rec in self:
-            rec.name = (
-                f"{rec.source_branch_id.name} -> {rec.target_branch_id.name}"
-            )
+            rec.name = f"{rec.source_branch_id.name} -> {rec.target_branch_id.name}"
