@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -6,11 +6,11 @@
   <record id="odoo_module_branch_view_form" model="ir.ui.view">
     <field name="name">odoo.module.branch.form.inherit</field>
     <field name="model">odoo.module.branch</field>
-    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form"/>
+    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form" />
     <field name="arch" type="xml">
       <page name="python_dependency_ids" position="after">
         <page name="projects" string="Projects">
-          <field name="odoo_project_ids" nolabel="1"/>
+          <field name="odoo_project_ids" nolabel="1" />
         </page>
       </page>
     </field>
@@ -19,17 +19,26 @@
   <record id="odoo_module_branch_view_search" model="ir.ui.view">
     <field name="name">odoo.module.branch.search.inherit</field>
     <field name="model">odoo.module.branch</field>
-    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search"/>
+    <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
     <field name="arch" type="xml">
       <filter name="no_repository" position="after">
-        <filter name="no_project" string="Installed in projects"
-          domain="[('odoo_project_ids', '!=', False)]"/>
-        <filter name="no_project" string="No project"
-          domain="[('odoo_project_ids', '=', False)]"/>
+        <filter
+                    name="no_project"
+                    string="Installed in projects"
+                    domain="[('odoo_project_ids', '!=', False)]"
+                />
+        <filter
+                    name="no_project"
+                    string="No project"
+                    domain="[('odoo_project_ids', '=', False)]"
+                />
       </filter>
       <filter name="group_by_development_status_id" position="after">
-        <filter name="group_by_odoo_project_id" string="Project"
-          context="{'group_by': 'odoo_project_ids'}"/>
+        <filter
+                    name="group_by_odoo_project_id"
+                    string="Project"
+                    context="{'group_by': 'odoo_project_ids'}"
+                />
       </filter>
     </field>
   </record>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -9,33 +9,45 @@
     <field name="arch" type="xml">
       <form>
         <header>
-          <button name="open_import_modules" type="object"
-            string="Import modules" class="btn-primary"/>
+          <button
+                        name="open_import_modules"
+                        type="object"
+                        string="Import modules"
+                        class="btn-primary"
+                    />
         </header>
         <sheet>
-          <field name="project_module_ids" invisible="1"/>
+          <field name="project_module_ids" invisible="1" />
           <div class="oe_button_box" name="button_box">
-            <button name="open_modules" type="object"
-              string="Modules" class="oe_stat_button" icon="fa-th-list">
+            <button
+                            name="open_modules"
+                            type="object"
+                            string="Modules"
+                            class="oe_stat_button"
+                            icon="fa-th-list"
+                        >
               <div class="o_field_widget o_stat_info">
-                  <span class="o_stat_value"><field name="modules_count"/></span>
+                  <span class="o_stat_value"><field name="modules_count" /></span>
                   <span class="o_stat_text"> Modules inst.</span>
               </div>
             </button>
           </div>
           <div class="oe_title">
-            <h1><field name="name" placeholder="Project Name"/></h1>
+            <h1><field name="name" placeholder="Project Name" /></h1>
           </div>
           <group>
-            <field name="repository_id" attrs="{'readonly': [('project_module_ids', '!=', [])]}" />
+            <field
+                            name="repository_id"
+                            attrs="{'readonly': [('project_module_ids', '!=', [])]}"
+                        />
             <field name="odoo_version_id" readonly="1" options="{'no_open': True}" />
           </group>
           <group name="modules_unmerged" string="Modules to merge">
             <field name="unmerged_module_ids" nolabel="1" colspan="2">
               <tree>
-                <field name="module_id"/>
-                <field name="repository_id"/>
-                <field name="pr_url" widget="url"/>
+                <field name="module_id" />
+                <field name="repository_id" />
+                <field name="pr_url" widget="url" />
               </tree>
             </field>
           </group>
@@ -43,17 +55,17 @@
             <group name="modules_not_installed" string="Modules not installed">
               <field name="module_not_installed_ids" nolabel="1" colspan="2">
                 <tree>
-                  <field name="module_id"/>
-                  <field name="repository_id"/>
-                  <field name="title"/>
+                  <field name="module_id" />
+                  <field name="repository_id" />
+                  <field name="title" />
                 </tree>
               </field>
             </group>
             <group name="modules_unknown" string="Unknown modules">
               <field name="unknown_module_ids" nolabel="1" colspan="2">
                 <tree>
-                  <field name="module_id"/>
-                  <field name="pr_url" widget="url"/>
+                  <field name="module_id" />
+                  <field name="pr_url" widget="url" />
                 </tree>
               </field>
             </group>
@@ -68,9 +80,9 @@
     <field name="model">odoo.project</field>
     <field name="arch" type="xml">
       <tree>
-        <field name="name"/>
-        <field name="odoo_version_id"/>
-        <field name="project_module_ids"/>
+        <field name="name" />
+        <field name="odoo_version_id" />
+        <field name="project_module_ids" />
       </tree>
     </field>
   </record>
@@ -81,14 +93,20 @@
     <field name="type">search</field>
     <field name="arch" type="xml">
       <search>
-        <field name="name"/>
-        <field name="odoo_version_id"/>
-        <field name="module_ids"/>
+        <field name="name" />
+        <field name="odoo_version_id" />
+        <field name="module_ids" />
         <group expand="0" string="Group By">
-          <filter name="group_by_odoo_version_id" string="Odoo Version"
-            context="{'group_by': 'odoo_version_id'}"/>
-          <filter name="group_by_module_ids" string="Module"
-            context="{'group_by': 'module_ids'}"/>
+          <filter
+                        name="group_by_odoo_version_id"
+                        string="Odoo Version"
+                        context="{'group_by': 'odoo_version_id'}"
+                    />
+          <filter
+                        name="group_by_module_ids"
+                        string="Module"
+                        context="{'group_by': 'module_ids'}"
+                    />
         </group>
       </search>
     </field>
@@ -98,11 +116,13 @@
     <field name="name">Projects</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.project</field>
-    <field name="view_id" ref="odoo_project_view_tree"/>
+    <field name="view_id" ref="odoo_project_view_tree" />
   </record>
 
-  <menuitem id="odoo_project_menu"
-    parent="odoo_project_main_menu"
-    action="odoo_project_action"/>
+  <menuitem
+        id="odoo_project_menu"
+        parent="odoo_project_main_menu"
+        action="odoo_project_action"
+    />
 
 </odoo>

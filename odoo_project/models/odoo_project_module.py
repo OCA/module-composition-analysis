@@ -24,7 +24,6 @@ class OdooProjectModule(models.Model):
     )
     installed_version = fields.Char()
     to_upgrade = fields.Boolean(
-        string="To Upgrade",
         compute="_compute_to_upgrade",
         store=True,
     )
