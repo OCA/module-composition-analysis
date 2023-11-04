@@ -32,7 +32,8 @@ class OdooProjectGenerateMigrationData(models.TransientModel):
         )
         module_migrations_to_unlink.sudo().unlink()
         values_list = []
-        for module_branch in self.odoo_project_id.module_branch_ids:
+        modules_branch = self.odoo_project_id.project_module_ids.module_branch_id
+        for module_branch in modules_branch:
             values = self._prepare_module_migration_values(module_branch)
             values_list.append(values)
         module_migration_model.sudo().create(values_list)
