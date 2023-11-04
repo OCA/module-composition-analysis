@@ -12,3 +12,11 @@ class OdooModuleBranch(models.Model):
         inverse_name="module_branch_id",
         string="Migrations",
     )
+
+    def _to_dict(self):
+        # Add the migrations data
+        data = super()._to_dict()
+        data["migrations"] = []
+        for migration in self.migration_ids:
+            data["migrations"].append(migration._to_dict())
+        return data
