@@ -9,6 +9,7 @@ from odoo import api, fields, models
 class OdooProject(models.Model):
     _name = "odoo.project"
     _inherits = {"odoo.repository": "repository_id"}
+    _inherit = "mail.thread"
     _description = "Odoo Project"
     _order = "name"
 
