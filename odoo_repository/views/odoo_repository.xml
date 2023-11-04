@@ -39,6 +39,7 @@
                                     attrs="{'readonly': [('branch_ids', '!=', [])]}"
                                 />
                 <field name="to_scan" />
+                <field name="sequence" />
               </group>
               <group attrs="{'invisible': [('to_scan', '=', False)]}" colspan="2">
                 <field

@@ -20,12 +20,13 @@ from ..utils.scanner import RepositoryScannerOdooEnv
 class OdooRepository(models.Model):
     _name = "odoo.repository"
     _description = "Odoo Modules Repository"
-    _order = "display_name"
+    _order = "sequence, display_name"
 
     _repositories_path_key = "odoo_repository_storage_path"
 
     display_name = fields.Char(compute="_compute_display_name", store=True)
     active = fields.Boolean(default=True)
+    sequence = fields.Integer(default=100)
     org_id = fields.Many2one(
         comodel_name="odoo.repository.org",
         ondelete="cascade",
