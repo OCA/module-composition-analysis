@@ -12,7 +12,7 @@
         "views/odoo_project.xml",
         "views/odoo_project_module_migration.xml",
         "wizards/generate_migration_data.xml",
-        "wizards/create_migration_report.xml",
+        "wizards/export_migration_report.xml",
     ],
     "installable": True,
     "depends": [

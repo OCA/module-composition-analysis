@@ -17,9 +17,9 @@
                     class="btn-secondary"
                 />
         <button
-                    name="open_create_migration_report"
+                    name="open_export_migration_report"
                     type="object"
-                    string="Create migration report"
+                    string="Export migration report"
                     class="btn-secondary"
                     attrs="{'invisible': [('module_migration_ids', '=', [])]}"
                 />
