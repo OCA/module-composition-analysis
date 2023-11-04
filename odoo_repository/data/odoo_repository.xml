@@ -6,6 +6,7 @@
   <record id="odoo_repository_odoo_odoo" model="odoo.repository">
     <field name="org_id" ref="odoo_repository_org_odoo" />
     <field name="name">odoo</field>
+    <field name="sequence" eval="1" />
     <field name="repo_url">https://github.com/odoo/odoo</field>
     <field name="clone_url">https://github.com/odoo/odoo</field>
     <field name="repo_type">github</field>
