@@ -18,7 +18,7 @@ class OdooProjectModule(models.Model):
     )
     module_branch_id = fields.Many2one(
         comodel_name="odoo.module.branch",
-        ondelete="set null",
+        ondelete="cascade",
         string="Upstream Module",
         required=True,
     )
