@@ -140,3 +140,14 @@ class OdooModuleBranchMigration(models.Model):
         else:
             migration = self.sudo().create(values)
         return migration
+
+    def _to_dict(self):
+        self.ensure_one()
+        return {
+            "source_branch": self.source_branch_id.name,
+            "target_branch": self.target_branch_id.name,
+            "process": self.process,
+            "results": self.results,
+            "last_source_scanned_commit": self.last_source_scanned_commit,
+            "last_target_scanned_commit": self.last_target_scanned_commit,
+        }

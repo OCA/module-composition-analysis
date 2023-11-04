@@ -3,7 +3,7 @@
 
 import os
 
-from odoo import fields, models
+from odoo import fields, models, tools
 
 from odoo.addons.queue_job.job import identity_exact
 
@@ -71,3 +71,47 @@ class OdooRepository(models.Model):
             "github_token": github_token,
             "env": self.env,
         }
+
+    def _prepare_module_branch_values(self, data):
+        # Handle migration data
+        values = super()._prepare_module_branch_values(data)
+        migrations = data.get("migrations", [])
+        for mig in migrations:
+            source_branch = self.env["odoo.branch"].search(
+                [("odoo_version", "=", True), ("name", "=", mig["source_branch"])]
+            )
+            target_branch = self.env["odoo.branch"].search(
+                [("odoo_version", "=", True), ("name", "=", mig["target_branch"])]
+            )
+            if not source_branch or not target_branch:
+                # Such branches are not configured on this instance, skip
+                continue
+            migration_path = self._get_migration_path(
+                source_branch.id, target_branch.id
+            )
+            mig_values = {
+                "migration_path_id": migration_path.id,
+                "process": mig["process"],
+                "results": mig["results"],
+                "last_source_scanned_commit": mig["last_source_scanned_commit"],
+                "last_target_scanned_commit": mig["last_target_scanned_commit"],
+            }
+            values["migration_ids"] = [(0, 0, mig_values)]
+        return values
+
+    @tools.ormcache("source_branch_id", "target_branch_id")
+    def _get_migration_path(self, source_branch_id, target_branch_id):
+        rec = self.env["odoo.migration.path"].search(
+            [
+                ("source_branch_id", "=", source_branch_id),
+                ("target_branch_id", "=", target_branch_id),
+            ],
+            limit=1,
+        )
+        values = {
+            "source_branch_id": source_branch_id,
+            "target_branch_id": target_branch_id,
+        }
+        if not rec:
+            rec = self.env["odoo.migration.path"].sudo().create(values)
+        return rec
