@@ -33,10 +33,10 @@ class OdooProject(models.Model):
         action["context"] = ctx
         return action
 
-    def open_create_migration_report(self):
+    def open_export_migration_report(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
-            "odoo_project_migration.odoo_project_create_migration_report_action"
+            "odoo_project_migration.odoo_project_export_migration_report_action"
         )
         ctx = action.get("context", {})
         if isinstance(ctx, str):
