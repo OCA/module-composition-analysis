@@ -161,7 +161,7 @@
         <separator />
         <filter
                     name="unmerged_pr"
-                    string="Unmerged PR"
+                    string="Unmerged"
                     domain="[('pr_url', '!=', False)]"
                 />
         <filter
