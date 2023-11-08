@@ -124,6 +124,9 @@
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.module.branch.migration</field>
     <field name="view_id" ref="odoo_module_branch_migration_view_tree" />
+    <field
+            name="context"
+        >{'search_default_group_by_migration_path_id': 1, 'search_default_group_by_state': 2}</field>
   </record>
 
   <menuitem
