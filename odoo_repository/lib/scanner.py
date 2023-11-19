@@ -48,11 +48,12 @@ class BaseScanner:
         self.ssh_key = ssh_key
         self.github_token = github_token
 
-    def scan(self):
+    def scan(self, fetch=True):
         # Clone or update the repository
         if not self.is_cloned:
             self._clone()
-        self._fetch()
+        if fetch:
+            self._fetch()
 
     @contextlib.contextmanager
     def _get_git_env(self):
@@ -273,11 +274,9 @@ class MigrationScanner(BaseScanner):
         self.migration_paths = migration_paths
 
     def scan(self):
-        res = super().scan()
-        repo_id = self._get_odoo_repository_id()
-        # Get the repository branches from Odoo as the ones we got as parameter
-        # could not exist in the repository
-        self._get_odoo_repository_branches(repo_id)
+        # Clone/fetch has been done during the repository scan, the migration
+        # scan will be processed on the current history of commits
+        res = super().scan(fetch=False)
         for source_branch, target_branch in self.migration_paths:
             if self._branch_exists(source_branch) and self._branch_exists(
                 target_branch
