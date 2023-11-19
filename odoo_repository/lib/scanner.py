@@ -154,7 +154,7 @@ class BaseScanner:
         if relative_tree_path:
             addons_trees = (branch_commit.tree / relative_tree_path).trees
         return [
-            (tree.path, self._get_commit_of_git_tree(f"origin/{branch}", tree))
+            (tree.path, self._get_last_commit_of_git_tree(f"origin/{branch}", tree))
             for tree in addons_trees
             if self._odoo_module(tree)
         ]
@@ -201,7 +201,10 @@ class BaseScanner:
             if self._odoo_module(tree):
                 module_paths.add(
                     # FIXME: should we return pathlib.Path objects?
-                    (tree.path, self._get_commit_of_git_tree(f"origin/{branch}", tree))
+                    (
+                        tree.path,
+                        self._get_last_commit_of_git_tree(f"origin/{branch}", tree),
+                    )
                 )
         return module_paths
 
@@ -211,7 +214,7 @@ class BaseScanner:
                 return False
         return True
 
-    def _get_commit_of_git_tree(self, ref, tree):
+    def _get_last_commit_of_git_tree(self, ref, tree):
         return tree.repo.git.log("--pretty=%H", "-n 1", ref, "--", tree.path)
 
     def _odoo_module(self, tree):
@@ -295,12 +298,14 @@ class MigrationScanner(BaseScanner):
             module_target_tree = self._get_subtree(
                 repo.commit(repo_target_commit).tree, module
             )
-            module_source_commit = self._get_commit_of_git_tree(
+            module_source_commit = self._get_last_commit_of_git_tree(
                 repo_source_commit, module_source_tree
             )
             module_target_commit = (
                 module_target_tree
-                and self._get_commit_of_git_tree(repo_target_commit, module_target_tree)
+                and self._get_last_commit_of_git_tree(
+                    repo_target_commit, module_target_tree
+                )
                 or False
             )
             # Retrieve existing migration data if any and check if it is outdated
