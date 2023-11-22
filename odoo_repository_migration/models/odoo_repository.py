@@ -72,10 +72,12 @@ class OdooRepository(models.Model):
             "env": self.env,
         }
 
-    def _prepare_module_branch_values(self, data):
+    def _pre_create_or_update_module_branch(self, rec, values, raw_data):
         # Handle migration data
-        values = super()._prepare_module_branch_values(data)
-        migrations = data.get("migrations", [])
+        values = super()._pre_create_or_update_module_branch(rec, values, raw_data)
+        mig_model = self.env["odoo.module.branch.migration"]
+        migrations = raw_data.get("migrations", [])
+        values["migration_ids"] = []
         for mig in migrations:
             source_branch = self.env["odoo.branch"].search(
                 [("odoo_version", "=", True), ("name", "=", mig["source_branch"])]
@@ -96,7 +98,20 @@ class OdooRepository(models.Model):
                 "last_source_scanned_commit": mig["last_source_scanned_commit"],
                 "last_target_scanned_commit": mig["last_target_scanned_commit"],
             }
-            values["migration_ids"] = [(0, 0, mig_values)]
+            # Check if this migration data exists to update it, otherwise create it
+            mig_rec = None
+            if rec:
+                mig_rec = mig_model.search(
+                    [
+                        ("migration_path_id", "=", migration_path.id),
+                        ("module_branch_id", "=", rec.id),
+                    ],
+                )
+            if mig_rec:
+                mig_values_ = fields.Command.update(mig_rec.id, mig_values)
+            else:
+                mig_values_ = fields.Command.create(mig_values)
+            values["migration_ids"].append(mig_values_)
         return values
 
     @tools.ormcache("source_branch_id", "target_branch_id")
