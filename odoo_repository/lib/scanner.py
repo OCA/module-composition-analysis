@@ -20,6 +20,10 @@ logging.getLogger("pygount").setLevel(logging.ERROR)
 
 _logger = logging.getLogger(__name__)
 
+# Paths ending with these patterns will be ignored such as if all scanned commits
+# update such files, the underlying module won't be scanned to preserve resources.
+IGNORE_FILES = [".po", ".pot", "README.rst", "index.html"]
+
 
 class BaseScanner:
     _dirname = "odoo-repositories"
@@ -44,11 +48,12 @@ class BaseScanner:
         self.ssh_key = ssh_key
         self.github_token = github_token
 
-    def scan(self):
+    def scan(self, fetch=True):
         # Clone or update the repository
         if not self.is_cloned:
             self._clone()
-        self._fetch()
+        if fetch:
+            self._fetch()
 
     @contextlib.contextmanager
     def _get_git_env(self):
@@ -154,7 +159,7 @@ class BaseScanner:
         if relative_tree_path:
             addons_trees = (branch_commit.tree / relative_tree_path).trees
         return [
-            (tree.path, self._get_commit_of_git_tree(f"origin/{branch}", tree))
+            (tree.path, self._get_last_commit_of_git_tree(f"origin/{branch}", tree))
             for tree in addons_trees
             if self._odoo_module(tree)
         ]
@@ -201,7 +206,10 @@ class BaseScanner:
             if self._odoo_module(tree):
                 module_paths.add(
                     # FIXME: should we return pathlib.Path objects?
-                    (tree.path, self._get_commit_of_git_tree(f"origin/{branch}", tree))
+                    (
+                        tree.path,
+                        self._get_last_commit_of_git_tree(f"origin/{branch}", tree),
+                    )
                 )
         return module_paths
 
@@ -211,8 +219,14 @@ class BaseScanner:
                 return False
         return True
 
-    def _get_commit_of_git_tree(self, ref, tree):
+    def _get_last_commit_of_git_tree(self, ref, tree):
         return tree.repo.git.log("--pretty=%H", "-n 1", ref, "--", tree.path)
+
+    def _get_commits_of_git_tree(self, from_, to_, tree):
+        commits = tree.repo.git.log(
+            "--pretty=%H", "-r", f"{from_}..{to_}", "--", tree.path
+        )
+        return commits.split()
 
     def _odoo_module(self, tree):
         """Check if the `git.Tree` object is an Odoo module."""
@@ -260,11 +274,9 @@ class MigrationScanner(BaseScanner):
         self.migration_paths = migration_paths
 
     def scan(self):
-        res = super().scan()
-        repo_id = self._get_odoo_repository_id()
-        # Get the repository branches from Odoo as the ones we got as parameter
-        # could not exist in the repository
-        self._get_odoo_repository_branches(repo_id)
+        # Clone/fetch has been done during the repository scan, the migration
+        # scan will be processed on the current history of commits
+        res = super().scan(fetch=False)
         for source_branch, target_branch in self.migration_paths:
             if self._branch_exists(source_branch) and self._branch_exists(
                 target_branch
@@ -295,12 +307,14 @@ class MigrationScanner(BaseScanner):
             module_target_tree = self._get_subtree(
                 repo.commit(repo_target_commit).tree, module
             )
-            module_source_commit = self._get_commit_of_git_tree(
+            module_source_commit = self._get_last_commit_of_git_tree(
                 repo_source_commit, module_source_tree
             )
             module_target_commit = (
                 module_target_tree
-                and self._get_commit_of_git_tree(repo_target_commit, module_target_tree)
+                and self._get_last_commit_of_git_tree(
+                    repo_target_commit, module_target_tree
+                )
                 or False
             )
             # Retrieve existing migration data if any and check if it is outdated
@@ -318,6 +332,8 @@ class MigrationScanner(BaseScanner):
                     target_branch,
                     module_source_commit,
                     module_target_commit,
+                    data.get("last_source_scanned_commit"),
+                    data.get("last_target_scanned_commit"),
                 )
 
     def _scan_module(
@@ -328,27 +344,98 @@ class MigrationScanner(BaseScanner):
         target_branch: str,
         source_commit: str,
         target_commit: str,
+        source_last_scanned_commit: str,
+        target_last_scanned_commit: str,
     ):
         """Collect the migration data of a module."""
-        # TODO if all the diffs from 'source_commit' to 'target_commit'
-        # for the current module relates to unrelevant files (po, rst, html)
-        # skip the scan to speed up the process and push only last scanned commits.
-        # OCA bots and weblate could update modules in batch to change such files,
-        # making the scan of all repositories quite long.
-        data = self._run_oca_port(module, source_branch, target_branch)
-        data.update(
-            {
-                "module": module,
-                "source_branch": source_branch,
-                "target_branch": target_branch,
-                "source_commit": source_commit,
-                "target_commit": target_commit,
-            }
+        data = {
+            "module": module,
+            "source_branch": source_branch,
+            "target_branch": target_branch,
+            "source_commit": source_commit,
+            "target_commit": target_commit,
+        }
+        # If files updated in the module since the last scan are not relevant
+        # (e.g. all new commits are updating PO files), we skip the scan but
+        # we still push the new source/target commits to Odoo.
+        scan_relevant = self._is_scan_module_relevant(
+            module,
+            source_commit,
+            target_commit,
+            source_last_scanned_commit,
+            target_last_scanned_commit,
         )
+        if scan_relevant:
+            _logger.info(
+                "%s: relevant changes detected in '%s' (%s -> %s)",
+                self.full_name,
+                module,
+                source_branch,
+                target_branch,
+            )
+            oca_port_data = self._run_oca_port(module, source_branch, target_branch)
+            data.update(oca_port_data)
         self._push_scanned_data(module_branch_id, data)
         # Mitigate "GH API rate limit exceeds" error
-        time.sleep(4)
+        if scan_relevant:
+            time.sleep(4)
         return True
+
+    def _is_scan_module_relevant(
+        self,
+        module: str,
+        source_commit: str,
+        target_commit: str,
+        source_last_scanned_commit: str,
+        target_last_scanned_commit: str,
+    ):
+        """Determine if scanning the module is relevant.
+
+        As the scan of a module can be quite time consuming, we first check
+        the files impacted among all new commits since the last scan.
+        If the all files are irrelevants, then we can bypass the scan.
+        """
+        # The first time we want to scan the module obviously
+        if not source_last_scanned_commit:
+            return True
+        # Module still not available on target branch, no need to re-run a scan
+        # as it is still "To migrate" in this case
+        if not target_commit:
+            return False
+        # Module is available on target branch but it wasn't during the last scan
+        if not target_last_scanned_commit:
+            return True
+        # Other cases: check files impacted by new commits both on source & target
+        # branches to tell if a scan should be processed
+        repo = self.repo
+        source_tree = self._get_subtree(repo.commit(source_commit).tree, module)
+        target_tree = self._get_subtree(repo.commit(target_commit).tree, module)
+        source_new_commits = self._get_commits_of_git_tree(
+            source_last_scanned_commit, source_commit, source_tree
+        )
+        source_to_scan = self._check_relevant_commits(module, source_new_commits)
+        target_new_commits = self._get_commits_of_git_tree(
+            target_last_scanned_commit, target_commit, target_tree
+        )
+        target_to_scan = self._check_relevant_commits(module, target_new_commits)
+        return source_to_scan or target_to_scan
+
+    def _check_relevant_commits(self, module, commits):
+        repo = self.repo
+        paths = set()
+        for commit_sha in commits:
+            commit = repo.commit(commit_sha)
+            if commit.parents:
+                diffs = commit.diff(commit.parents[0], paths=[module], R=True)
+            else:
+                diffs = commit.diff(git.NULL_TREE)
+            for diff in diffs:
+                paths.add(diff.a_path)
+                paths.add(diff.b_path)
+        for path in paths:
+            if all(not path.endswith(pattern) for pattern in IGNORE_FILES):
+                return True
+        return False
 
     def _run_oca_port(self, module, source_branch, target_branch):
         _logger.info(
