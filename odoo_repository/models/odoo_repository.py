@@ -279,7 +279,7 @@ class OdooRepository(models.Model):
         for module_data in data:
             # TODO Move these methods to 'odoo.module.branch'?
             values = self._prepare_module_branch_values(module_data)
-            self._create_or_update_module_branch(values)
+            self._create_or_update_module_branch(values, module_data)
 
     def _prepare_module_branch_values(self, data):
         # Get branch, repository and technical module
@@ -339,7 +339,7 @@ class OdooRepository(models.Model):
         }
         return values
 
-    def _create_or_update_module_branch(self, values):
+    def _create_or_update_module_branch(self, values, raw_data):
         mb_model = self.env["odoo.module.branch"]
         rec = mb_model.search(
             [
@@ -352,11 +352,20 @@ class OdooRepository(models.Model):
             ],
             limit=1,
         )
+        values = self._pre_create_or_update_module_branch(rec, values, raw_data)
         if rec:
             rec.sudo().write(values)
         else:
             rec = mb_model.sudo().create(values)
+        self._post_create_or_update_module_branch(rec, values, raw_data)
         return rec
+
+    def _pre_create_or_update_module_branch(self, rec, values, raw_data):
+        """Hook executed before the creation or update of `rec`. Return values."""
+        return values
+
+    def _post_create_or_update_module_branch(self, rec, values, raw_data):
+        """Hook executed after the creation or update of `rec`."""
 
     @tools.ormcache("name")
     def _get_repository_org(self, name):
