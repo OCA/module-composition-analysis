@@ -379,7 +379,6 @@ class OdooModuleBranch(models.Model):
             return rec.id
         return False
 
-    @tools.ormcache("name")
     def _get_module(self, name):
         module = self.env["odoo.module"].search([("name", "=", name)])
         if not module:
