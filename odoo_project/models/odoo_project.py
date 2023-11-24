@@ -108,7 +108,7 @@ class OdooProject(models.Model):
     def open_modules(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
-            "odoo_project.odoo_project_module_action"
+            "odoo_project.odoo_project_module_for_project_action"
         )
         ctx = action.get("context", {})
         if isinstance(ctx, str):
