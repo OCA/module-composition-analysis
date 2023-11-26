@@ -131,6 +131,9 @@ class TestRepositoryScanner(Common):
         self.assertEqual(data["is_enterprise"], addons_path_data["is_enterprise"])
         self.assertEqual(data["is_community"], addons_path_data["is_community"])
         self.assertEqual(data["last_scanned_commit"], last_module_commit)
+        self.assertIn("1.0.0", data["versions"])
+        self.assertEqual(data["versions"]["1.0.0"]["commit"], last_module_commit)
+        self.assertFalse(data["versions"]["1.0.0"]["migration_script"])
 
     def test_push_scanned_data(self):
         scanner = self._init_scanner()
