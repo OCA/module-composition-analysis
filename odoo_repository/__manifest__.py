@@ -14,6 +14,7 @@
         "data/odoo_repository_addons_path.xml",
         "data/odoo_repository.xml",
         "data/odoo.repository.csv",
+        "data/odoo_branch.xml",
         "data/queue_job.xml",
         "views/menu.xml",
         "views/ssh_key.xml",
