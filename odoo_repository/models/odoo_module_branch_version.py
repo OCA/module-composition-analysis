@@ -7,7 +7,7 @@ from odoo import api, fields, models
 class OdooModuleBranchVersion(models.Model):
     _name = "odoo.module.branch.version"
     _description = "Version of a Odoo Module on a given branch"
-    _order = "sequence DESC"
+    _order = "branch_sequence DESC, sequence DESC"
 
     module_branch_id = fields.Many2one(
         comodel_name="odoo.module.branch",
@@ -15,6 +15,21 @@ class OdooModuleBranchVersion(models.Model):
         string="Module",
         required=True,
         index=True,
+    )
+    branch_id = fields.Many2one(
+        related="module_branch_id.branch_id",
+        store=True,
+    )
+    module_name = fields.Char(
+        string="Module Technical Name",
+        related="module_branch_id.module_name",
+        store=True,
+        index=True,
+    )
+    branch_sequence = fields.Integer(
+        string="Branch Sequence",
+        related="branch_id.sequence",
+        store=True,
     )
     name = fields.Char(required=True)
     manifest_value = fields.Char(
