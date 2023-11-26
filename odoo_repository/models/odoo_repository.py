@@ -175,22 +175,29 @@ class OdooRepository(models.Model):
         if not branches:
             branches = self._get_odoo_branches_to_clone().mapped("name")
         if force:
-            self._reset_scanned_commits()
+            self._reset_scanned_commits(branches)
         # Scan repository branches sequentially as they need to be checked out
         # to perform the analysis
         jobs = self._create_jobs(branches)
         chain(*jobs).delay()
         return True
 
-    def _reset_scanned_commits(self):
+    def _reset_scanned_commits(self, branches=None):
         """Reset the scanned commits.
 
         This will make the next repository scan restarting from the beginning,
         and thus making it slower.
         """
         self.ensure_one()
-        self.branch_ids.write({"last_scanned_commit": False})
-        self.branch_ids.module_ids.sudo().write({"last_scanned_commit": False})
+        if branches is None:
+            branches = []
+        branches_ = (
+            self.branch_ids.filtered(lambda br: br.branch_id.name in branches)
+            if branches
+            else self.branch_ids
+        )
+        branches_.write({"last_scanned_commit": False})
+        branches_.module_ids.sudo().write({"last_scanned_commit": False})
 
     def _create_jobs(self, branches):
         self.ensure_one()
