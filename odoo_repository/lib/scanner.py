@@ -1,11 +1,13 @@
 # Copyright 2023 Camptocamp SA
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl)
 
+import ast
 import contextlib
 import json
 import logging
 import os
 import pathlib
+import re
 import tempfile
 import time
 
@@ -22,6 +24,8 @@ _logger = logging.getLogger(__name__)
 # Paths ending with these patterns will be ignored such as if all scanned commits
 # update such files, the underlying module won't be scanned to preserve resources.
 IGNORE_FILES = [".po", ".pot", "README.rst", "index.html"]
+
+MANIFEST_FILES = ("__manifest__.py", "__openerp__.py")
 
 
 class BaseScanner:
@@ -261,7 +265,7 @@ class BaseScanner:
     def _manifest_exists(self, tree):
         """Check if the `git.Tree` object contains an Odoo manifest file."""
         manifest_found = False
-        for manifest_file in ("__manifest__.py", "__openerp__.py"):
+        for manifest_file in MANIFEST_FILES:
             if self._get_subtree(tree, manifest_file):
                 manifest_found = True
                 break
@@ -645,7 +649,9 @@ class RepositoryScanner(BaseScanner):
             branch,
             module_path,
         )
-        data = self._run_code_analysis(module_path)
+        data = self._run_module_code_analysis(
+            module_path, branch, last_module_scanned_commit, last_module_commit
+        )
         if data["manifest"]:
             # Insert all flags 'is_standard', 'is_enterprise', etc
             data.update(addons_path_data)
@@ -654,10 +660,91 @@ class RepositoryScanner(BaseScanner):
             self._push_scanned_data(repo_branch_id, module, data)
         return data
 
-    def _run_code_analysis(self, module_path):
+    def _run_module_code_analysis(self, module_path, branch, from_commit, to_commit):
         """Perform a code analysis of `module_path`."""
+        # Get current code analysis data
         module_analysis = ModuleAnalysis(f"{self.path}/{module_path}")
-        return module_analysis.to_dict()
+        data = module_analysis.to_dict()
+        # Append the history of versions
+        versions = self._read_module_versions(
+            module_path, branch, from_commit, to_commit
+        )
+        data["versions"] = versions
+        return data
+
+    def _read_module_versions(self, module_path, branch, from_commit, to_commit):
+        """Return versions data introduced between `from_commit` and `to_commit`."""
+        versions = {}
+        repo = self.repo
+        for manifest_file in MANIFEST_FILES:
+            manifest_path = "/".join([module_path, manifest_file])
+            manifest_tree = self._get_subtree(
+                repo.commit(to_commit).tree, manifest_path
+            )
+            if not manifest_tree:
+                continue
+            new_commits = self._get_commits_of_git_tree(
+                from_commit, to_commit, manifest_tree
+            )
+            versions_ = self._parse_module_versions_from_commits(
+                module_path, manifest_path, branch, new_commits
+            )
+            versions.update(versions_)
+        return versions
+
+    def _parse_module_versions_from_commits(
+        self, module_path, manifest_path, branch, new_commits
+    ):
+        """Parse module versions introduced in `new_commits`."""
+        versions = {}
+        repo = self.repo
+        for commit_sha in new_commits:
+            commit = repo.commit(commit_sha)
+            if commit.parents:
+                diffs = commit.diff(commit.parents[0], R=True)
+            else:
+                diffs = commit.diff(git.NULL_TREE)
+            for diff in diffs:
+                # Check only diffs that update the manifest file
+                diff_manifest = diff.a_path.endswith(
+                    manifest_path
+                ) or diff.b_path.endswith(manifest_path)
+                if not diff_manifest:
+                    continue
+                # Try to parse the manifest file
+                try:
+                    manifest_a = ast.literal_eval(
+                        diff.a_blob and diff.a_blob.data_stream.read().decode() or "{}"
+                    )
+                    manifest_b = ast.literal_eval(
+                        diff.b_blob and diff.b_blob.data_stream.read().decode() or "{}"
+                    )
+                except SyntaxError:
+                    _logger.warning(f"Unable to parse {manifest_path} on {branch}")
+                    continue
+                # Detect version change (added or updated)
+                if manifest_a.get("version") == manifest_b.get("version"):
+                    continue
+                if not manifest_b.get("version"):
+                    # Module has been removed? Skipping
+                    continue
+                version = manifest_b["version"]
+                # Skip versions that contains special characters
+                # (often human errors fixed afterwards)
+                clean_version = re.sub(r"[^0-9\.]", "", version)
+                if clean_version != version:
+                    continue
+                # Detect migration script and bind the version to the commit sha
+                migration_path = "/".join([module_path, "migrations", version])
+                migration_tree = self._get_subtree(
+                    repo.tree(f"origin/{branch}"), migration_path
+                )
+                values = {
+                    "commit": commit_sha,
+                    "migration_script": bool(migration_tree),
+                }
+                versions[version] = values
+        return versions
 
     # Hooks method to override by client class
 
