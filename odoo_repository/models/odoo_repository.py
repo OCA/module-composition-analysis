@@ -427,3 +427,8 @@ class OdooRepository(models.Model):
         else:
             rec = self.env["odoo.repository.branch"].sudo().create(values)
         return rec
+
+    def _get_resource_url(self, branch, path):
+        self.ensure_one()
+        # NOTE: GitHub and GitLab supports the same URL pattern
+        return "/".join([self.repo_url, "tree", branch, path])
