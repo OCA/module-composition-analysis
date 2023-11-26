@@ -24,10 +24,11 @@ class OdooBranch(models.Model):
         ("name_uniq", "UNIQUE (name)", "This branch already exists."),
     ]
 
+    @api.model
     def _recompute_sequence(self):
         """Recompute the 'sequence' field to get release branches sorted."""
         self.flush_recordset()
-        odoo_versions_to_recompute = self.search([("odoo_version", "=", True)])
+        odoo_versions_to_recompute = self._get_all_odoo_versions()
         for odoo_version in odoo_versions_to_recompute:
             query = """
                 UPDATE odoo_branch
@@ -74,3 +75,9 @@ class OdooBranch(models.Model):
         overriding already collected module data if any.
         """
         return self.action_scan(force=True)
+
+    def _get_all_odoo_versions(self):
+        """Return all Odoo versions, even archived ones."""
+        return self.with_context(active_test=False).search(
+            [("odoo_version", "=", True)]
+        )
