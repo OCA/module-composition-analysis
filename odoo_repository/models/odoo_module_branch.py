@@ -117,7 +117,12 @@ class OdooModuleBranch(models.Model):
         string="License",
         index=True,
     )
-    version = fields.Char()
+    version = fields.Char("Last version")
+    version_ids = fields.One2many(
+        comodel_name="odoo.module.branch.version",
+        inverse_name="module_branch_id",
+        string="Versions",
+    )
     development_status_id = fields.Many2one(
         comodel_name="odoo.module.dev.status",
         ondelete="restrict",

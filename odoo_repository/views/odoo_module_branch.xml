@@ -47,6 +47,15 @@
             </group>
           </group>
           <notebook>
+            <page name="versions" string="Versions">
+              <field name="version_ids" nolabel="1">
+                <tree>
+                  <field name="name" />
+                  <field name="commit" />
+                  <field name="migration_script_url" widget="url" />
+                </tree>
+              </field>
+            </page>
             <page name="dependencies" string="Dependencies">
               <field name="dependency_ids" nolabel="1">
                 <tree>
