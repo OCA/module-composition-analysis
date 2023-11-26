@@ -223,9 +223,12 @@ class BaseScanner:
         return tree.repo.git.log("--pretty=%H", "-n 1", ref, "--", tree.path)
 
     def _get_commits_of_git_tree(self, from_, to_, tree):
-        commits = tree.repo.git.log(
-            "--pretty=%H", "-r", f"{from_}..{to_}", "--", tree.path
-        )
+        rev_pattern = f"{from_}..{to_}"
+        if not from_:
+            rev_pattern = to_
+        elif not to_:
+            rev_pattern = from_
+        commits = tree.repo.git.log("--pretty=%H", "-r", rev_pattern, "--", tree.path)
         return commits.split()
 
     def _odoo_module(self, tree):
