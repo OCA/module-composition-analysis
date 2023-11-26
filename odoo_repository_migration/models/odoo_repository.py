@@ -19,9 +19,16 @@ class OdooRepository(models.Model):
         default=False,
     )
 
-    def _reset_scanned_commits(self):
-        res = super()._reset_scanned_commits()
-        self.branch_ids.module_ids.migration_ids.sudo().write(
+    def _reset_scanned_commits(self, branches=None):
+        res = super()._reset_scanned_commits(branches)
+        if branches is None:
+            branches = []
+        branches_ = (
+            self.branch_ids.filtered(lambda br: br.branch_id.name in branches)
+            if branches
+            else self.branch_ids
+        )
+        branches_.module_ids.migration_ids.sudo().write(
             {
                 "last_source_scanned_commit": False,
                 "last_target_scanned_commit": False,
@@ -34,8 +41,15 @@ class OdooRepository(models.Model):
         # Check if the addons_paths are compatible with 'oca_port'
         if not self.collect_migration_data:
             return jobs
-        # Override to run the MigrationScanner once all branches are scanned
-        migration_paths = self.env["odoo.migration.path"].search([])
+        # Override to run the MigrationScanner once branches are scanned
+        args = []
+        if branches:
+            args = [
+                "|",
+                ("source_branch_id", "in", branches),
+                ("target_branch_id", "in", branches),
+            ]
+        migration_paths = self.env["odoo.migration.path"].search(args)
         for rec in migration_paths:
             migration_path = (rec.source_branch_id.name, rec.target_branch_id.name)
             delayable = self.delayable(
