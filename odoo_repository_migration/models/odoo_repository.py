@@ -39,7 +39,8 @@ class OdooRepository(models.Model):
     def _create_jobs(self, branches):
         jobs = super()._create_jobs(branches)
         # Check if the addons_paths are compatible with 'oca_port'
-        if not self.collect_migration_data:
+        disable_collect = self.env.context.get("disable_collect_migration_data")
+        if not self.collect_migration_data or disable_collect:
             return jobs
         # Override to run the MigrationScanner once branches are scanned
         args = []
