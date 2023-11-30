@@ -48,7 +48,6 @@ class OdooRepositoryBranch(models.Model):
 
     def action_scan(self, force=False):
         """Scan the repository/branch."""
-        self.ensure_one()
         return self.repository_id.action_scan(
             branches=[self.branch_id.name], force=force
         )
@@ -59,5 +58,4 @@ class OdooRepositoryBranch(models.Model):
         It will restart the scan without considering the last scanned commit,
         overriding already collected module data if any.
         """
-        self.ensure_one()
         return self.action_scan(force=True)

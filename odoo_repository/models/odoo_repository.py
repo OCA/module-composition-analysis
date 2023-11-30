@@ -166,31 +166,38 @@ class OdooRepository(models.Model):
 
     def action_scan(self, branches=None, force=False):
         """Scan the whole repository."""
-        self.ensure_one()
-        if not self.to_scan:
-            return False
         self._check_config()
-        if self.clone_branch_id:
-            branches = [self.clone_branch_id.name]
-        if not branches:
-            branches = self._get_odoo_branches_to_clone().mapped("name")
-        if force:
-            self._reset_scanned_commits()
-        # Scan repository branches sequentially as they need to be checked out
-        # to perform the analysis
-        jobs = self._create_jobs(branches)
-        chain(*jobs).delay()
+        for rec in self:
+            if not rec.to_scan:
+                return False
+            if rec.clone_branch_id:
+                branches = [rec.clone_branch_id.name]
+            if not branches:
+                branches = rec._get_odoo_branches_to_clone().mapped("name")
+            if force:
+                rec._reset_scanned_commits(branches)
+            # Scan repository branches sequentially as they need to be checked out
+            # to perform the analysis
+            jobs = rec._create_jobs(branches)
+            chain(*jobs).delay()
         return True
 
-    def _reset_scanned_commits(self):
+    def _reset_scanned_commits(self, branches=None):
         """Reset the scanned commits.
 
         This will make the next repository scan restarting from the beginning,
         and thus making it slower.
         """
         self.ensure_one()
-        self.branch_ids.write({"last_scanned_commit": False})
-        self.branch_ids.module_ids.sudo().write({"last_scanned_commit": False})
+        if branches is None:
+            branches = []
+        branches_ = (
+            self.branch_ids.filtered(lambda br: br.branch_id.name in branches)
+            if branches
+            else self.branch_ids
+        )
+        branches_.write({"last_scanned_commit": False})
+        branches_.module_ids.sudo().write({"last_scanned_commit": False})
 
     def _create_jobs(self, branches):
         self.ensure_one()
@@ -257,7 +264,10 @@ class OdooRepository(models.Model):
         )
         if not main_node_url:
             return False
-        branches = self.env["odoo.branch"].search([("odoo_version", "=", True)])
+        branch_domain = [("odoo_version", "=", True)]
+        if branches:
+            branch_domain.append(("name", "in", branches))
+        branches = self.env["odoo.branch"].search(branch_domain)
         branch_names = ",".join(branches.mapped("name"))
         url = f"{main_node_url}?branches=%s" % branch_names
         try:
