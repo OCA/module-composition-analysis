@@ -264,7 +264,10 @@ class OdooRepository(models.Model):
         )
         if not main_node_url:
             return False
-        branches = self.env["odoo.branch"].search([("odoo_version", "=", True)])
+        branch_domain = [("odoo_version", "=", True)]
+        if branches:
+            branch_domain.append(("name", "in", branches))
+        branches = self.env["odoo.branch"].search(branch_domain)
         branch_names = ",".join(branches.mapped("name"))
         url = f"{main_node_url}?branches=%s" % branch_names
         try:
