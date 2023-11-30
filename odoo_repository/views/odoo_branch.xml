@@ -27,8 +27,23 @@
         </header>
         <sheet>
           <group>
-            <field name="name" />
-            <field name="odoo_version" />
+            <field
+                            name="name"
+                            attrs="{'readonly': [('repository_branch_ids', '!=', [])]}"
+                        />
+            <field
+                            name="odoo_version"
+                            attrs="{'readonly': [('repository_branch_ids', '!=', [])]}"
+                        />
+          </group>
+          <group name="repositories" string="Repositories">
+            <field name="repository_branch_ids" nolabel="1" colspan="2">
+              <tree>
+                <field name="repository_id" />
+                <field name="module_ids" />
+                <field name="last_scanned_commit" />
+              </tree>
+            </field>
           </group>
         </sheet>
       </form>
