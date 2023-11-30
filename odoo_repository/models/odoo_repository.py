@@ -166,20 +166,20 @@ class OdooRepository(models.Model):
 
     def action_scan(self, branches=None, force=False):
         """Scan the whole repository."""
-        self.ensure_one()
-        if not self.to_scan:
-            return False
         self._check_config()
-        if self.clone_branch_id:
-            branches = [self.clone_branch_id.name]
-        if not branches:
-            branches = self._get_odoo_branches_to_clone().mapped("name")
-        if force:
-            self._reset_scanned_commits(branches)
-        # Scan repository branches sequentially as they need to be checked out
-        # to perform the analysis
-        jobs = self._create_jobs(branches)
-        chain(*jobs).delay()
+        for rec in self:
+            if not rec.to_scan:
+                return False
+            if rec.clone_branch_id:
+                branches = [rec.clone_branch_id.name]
+            if not branches:
+                branches = rec._get_odoo_branches_to_clone().mapped("name")
+            if force:
+                rec._reset_scanned_commits(branches)
+            # Scan repository branches sequentially as they need to be checked out
+            # to perform the analysis
+            jobs = rec._create_jobs(branches)
+            chain(*jobs).delay()
         return True
 
     def _reset_scanned_commits(self, branches=None):
