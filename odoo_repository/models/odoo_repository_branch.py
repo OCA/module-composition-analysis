@@ -59,3 +59,16 @@ class OdooRepositoryBranch(models.Model):
         overriding already collected module data if any.
         """
         return self.action_scan(force=True)
+
+    def _to_dict(self):
+        """Convert branch repository data to a dictionary."""
+        self.ensure_one()
+        return {
+            "org": self.repository_id.org_id.name,
+            "name": self.repository_id.name,
+            "repo_url": self.repository_id.repo_url,
+            "repo_type": self.repository_id.repo_type,
+            "active": self.repository_id.active,
+            "branch": self.branch_id.name,
+            "last_scanned_commit": self.last_scanned_commit,
+        }
