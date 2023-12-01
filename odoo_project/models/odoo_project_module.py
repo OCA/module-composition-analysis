@@ -27,6 +27,11 @@ class OdooProjectModule(models.Model):
         compute="_compute_to_upgrade",
         store=True,
     )
+    migration_scripts = fields.Boolean(
+        compute="_compute_migration_scripts",
+        store=True,
+        help="Available migration scripts between installed and last version.",
+    )
 
     @api.depends("version", "installed_version")
     def _compute_to_upgrade(self):
@@ -35,3 +40,41 @@ class OdooProjectModule(models.Model):
             installed_version = rec.installed_version or rec.version
             if installed_version and rec.version:
                 rec.to_upgrade = v(installed_version) < v(rec.version)
+
+    @api.depends(
+        "to_upgrade",
+        "installed_version",
+        "version_ids.name",
+        "version_ids.has_migration_script",
+    )
+    def _compute_migration_scripts(self):
+        for rec in self:
+            rec.migration_scripts = False
+            if not rec.to_upgrade:
+                continue
+            installed_version = rec._get_installed_version()
+            versions_with_mig_script = rec.version_ids.filtered(
+                lambda v: (
+                    v.sequence > installed_version.sequence and v.has_migration_script
+                )
+            )
+            rec.migration_scripts = bool(versions_with_mig_script)
+
+    def _get_installed_version(self):
+        self.ensure_one()
+        installed_version = self.version_ids.browse()
+        if not self.installed_version:
+            return installed_version
+        # Installed version could not be available in inventoried versions
+        # if it is coming from a pending-merge. In such case we take the last
+        # matching version as the installed one.
+        #   - Available versions upstream = "14.0.2.0.0" & "14.0.2.1.0"
+        #   - Installed version  = "14.0.2.0.1" (in a pending-merge)
+        #   - Computed installed version = "14.0.2.0.0"
+        inst_ver = [int(n) for n in self.installed_version.split(".")]
+        for version in self.version_ids.sorted("sequence"):
+            ver = [int(n) for n in version.name.split(".")]
+            if ver > inst_ver:
+                break
+            installed_version = version
+        return installed_version
