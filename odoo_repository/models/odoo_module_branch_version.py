@@ -102,3 +102,14 @@ class OdooModuleBranchVersion(models.Model):
                 rec.migration_script_url = repo._get_resource_url(
                     rec.module_branch_id.branch_name, migration_path
                 )
+
+    def _to_dict(self):
+        """Convert version data to a dictionary."""
+        self.ensure_one()
+        return {
+            "name": self.name,
+            "manifest_value": self.manifest_value,
+            "commit": self.commit,
+            "has_migration_script": self.has_migration_script,
+            "sequence": self.sequence,
+        }
