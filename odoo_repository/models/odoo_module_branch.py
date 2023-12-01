@@ -559,14 +559,7 @@ class OdooModuleBranch(models.Model):
         return {
             "module": self.module_name,
             "branch": self.branch_id.name,
-            "repository": {
-                "org": self.repository_id.org_id.name,
-                "name": self.repository_id.name,
-                "repo_url": self.repository_id.repo_url,
-                "repo_type": self.repository_id.repo_type,
-                "active": self.repository_id.active,
-                "last_scanned_commit": self.repository_branch_id.last_scanned_commit,
-            },
+            "repository": self.repository_branch_id._to_dict(),
             "title": self.title,
             "summary": self.summary,
             "authors": self.author_ids.mapped("name"),
@@ -575,6 +568,7 @@ class OdooModuleBranch(models.Model):
             "category": self.category_id.name,
             "license": self.license_id.name,
             "version": self.version,
+            "versions": [version._to_dict() for version in self.version_ids],
             "development_status": self.development_status_id.name,
             "application": self.application,
             "installable": self.installable,
