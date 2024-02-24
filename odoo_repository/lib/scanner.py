@@ -223,12 +223,18 @@ class BaseScanner:
         return tree.repo.git.log("--pretty=%H", "-n 1", ref, "--", tree.path)
 
     def _get_commits_of_git_tree(self, from_, to_, tree):
+        """Returns commits between `from_` and `to_` in chronological order.
+
+        The list of commits can be limited to a `tree`.
+        """
         rev_pattern = f"{from_}..{to_}"
         if not from_:
             rev_pattern = to_
         elif not to_:
             rev_pattern = from_
-        commits = tree.repo.git.log("--pretty=%H", "-r", rev_pattern, "--", tree.path)
+        commits = tree.repo.git.log(
+            "--pretty=%H", "-r", rev_pattern, "--reverse", "--", tree.path
+        )
         return commits.split()
 
     def _odoo_module(self, tree):
