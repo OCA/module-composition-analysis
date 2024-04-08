@@ -193,7 +193,7 @@ class OdooRepository(models.Model):
             branches = []
         branches_ = (
             self.branch_ids.filtered(lambda br: br.branch_id.name in branches)
-            if branches
+            if branches and not self.clone_branch_id
             else self.branch_ids
         )
         branches_.write({"last_scanned_commit": False})
