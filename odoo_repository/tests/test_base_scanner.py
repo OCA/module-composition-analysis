@@ -1,0 +1,184 @@
+# Copyright 2024 Camptocamp SA
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
+
+import tempfile
+
+from odoo.addons.odoo_repository.lib.scanner import BaseScanner
+
+from .common import Common
+
+
+class TestBaseScanner(Common):
+    def _init_scanner(self, **params):
+        kwargs = {
+            "org": self._settings["user_org"],
+            "name": self.repo_name,
+            "clone_url": self.repo_upstream_path,
+            "branches": [
+                self._settings["branch1"],
+                self._settings["branch2"],
+                self._settings["branch3"],
+            ],
+            "repositories_path": self.repositories_path,
+        }
+        if params:
+            kwargs.update(params)
+        return BaseScanner(**kwargs)
+
+    def test_init(self):
+        scanner = self._init_scanner()
+        self.assertTrue(scanner.repositories_path.exists())
+        self.assertEqual(scanner.path.parts[-1], self.repo_name)
+        self.assertEqual(scanner.path.parts[-2], self._settings["user_org"])
+        self.assertEqual(
+            scanner.full_name, f"{self._settings['user_org']}/{self.repo_name}"
+        )
+
+    def test_scan(self):
+        scanner = self._init_scanner(repositories_path=tempfile.mkdtemp())
+        # Clone
+        self.assertFalse(scanner.path.exists())
+        self.assertFalse(scanner.is_cloned)
+        scanner.scan()
+        self.assertTrue(scanner.is_cloned)
+        # Fetch once cloned
+        scanner.scan()
+
+    def test_branch_exists(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        self.assertTrue(scanner._branch_exists(self._settings["branch1"]))
+        self.assertTrue(scanner._branch_exists(self._settings["branch2"]))
+        self.assertTrue(scanner._branch_exists(self._settings["branch3"]))
+
+    def test_checkout_branch(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        repo = scanner.repo
+        branch = self._settings["branch1"]
+        branch_sha = repo.refs[f"origin/{branch}"].object.hexsha
+        self.assertNotEqual(repo.head.object.hexsha, branch_sha)
+        scanner._checkout_branch(branch)
+        self.assertEqual(repo.head.object.hexsha, branch_sha)
+
+    def test_get_last_fetched_commit(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        repo = scanner.repo
+        branch1 = self._settings["branch1"]
+        branch2 = self._settings["branch2"]
+        branch3 = self._settings["branch3"]
+        branch1_sha = repo.refs[f"origin/{branch1}"].object.hexsha
+        branch2_sha = repo.refs[f"origin/{branch2}"].object.hexsha
+        branch3_sha = repo.refs[f"origin/{branch3}"].object.hexsha
+        self.assertEqual(scanner._get_last_fetched_commit(branch1), branch1_sha)
+        self.assertEqual(scanner._get_last_fetched_commit(branch2), branch2_sha)
+        self.assertEqual(scanner._get_last_fetched_commit(branch3), branch3_sha)
+
+    def test_get_module_paths(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        repo = scanner.repo
+        branch = self._settings["branch1"]
+        module_paths = scanner._get_module_paths(".", branch)
+        self.assertEqual(len(module_paths), 1)
+        self.assertEqual(len(module_paths[0]), 2)
+        self.assertEqual(module_paths[0][0], self._settings["addon"])
+        all_commits = [c.hexsha for c in repo.iter_commits(f"origin/{branch}")]
+        self.assertIn(module_paths[0][1], all_commits)
+
+    def test_get_module_paths_updated(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        branch = self._settings["branch1"]
+        initial_commit = scanner._get_last_fetched_commit(branch)
+        # Case where from_commit and to_commit are the same: no change detected
+        module_paths = scanner._get_module_paths_updated(
+            relative_path=".",
+            from_commit=initial_commit,
+            to_commit=initial_commit,
+            branch=branch,
+        )
+        self.assertFalse(module_paths)
+        # Update the upstream repository with a new commit
+        self._update_module_version_on_branch(branch, "1.0.1")
+        # Module is now detected has updated
+        scanner.scan()  # Fetch new commit from upstream repo
+        last_commit = scanner._get_last_fetched_commit(branch)
+        module_paths = scanner._get_module_paths_updated(
+            relative_path=".",
+            from_commit=initial_commit,
+            to_commit=last_commit,
+            branch=branch,
+        )
+        self.assertEqual(len(module_paths), 1)
+        module_path = module_paths.pop()
+        self.assertEqual(module_path[0], self._settings["addon"])
+        self.assertEqual(module_path[1], last_commit)
+
+    def test_filter_file_path(self):
+        scanner = self._init_scanner()
+        self.assertFalse(scanner._filter_file_path("fr.po"))
+        self.assertTrue(scanner._filter_file_path("test.py"))
+
+    def test_get_last_commit_of_git_tree(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        repo = scanner.repo
+        branch = self._settings["branch1"]
+        remote_branch = f"origin/{branch}"
+        module = self._settings["addon"]
+        module_tree = repo.tree(remote_branch) / module
+        all_commits = [c.hexsha for c in repo.iter_commits(remote_branch)]
+        commit = scanner._get_last_commit_of_git_tree(remote_branch, module_tree)
+        self.assertIn(commit, all_commits)
+
+    def test_get_commits_of_git_tree(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        repo = scanner.repo
+        branch = self._settings["branch1"]
+        remote_branch = f"origin/{branch}"
+        module = self._settings["addon"]
+        module_tree = repo.tree(remote_branch) / module
+        all_commits = [c.hexsha for c in repo.iter_commits(remote_branch)]
+        commits = scanner._get_commits_of_git_tree(
+            from_=None, to_=remote_branch, tree=module_tree
+        )
+        for commit in commits:
+            self.assertIn(commit, all_commits)
+
+    def test_odoo_module(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        repo = scanner.repo
+        branch = self._settings["branch1"]
+        remote_branch = f"origin/{branch}"
+        module = self._settings["addon"]
+        module_tree = repo.tree(remote_branch) / module
+        self.assertTrue(scanner._odoo_module(module_tree))
+
+    def test_manifest_exists(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        repo = scanner.repo
+        branch = self._settings["branch1"]
+        remote_branch = f"origin/{branch}"
+        # Check module tree: OK
+        module = self._settings["addon"]
+        module_tree = repo.tree(remote_branch) / module
+        self.assertTrue(scanner._manifest_exists(module_tree))
+        # Check repository root tree: KO
+        self.assertFalse(scanner._manifest_exists(repo.tree(remote_branch)))
+
+    def test_get_subtree(self):
+        scanner = self._init_scanner()
+        scanner.scan()
+        repo = scanner.repo
+        branch = self._settings["branch1"]
+        remote_branch = f"origin/{branch}"
+        module = self._settings["addon"]
+        # Module/folder exists: OK
+        self.assertTrue(scanner._get_subtree(repo.tree(remote_branch), module))
+        # Module/folder doesn't exist: KO
+        self.assertFalse(scanner._get_subtree(repo.tree(remote_branch), "none"))
