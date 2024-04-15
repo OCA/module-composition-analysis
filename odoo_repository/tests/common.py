@@ -1,0 +1,59 @@
+# Copyright 2024 Camptocamp SA
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
+
+import pathlib
+import re
+import tempfile
+from unittest.mock import patch
+
+import git
+from oca_port.tests.common import CommonCase
+
+from odoo.tests.common import TransactionCase
+
+
+class Common(TransactionCase, CommonCase):
+    def setUp(self):
+        super().setUp()
+        # Leverage the existing test class from 'oca_port' to bootstrap
+        # temporary git repositories to run tests
+        CommonCase.setUp(self)
+        self.repo_name = pathlib.Path(self.repo_upstream_path).parts[-1]
+
+    def _patch_github_class(self):
+        res = super()._patch_github_class()
+        # Patch helper method part of 'odoo_repository' module as well
+        self.patcher2 = patch("odoo.addons.odoo_repository.utils.github.request")
+        github_request = self.patcher2.start()
+        github_request.return_value = {}
+        self.addCleanup(self.patcher2.stop)
+        return res
+
+    def _update_module_version_on_branch(self, branch, version):
+        """Change module version on a given branch, and commit the change."""
+        repo = git.Repo(self.repo_upstream_path)
+        repo.git.checkout(branch)
+        # Update version in manifest file
+        lines = []
+        with open(self.manifest_path, "r+") as manifest:
+            for line in manifest:
+                pattern = r".*version['\"]:\s['\"]([\d.]+).*"
+                match = re.search(pattern, line)
+                if match:
+                    current_version = match.group(1)
+                    line = line.replace(current_version, version)
+                lines.append(line)
+        with open(self.manifest_path, "r+") as manifest:
+            manifest.writelines(lines)
+        # Commit
+        repo.index.add(self.manifest_path)
+        commit = repo.index.commit(
+            f"[IMP] {self._settings['addon']}: bump version to {version}"
+        )
+        return commit.hexsha
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
+        cls.repositories_path = tempfile.mkdtemp()
