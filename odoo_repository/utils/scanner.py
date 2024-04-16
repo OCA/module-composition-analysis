@@ -1,6 +1,8 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+from odoo.tools import config
+
 from ..lib.scanner import RepositoryScanner
 
 
@@ -71,7 +73,8 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
             repo_branch_id, module, data
         )
         # Commit after each module
-        self.env.cr.commit()  # pylint: disable=invalid-commit
+        if not config["test_enable"]:
+            self.env.cr.commit()  # pylint: disable=invalid-commit
         return res
 
     def _update_last_scanned_commit(self, repo_branch_id, last_fetched_commit):
@@ -79,5 +82,6 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
         repo_branch = repo_branch_model.browse(repo_branch_id)
         repo_branch.last_scanned_commit = last_fetched_commit
         # Commit after each repository/branch
-        self.env.cr.commit()  # pylint: disable=invalid-commit
+        if not config["test_enable"]:
+            self.env.cr.commit()  # pylint: disable=invalid-commit
         return True

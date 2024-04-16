@@ -597,6 +597,7 @@ class RepositoryScanner(BaseScanner):
             branch,
         )
         # Scan each module
+        modules_scanned = {}
         for module_path, last_module_commit in module_paths:
             self._scan_module(
                 branch,
@@ -605,6 +606,9 @@ class RepositoryScanner(BaseScanner):
                 last_module_commit,
                 addons_path_data,
             )
+            module = module_path.split("/")[-1]
+            modules_scanned[module] = True
+        return modules_scanned
 
     def _scan_module(
         self,
@@ -638,6 +642,7 @@ class RepositoryScanner(BaseScanner):
             # Set the last fetched commit as last scanned commit
             data["last_scanned_commit"] = last_module_commit
             self._push_scanned_data(repo_branch_id, module, data)
+        return data
 
     def _run_code_analysis(self, module_path):
         """Perform a code analysis of `module_path`."""

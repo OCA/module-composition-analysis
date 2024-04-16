@@ -19,6 +19,24 @@ class Common(TransactionCase, CommonCase):
         # temporary git repositories to run tests
         CommonCase.setUp(self)
         self.repo_name = pathlib.Path(self.repo_upstream_path).parts[-1]
+        self.org = self.env["odoo.repository.org"].create(
+            {"name": self._settings["user_org"]}
+        )
+        self.odoo_repository = self.env["odoo.repository"].create(
+            {
+                "org_id": self.org.id,
+                "name": self.repo_name,
+                "repo_url": self.repo_upstream_path,
+                "clone_url": self.repo_upstream_path,
+                "repo_type": "github",
+            }
+        )
+        self.branch = self.env["odoo.branch"].create(
+            {
+                "name": self._settings["branch1"],
+                "odoo_version": True,
+            }
+        )
 
     def _patch_github_class(self):
         res = super()._patch_github_class()
