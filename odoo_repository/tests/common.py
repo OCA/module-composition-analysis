@@ -1,6 +1,7 @@
 # Copyright 2024 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+import os
 import pathlib
 import re
 import tempfile
@@ -37,6 +38,15 @@ class Common(TransactionCase, CommonCase):
                 "odoo_version": True,
             }
         )
+
+    @classmethod
+    def _apply_git_config(cls):
+        """Configure git (~/.gitconfig) if no config file exists."""
+        git_cfg = pathlib.Path(os.path.expanduser("~/.gitconfig"))
+        if git_cfg.exists():
+            return
+        os.system("git config --global user.email 'test@example.com'")
+        os.system("git config --global user.name 'test'")
 
     def _patch_github_class(self):
         res = super()._patch_github_class()
@@ -75,3 +85,4 @@ class Common(TransactionCase, CommonCase):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.repositories_path = tempfile.mkdtemp()
+        cls._apply_git_config()
