@@ -174,6 +174,8 @@ class OdooRepository(models.Model):
                 branches = [rec.clone_branch_id.name]
             if not branches:
                 branches = rec._get_odoo_branches_to_clone().mapped("name")
+            if not branches:
+                raise UserError(_("No branches to scan."))
             if force:
                 rec._reset_scanned_commits(branches)
             # Scan repository branches sequentially as they need to be checked out
