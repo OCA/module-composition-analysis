@@ -4,6 +4,7 @@
 import json
 import os
 import pathlib
+from urllib.parse import urljoin
 
 import requests
 
@@ -431,4 +432,5 @@ class OdooRepository(models.Model):
     def _get_resource_url(self, branch, path):
         self.ensure_one()
         # NOTE: GitHub and GitLab supports the same URL pattern
-        return "/".join([self.repo_url, "tree", branch, path])
+        url = "/".join(["tree", branch, path])
+        return urljoin(self.repo_url + "/", url)

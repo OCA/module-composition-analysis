@@ -41,6 +41,7 @@ class TestOdooRepositoryScan(Common):
         )
         self.assertFalse(module_branch.version_ids.has_migration_script)
         self.assertTrue(module_branch.sloc_python)
+        self.assertEqual(module_branch.addons_path, ".")
         # Check repository branch
         repo_branch = module_branch.repository_branch_id
         self.assertEqual(repo_branch.branch_id, self.branch)
