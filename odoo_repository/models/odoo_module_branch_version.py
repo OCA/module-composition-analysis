@@ -92,7 +92,12 @@ class OdooModuleBranchVersion(models.Model):
             repo = rec.module_branch_id.repository_id
             if rec.has_migration_script:
                 migration_path = "/".join(
-                    [rec.module_branch_id.module_name, "migrations", rec.name]
+                    [
+                        rec.module_branch_id.addons_path or ".",
+                        rec.module_branch_id.module_name,
+                        "migrations",
+                        rec.manifest_value,
+                    ]
                 )
                 rec.migration_script_url = repo._get_resource_url(
                     rec.module_branch_id.branch_name, migration_path

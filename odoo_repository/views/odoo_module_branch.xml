@@ -33,6 +33,11 @@
                                     widget="url"
                                     attrs="{'invisible': [('pr_url', '=', False)]}"
                                 />
+                <field
+                                    name="url"
+                                    widget="url"
+                                    attrs="{'invisible': [('pr_url', '=', True)]}"
+                                />
                 <field name="last_scanned_commit" />
                 <field name="is_standard" />
                 <field name="is_enterprise" />
