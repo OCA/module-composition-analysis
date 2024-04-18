@@ -146,6 +146,10 @@ class OdooModuleBranch(models.Model):
     sloc_js = fields.Integer("JS", help="JavaScript source lines of code")
     sloc_css = fields.Integer("CSS", help="CSS source lines of code")
     last_scanned_commit = fields.Char()
+    addons_path = fields.Char(
+        help="Technical field. Where the module is located in the repository."
+    )
+    url = fields.Char("URL", compute="_compute_url")
 
     _sql_constraints = [
         (
@@ -154,6 +158,17 @@ class OdooModuleBranch(models.Model):
             "This module already exists for this branch.",
         ),
     ]
+
+    @api.depends("repository_id.repo_url", "branch_name", "addons_path", "module_name")
+    def _compute_url(self):
+        for rec in self:
+            rec.url = False
+            if not rec.repository_id:
+                continue
+            module_path = "/".join([self.addons_path or ".", self.module_name])
+            rec.url = self.repository_id._get_resource_url(
+                self.branch_name, module_path
+            )
 
     @api.depends("repository_branch_id.name", "module_id.name")
     def _compute_name(self):
@@ -273,6 +288,7 @@ class OdooModuleBranch(models.Model):
             "sloc_js": data["code"]["JavaScript"],
             "sloc_css": data["code"]["CSS"],
             "last_scanned_commit": data.get("last_scanned_commit", False),
+            "addons_path": data["relative_path"],
             # Unset PR URL once the module is available in the repository.
             "pr_url": False,
         }
@@ -572,5 +588,6 @@ class OdooModuleBranch(models.Model):
             "sloc_js": self.sloc_js,
             "sloc_css": self.sloc_css,
             "last_scanned_commit": self.last_scanned_commit,
+            "addons_path": self.addons_path,
             "pr_url": self.pr_url,
         }
