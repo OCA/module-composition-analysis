@@ -6,7 +6,6 @@ import json
 import logging
 import os
 import pathlib
-import subprocess
 import tempfile
 import time
 
@@ -44,7 +43,6 @@ class BaseScanner:
         self.branches = branches
         self.repositories_path = self._prepare_repositories_path(repositories_path)
         self.path = self.repositories_path.joinpath(self.org, self.name)
-        self._apply_git_config()
         self.ssh_key = ssh_key
         self.github_token = github_token
 
@@ -52,6 +50,7 @@ class BaseScanner:
         # Clone or update the repository
         if not self.is_cloned:
             self._clone()
+        self._apply_git_config()
         if fetch:
             self._fetch()
 
@@ -93,9 +92,12 @@ class BaseScanner:
     def _apply_git_config(self):
         # This avoids too high memory consumption (default git config could
         # crash the Odoo workers when the scanner is run by Odoo itself).
-        subprocess.run(["git", "config", "--global", "core.packedGitLimit", "256m"])
-        # self.repo.config_writer().set_value(
-        #     "core", "packedGitLimit", "256m").release()
+        # This is especially useful to checkout big repositories like odoo/odoo.
+        with self.repo.config_writer() as writer:
+            writer.set_value("core", "packedGitLimit", "128m")
+            writer.set_value("core", "packedGitWindowSize", "32m")
+            writer.set_value("pack", "windowMemory", "64m")
+            writer.set_value("pack", "threads", "1")
 
     @property
     def is_cloned(self):
@@ -112,7 +114,16 @@ class BaseScanner:
     def _clone(self):
         _logger.info("Cloning %s...", self.full_name)
         with self._get_git_env() as git_env:
-            git.Repo.clone_from(self.clone_url, self.path, env=git_env)
+            # NOTE: adding 'no_checkout' and 'filter=blob:none' allows fast
+            # cloning and reduce memory usage. Blobs will be fetched later on
+            # demand, once the git config to reduce memory usage is applied.
+            git.Repo.clone_from(
+                self.clone_url,
+                self.path,
+                env=git_env,
+                no_checkout=True,
+                filter="blob:none",
+            )
 
     def _fetch(self):
         repo = self.repo
