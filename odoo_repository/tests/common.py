@@ -32,12 +32,19 @@ class Common(TransactionCase, CommonCase):
                 "repo_type": "github",
             }
         )
-        self.branch = self.env["odoo.branch"].create(
-            {
-                "name": self._settings["branch1"],
-                "odoo_version": True,
-            }
+        self.branch = (
+            self.env["odoo.branch"]
+            .with_context(active_test=False)
+            .search([("name", "=", self._settings["branch1"])])
         )
+        if not self.branch:
+            self.branch = self.env["odoo.branch"].create(
+                {
+                    "name": self._settings["branch1"],
+                    "odoo_version": True,
+                }
+            )
+        self.module_name = self._settings["addon"]
 
     @classmethod
     def _apply_git_config(cls):
@@ -85,4 +92,7 @@ class Common(TransactionCase, CommonCase):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.repositories_path = tempfile.mkdtemp()
+        cls.env["ir.config_parameter"].set_param(
+            "odoo_repository_storage_path", cls.repositories_path
+        )
         cls._apply_git_config()
