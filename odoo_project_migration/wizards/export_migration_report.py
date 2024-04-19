@@ -128,6 +128,7 @@ class OdooProjectExportMigrationReport(models.TransientModel):
     def _get_csv_module_info(self, module):
         migration = module.module_migration_id
         info = ""
+        # Migration to review or commits/PRs to port
         if migration.state == "review_migration":
             info = migration.pr_url or ""
         elif migration.process == "port_commits":
@@ -136,6 +137,15 @@ class OdooProjectExportMigrationReport(models.TransientModel):
             info = "\n".join(
                 [info] + [f"- {pr['url']}" for pr in migration.results.values()]
             )
+        # Migration scripts
+        if module.migration_script_ids:
+            nb_scripts = len(module.migration_script_ids)
+            info_mig = f"\n\n{nb_scripts} migration script(s) to consider:"
+            info_mig = "\n".join(
+                [info_mig]
+                + [f"- {sc.migration_script_url}" for sc in module.migration_script_ids]
+            )
+            info += info_mig
         return info
 
     def _get_csv_module_warning(self, module):

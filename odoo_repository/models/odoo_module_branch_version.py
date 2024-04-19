@@ -20,6 +20,12 @@ class OdooModuleBranchVersion(models.Model):
         related="module_branch_id.branch_id",
         store=True,
     )
+    module_id = fields.Many2one(
+        string="Module",
+        related="module_branch_id.module_id",
+        store=True,
+        index=True,
+    )
     module_name = fields.Char(
         string="Module Technical Name",
         related="module_branch_id.module_name",
