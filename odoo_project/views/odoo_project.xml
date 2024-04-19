@@ -68,6 +68,12 @@
                   <field name="pr_url" widget="url" />
                 </tree>
               </field>
+              <button
+                                name="action_find_unknown_modules"
+                                type="object"
+                                string="Find modules"
+                                colspan="2"
+                            />
             </group>
           </group>
         </sheet>
