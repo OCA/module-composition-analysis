@@ -118,3 +118,8 @@ class OdooProject(models.Model):
         ctx["search_default_group_by_repository_id"] = 2
         action["context"] = ctx
         return action
+
+    def action_find_unknown_modules(self):
+        """Try to locate unknown modules."""
+        for module in self.unknown_module_ids:
+            module.action_find_pr_url()
