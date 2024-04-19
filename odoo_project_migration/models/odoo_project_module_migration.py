@@ -45,6 +45,15 @@ class OdooProjectModuleMigration(models.Model):
         index=True,
         readonly=True,
     )
+    project_module_id = fields.Many2one(
+        comodel_name="odoo.project.module",
+        ondelete="cascade",
+        string="Installed Module",
+        help="Version of the module installed in the project.",
+        compute="_compute_project_module_id",
+        store=True,
+        index=True,
+    )
     target_module_branch_id = fields.Many2one(
         comodel_name="odoo.module.branch",
         ondelete="restrict",
@@ -65,6 +74,16 @@ class OdooProjectModuleMigration(models.Model):
         compute="_compute_module_migration_id",
         store=True,
         index=True,
+    )
+    migration_script_ids = fields.One2many(
+        comodel_name="odoo.module.branch.version",
+        string="Migration Scripts",
+        help=(
+            "Migration scripts available between the installed version and "
+            "the last version available on the target branch.\n"
+            "Ones that rework the database schema or data could be mandatory."
+        ),
+        compute="_compute_migration_script_ids",
     )
     state = fields.Selection(
         # Same as in 'odoo.module.branch.migration' but set a state even for
@@ -87,6 +106,18 @@ class OdooProjectModuleMigration(models.Model):
     results_text = fields.Text(related="module_migration_id.results_text")
     pr_url = fields.Char(related="module_migration_id.pr_url")
 
+    @api.depends("odoo_project_id", "source_module_branch_id")
+    def _compute_project_module_id(self):
+        for rec in self:
+            project_module = self.env["odoo.project.module"].search(
+                [
+                    ("odoo_project_id", "=", rec.odoo_project_id.id),
+                    ("module_branch_id", "=", rec.source_module_branch_id.id),
+                ],
+                limit=1,
+            )
+            rec.project_module_id = project_module
+
     @api.depends("source_module_branch_id", "migration_path_id")
     def _compute_target_module_branch_id(self):
         for rec in self:
@@ -108,6 +139,45 @@ class OdooProjectModuleMigration(models.Model):
                     ("module_branch_id", "=", rec.source_module_branch_id.id),
                 ]
             )
+
+    @api.depends("project_module_id")
+    def _compute_migration_script_ids(self):
+        for rec in self:
+            version_model = rec.env["odoo.module.branch.version"]
+            current_release_versions = version_model.search(
+                [
+                    ("module_branch_id", "=", rec.source_module_branch_id.id),
+                    (
+                        "sequence",
+                        ">",
+                        rec.project_module_id.installed_version_id.sequence,
+                    ),
+                    ("has_migration_script", "=", True),
+                ],
+                order="sequence",
+            )
+            new_release_versions = version_model.search(
+                [
+                    (
+                        "module_id",
+                        "=",
+                        rec.module_id.id,
+                    ),
+                    (
+                        "branch_sequence",
+                        ">",
+                        rec.source_module_branch_id.branch_id.sequence,
+                    ),
+                    (
+                        "branch_sequence",
+                        "<=",
+                        rec.target_module_branch_id.branch_id.sequence,
+                    ),
+                    ("has_migration_script", "=", True),
+                ],
+                order="branch_sequence, sequence",
+            )
+            rec.migration_script_ids = current_release_versions | new_release_versions
 
     @api.depends("module_migration_id.state")
     def _compute_state(self):
