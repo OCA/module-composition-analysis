@@ -266,12 +266,29 @@ class OdooModuleBranch(models.Model):
         return self._create_or_update(repo_branch, module, values)
 
     def _create_or_update(self, repo_branch, module, values):
+        # Check if the module was already scanned.
+        # We take care of checking the priority of repositories so any module
+        # tied to a wrong repository by mistake (due to a PR title mentionning
+        # it for instance while the original repo was still not scanned) will
+        # be attached to the repository with the highest priority.
+        # E.g:
+        #   1. we import a project using module A from odoo/odoo
+        #   2. odoo/odoo is still not scanned, but module A is anyway created
+        #   3. we find a PR in repo OCA/x mentionning it, module A is then
+        #      attached to repo OCA/x
+        #   5. we scan odoo/odoo and find module A there, as odoo/odoo has a
+        #      higher priority, it is replacing OCA/x as original repo of module A
         args = [
             ("branch_id", "=", repo_branch.branch_id.id),
             ("module_id", "=", module.id),
         ]
         module_branch = self.search(args)
         if module_branch:
+            if (
+                module_branch.repository_id.sequence
+                > repo_branch.repository_id.sequence
+            ):
+                values["repository_branch_id"] = repo_branch.id
             module_branch.sudo().write(values)
         else:
             module_branch = self.sudo().create(values)
