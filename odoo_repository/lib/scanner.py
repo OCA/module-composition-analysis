@@ -60,7 +60,6 @@ class BaseScanner:
         git_env = {}
         if self.ssh_key:
             with self._get_ssh_key() as ssh_key_path:
-                ssh_key_path = "/home/salix/.ssh/testing"  # FIXME test
                 git_ssh_cmd = f"ssh -o StrictHostKeyChecking=no -i {ssh_key_path}"
                 git_env.update(GIT_SSH_COMMAND=git_ssh_cmd, GIT_TRACE="true")
                 yield git_env
