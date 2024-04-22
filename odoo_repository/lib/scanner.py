@@ -151,6 +151,9 @@ class BaseScanner:
         return branch in refs
 
     def _checkout_branch(self, branch):
+        # Ensure to clean up the repository before a checkout
+        self.repo.git.reset("--hard")
+        self.repo.git.clean("-xdf")
         self.repo.refs[f"origin/{branch}"].checkout()
 
     def _get_last_fetched_commit(self, branch):
