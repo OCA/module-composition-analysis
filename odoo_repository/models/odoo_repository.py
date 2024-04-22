@@ -4,6 +4,7 @@
 import json
 import os
 import pathlib
+from urllib.parse import urljoin
 
 import requests
 
@@ -321,6 +322,9 @@ class OdooRepository(models.Model):
             tuple(external_dependencies.get("python", []))
         )
         license_id = mb_model._get_license_id(data["license"])
+        versions_values = self._prepare_version_ids_values(
+            repository_branch, module, data["versions"]
+        )
         values = {
             "repository_branch_id": repository_branch.id,
             "branch_id": repository_branch.branch_id.id,
@@ -335,6 +339,7 @@ class OdooRepository(models.Model):
             "python_dependency_ids": [(6, 0, python_dependency_ids)],
             "license_id": license_id,
             "version": data["version"],
+            "version_ids": versions_values,
             "development_status_id": dev_status_id,
             "installable": data["installable"],
             "auto_install": data["auto_install"],
@@ -350,6 +355,24 @@ class OdooRepository(models.Model):
             "pr_url": data["pr_url"],
         }
         return values
+
+    def _prepare_version_ids_values(self, repo_branch, module, versions: list[dict]):
+        version_ids = []
+        for version in versions:
+            version_model = self.env["odoo.module.branch.version"]
+            rec = version_model.search(
+                [
+                    ("module_branch_id.branch_id", "=", repo_branch.branch_id.id),
+                    ("module_branch_id.module_id", "=", module.id),
+                    ("name", "=", version["name"]),
+                ],
+                limit=1,
+            )
+            if rec:
+                version_ids.append(fields.Command.update(rec.id, version))
+            else:
+                version_ids.append(fields.Command.create(version))
+        return version_ids
 
     def _create_or_update_module_branch(self, values, raw_data):
         mb_model = self.env["odoo.module.branch"]
@@ -427,3 +450,9 @@ class OdooRepository(models.Model):
         else:
             rec = self.env["odoo.repository.branch"].sudo().create(values)
         return rec
+
+    def _get_resource_url(self, branch, path):
+        self.ensure_one()
+        # NOTE: GitHub and GitLab supports the same URL pattern
+        url = "/".join(["tree", branch, path])
+        return urljoin(self.repo_url + "/", url)

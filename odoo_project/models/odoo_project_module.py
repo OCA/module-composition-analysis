@@ -22,11 +22,45 @@ class OdooProjectModule(models.Model):
         string="Upstream Module",
         required=True,
     )
-    installed_version = fields.Char()
+    installed_version = fields.Char(help="Installed version in project database.")
+    installed_version_id = fields.Many2one(
+        comodel_name="odoo.module.branch.version",
+        string="Nearest installed version",
+        help=(
+            "If the real installed version is not available in the history of "
+            "versions (could come from a pending merge not scanned), this field "
+            "computes the nearest version available."
+        ),
+        compute="_compute_installed_version_id",
+    )
     to_upgrade = fields.Boolean(
         compute="_compute_to_upgrade",
         store=True,
     )
+    migration_scripts = fields.Boolean(
+        compute="_compute_migration_scripts",
+        store=True,
+        help="Available migration scripts between installed and last version.",
+    )
+
+    @api.depends("installed_version")
+    def _compute_installed_version_id(self):
+        for rec in self:
+            rec.installed_version_id = rec.version_ids.browse()
+            if not rec.installed_version:
+                continue
+            # Installed version could not be available in inventoried versions
+            # if it is coming from a pending-merge. In such case we take the
+            # nearest version matching the installed one.
+            #   - Available versions upstream = "14.0.2.0.0" & "14.0.2.1.0"
+            #   - Installed version  = "14.0.2.0.1" (in a pending-merge)
+            #   - Computed installed version = "14.0.2.0.0"
+            inst_ver = [int(n) for n in rec.installed_version.split(".")]
+            for version in rec.version_ids.sorted("sequence"):
+                ver = [int(n) for n in version.name.split(".")]
+                if ver > inst_ver:
+                    break
+                rec.installed_version_id = version
 
     @api.depends("version", "installed_version")
     def _compute_to_upgrade(self):
@@ -35,3 +69,22 @@ class OdooProjectModule(models.Model):
             installed_version = rec.installed_version or rec.version
             if installed_version and rec.version:
                 rec.to_upgrade = v(installed_version) < v(rec.version)
+
+    @api.depends(
+        "to_upgrade",
+        "installed_version",
+        "version_ids.name",
+        "version_ids.has_migration_script",
+    )
+    def _compute_migration_scripts(self):
+        for rec in self:
+            rec.migration_scripts = False
+            if not rec.to_upgrade:
+                continue
+            installed_version = rec.installed_version_id
+            versions_with_mig_script = rec.version_ids.filtered(
+                lambda v: (
+                    v.sequence > installed_version.sequence and v.has_migration_script
+                )
+            )
+            rec.migration_scripts = bool(versions_with_mig_script)

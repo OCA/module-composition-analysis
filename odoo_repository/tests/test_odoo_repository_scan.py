@@ -34,7 +34,14 @@ class TestOdooRepositoryScan(Common):
         self.assertEqual(module_branch.dependency_ids.module_name, "base")
         self.assertEqual(module_branch.license_id.name, "AGPL-3")
         self.assertEqual(module_branch.version, "1.0.0")
+        self.assertEqual(module_branch.version_ids.manifest_value, "1.0.0")
+        self.assertEqual(module_branch.version_ids.name, f"{self.branch.name}.1.0.0")
+        self.assertEqual(
+            module_branch.version_ids.commit, module_branch.last_scanned_commit
+        )
+        self.assertFalse(module_branch.version_ids.has_migration_script)
         self.assertTrue(module_branch.sloc_python)
+        self.assertEqual(module_branch.addons_path, ".")
         # Check repository branch
         repo_branch = module_branch.repository_branch_id
         self.assertEqual(repo_branch.branch_id, self.branch)

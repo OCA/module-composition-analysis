@@ -10,6 +10,7 @@ from odoo import api, fields, models, tools
 from odoo.addons.queue_job.exception import RetryableJobError
 
 from ..utils import github
+from ..utils.module import adapt_version
 
 
 class OdooModuleBranch(models.Model):
@@ -117,7 +118,12 @@ class OdooModuleBranch(models.Model):
         string="License",
         index=True,
     )
-    version = fields.Char()
+    version = fields.Char("Last version")
+    version_ids = fields.One2many(
+        comodel_name="odoo.module.branch.version",
+        inverse_name="module_branch_id",
+        string="Versions",
+    )
     development_status_id = fields.Many2one(
         comodel_name="odoo.module.dev.status",
         ondelete="restrict",
@@ -140,6 +146,10 @@ class OdooModuleBranch(models.Model):
     sloc_js = fields.Integer("JS", help="JavaScript source lines of code")
     sloc_css = fields.Integer("CSS", help="CSS source lines of code")
     last_scanned_commit = fields.Char()
+    addons_path = fields.Char(
+        help="Technical field. Where the module is located in the repository."
+    )
+    url = fields.Char("URL", compute="_compute_url")
 
     _sql_constraints = [
         (
@@ -148,6 +158,17 @@ class OdooModuleBranch(models.Model):
             "This module already exists for this branch.",
         ),
     ]
+
+    @api.depends("repository_id.repo_url", "branch_name", "addons_path", "module_name")
+    def _compute_url(self):
+        for rec in self:
+            rec.url = False
+            if not rec.repository_id:
+                continue
+            module_path = "/".join([self.addons_path or ".", self.module_name])
+            rec.url = self.repository_id._get_resource_url(
+                self.branch_name, module_path
+            )
 
     @api.depends("repository_branch_id.name", "module_id.name")
     def _compute_name(self):
@@ -217,9 +238,16 @@ class OdooModuleBranch(models.Model):
     @api.returns("odoo.module.branch")
     def push_scanned_data(self, repo_branch_id, module, data):
         """Entry point for the scanner to push its data."""
-        manifest = data["manifest"]
         module = self._get_module(module)
         repo_branch = self.env["odoo.repository.branch"].browse(repo_branch_id)
+        values = self._prepare_module_branch_values(repo_branch, module, data)
+        return self._create_or_update(repo_branch, module, values)
+
+    def _prepare_module_branch_values(self, repo_branch, module, data):
+        # Get existing module.branch if any
+        module_branch = self._get_module_branch(repo_branch, module)
+        # Prepare the 'odoo.module.branch' values
+        manifest = data["manifest"]
         category_id = self._get_module_category_id(manifest.get("category", ""))
         author_ids = self._get_author_ids(manifest.get("author", ""))
         maintainer_ids = self._get_maintainer_ids(
@@ -260,10 +288,25 @@ class OdooModuleBranch(models.Model):
             "sloc_js": data["code"]["JavaScript"],
             "sloc_css": data["code"]["CSS"],
             "last_scanned_commit": data.get("last_scanned_commit", False),
+            "addons_path": data["relative_path"],
             # Unset PR URL once the module is available in the repository.
             "pr_url": False,
         }
-        return self._create_or_update(repo_branch, module, values)
+        versions = self._prepare_module_branch_version_ids_values(
+            repo_branch,
+            module_branch,
+            module,
+            # If no history versions was scanned (could happen if versions are
+            # part of an unfetched branch), create one corresponding to the
+            # current manifest version if any but without commit.
+            versions=(
+                data.get("versions")
+                or ({values["version"]: {"commit": None}} if values["version"] else {})
+            ),
+        )
+        if versions:
+            values["version_ids"] = versions
+        return values
 
     def _create_or_update(self, repo_branch, module, values):
         # Check if the module was already scanned.
@@ -293,6 +336,70 @@ class OdooModuleBranch(models.Model):
         else:
             module_branch = self.sudo().create(values)
         return module_branch
+
+    @api.model
+    def _get_existing_version(self, module, manifest_value, commit):
+        if not commit:
+            return self.env["odoo.module.branch.version"]
+        return self.env["odoo.module.branch.version"].search(
+            [
+                ("module_name", "=", module.name),
+                ("manifest_value", "=", manifest_value),
+                ("commit", "=", commit),
+            ],
+            limit=1,
+        )
+
+    def _prepare_module_branch_version_ids_values(
+        self, repo_branch, module_branch, module, versions
+    ):
+        # Insert new versions
+        version_ids = []
+        other_odoo_versions = (
+            self.env["odoo.branch"]._get_all_odoo_versions() - repo_branch.branch_id
+        )
+        for manifest_value, data in versions.items():
+            # Version scanned doesn't belong to the current branch, skipping
+            if any(
+                manifest_value.startswith(odoo_version.name + ".")
+                for odoo_version in other_odoo_versions
+            ):
+                continue
+            name = adapt_version(repo_branch.branch_id.name, manifest_value)
+            # As we could import versions history from previous Odoo releases
+            # (i.e. the branch has been started from a previous one), check if
+            # it hasn't been imported already thanks to the related commit SHA
+            version = self._get_existing_version(module, manifest_value, data["commit"])
+            if version and module_branch:
+                # Skip if the version has already been imported for a
+                # previous Odoo release
+                if version.branch_id.sequence < module_branch.branch_id.sequence:
+                    continue
+                # Corner case: we scanned a version that was already imported
+                # through a newer Odoo branch. Downgrade the existing version
+                # to the current module branch.
+                if version.branch_id.sequence > module_branch.branch_id.sequence:
+                    version.write(
+                        {
+                            "module_branch_id": module_branch.id,
+                            "name": name,
+                        }
+                    )
+                    continue
+            module_version = module_branch.version_ids.filtered(
+                lambda v: v.name == name and v.manifest_value == manifest_value
+            )
+            values = {
+                "name": name,
+                "manifest_value": manifest_value,
+                "commit": data["commit"],
+                "has_migration_script": data.get("migration_script", False),
+            }
+            if module_version:
+                version_ids.append(fields.Command.update(module_version.id, values))
+            else:
+                version_ids.append(fields.Command.create(values))
+        return version_ids
 
     @tools.ormcache("category_name")
     def _get_module_category_id(self, category_name):
@@ -402,6 +509,15 @@ class OdooModuleBranch(models.Model):
             module = self.env["odoo.module"].sudo().create({"name": name})
         return module
 
+    @api.model
+    def _get_module_branch(self, repo_branch, module):
+        """Return the `odoo.module.branch` if it already exists. Do not create it."""
+        args = [
+            ("branch_id", "=", repo_branch.branch_id.id),
+            ("module_id", "=", module.id),
+        ]
+        return self.search(args)
+
     # TODO adds ormcache
     def _get_modules_data(self, orgs=None, repositories=None, branches=None):
         """Returns modules data matching the criteria.
@@ -443,14 +559,7 @@ class OdooModuleBranch(models.Model):
         return {
             "module": self.module_name,
             "branch": self.branch_id.name,
-            "repository": {
-                "org": self.repository_id.org_id.name,
-                "name": self.repository_id.name,
-                "repo_url": self.repository_id.repo_url,
-                "repo_type": self.repository_id.repo_type,
-                "active": self.repository_id.active,
-                "last_scanned_commit": self.repository_branch_id.last_scanned_commit,
-            },
+            "repository": self.repository_branch_id._to_dict(),
             "title": self.title,
             "summary": self.summary,
             "authors": self.author_ids.mapped("name"),
@@ -459,6 +568,7 @@ class OdooModuleBranch(models.Model):
             "category": self.category_id.name,
             "license": self.license_id.name,
             "version": self.version,
+            "versions": [version._to_dict() for version in self.version_ids],
             "development_status": self.development_status_id.name,
             "application": self.application,
             "installable": self.installable,
@@ -472,5 +582,6 @@ class OdooModuleBranch(models.Model):
             "sloc_js": self.sloc_js,
             "sloc_css": self.sloc_css,
             "last_scanned_commit": self.last_scanned_commit,
+            "addons_path": self.addons_path,
             "pr_url": self.pr_url,
         }

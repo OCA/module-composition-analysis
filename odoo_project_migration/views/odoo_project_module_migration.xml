@@ -10,15 +10,25 @@
       <form>
         <sheet>
           <group>
-            <field name="odoo_project_id" />
-            <field name="migration_path_id" options="{'no_open': True}" />
-            <field name="module_id" />
-            <field name="source_module_branch_id" />
-            <field name="target_module_branch_id" />
-            <field name="module_migration_id" />
-            <field name="state" />
-            <field name="results_text" />
-            <field name="pr_url" widget="url" />
+            <group string="Info">
+              <field name="odoo_project_id" />
+              <field name="migration_path_id" options="{'no_open': True}" />
+              <field name="module_id" />
+              <field name="source_module_branch_id" />
+              <field name="target_module_branch_id" />
+              <field name="module_migration_id" />
+              <field name="state" />
+              <field name="results_text" />
+              <field name="pr_url" widget="url" />
+            </group>
+            <group name="migration_scripts" string="Migration scripts to consider">
+              <field name="migration_script_ids" nolabel="1" colspan="2">
+                <tree>
+                  <field name="name" />
+                  <field name="migration_script_url" widget="url" string="URL" />
+                </tree>
+              </field>
+            </group>
           </group>
         </sheet>
       </form>
@@ -43,6 +53,7 @@
         <field name="sloc_js" sum="JS" />
         <field name="sloc_css" sum="CSS" />
         <field name="state" />
+        <field name="migration_script_ids" />
       </tree>
     </field>
   </record>
