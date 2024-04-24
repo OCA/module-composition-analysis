@@ -32,6 +32,7 @@ class OdooRepositoryBranch(models.Model):
         readonly=True,
     )
     last_scanned_commit = fields.Char(readonly=True)
+    active = fields.Boolean(compute="_compute_active", store=True)
 
     _sql_constraints = [
         (
@@ -45,6 +46,11 @@ class OdooRepositoryBranch(models.Model):
     def _compute_name(self):
         for rec in self:
             rec.name = f"{rec.repository_id.display_name}#{rec.branch_id.name}"
+
+    @api.depends("repository_id.active", "branch_id.active")
+    def _compute_active(self):
+        for rec in self:
+            rec.active = all((rec.repository_id.active, rec.branch_id.active))
 
     def action_scan(self, force=False):
         """Scan the repository/branch."""
