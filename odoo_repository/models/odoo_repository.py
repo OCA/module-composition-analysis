@@ -169,19 +169,23 @@ class OdooRepository(models.Model):
         """Scan the whole repository."""
         self._check_config()
         for rec in self:
+            # Copy `branches` list to not override initial values
+            branches_ = branches and branches[:] or []
             if not rec.to_scan:
                 return False
             if rec.clone_branch_id:
-                branches = [rec.clone_branch_id.name]
-            if not branches:
-                branches = rec._get_odoo_branches_to_clone().mapped("name")
-            if not branches:
+                # Repository qualified with e.g. '17.0' branch but cloning a
+                # different branch like 'main'
+                branches_ = [rec.clone_branch_id.name]
+            if not branches_:
+                branches_ = rec._get_odoo_branches_to_clone().mapped("name")
+            if not branches_:
                 raise UserError(_("No branches to scan."))
             if force:
-                rec._reset_scanned_commits(branches)
+                rec._reset_scanned_commits(branches_)
             # Scan repository branches sequentially as they need to be checked out
             # to perform the analysis
-            jobs = rec._create_jobs(branches)
+            jobs = rec._create_jobs(branches_)
             chain(*jobs).delay()
         return True
 
