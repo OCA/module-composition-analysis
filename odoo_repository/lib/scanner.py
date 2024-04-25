@@ -28,6 +28,33 @@ IGNORE_FILES = [".po", ".pot", "README.rst", "index.html"]
 MANIFEST_FILES = ("__manifest__.py", "__openerp__.py")
 
 
+@contextlib.contextmanager
+def set_env(**environ):
+    """
+    Temporarily set the process environment variables.
+
+    >>> with set_env(PLUGINS_DIR='test/plugins'):
+    ...   "PLUGINS_DIR" in os.environ
+    True
+
+    >>> "PLUGINS_DIR" in os.environ
+    False
+
+    :type environ: dict[str, unicode]
+    :param environ: Environment variables to set
+    """
+    # Copied from:
+    # https://stackoverflow.com/questions/2059482/
+    # temporarily-modify-the-current-processs-environment
+    old_environ = dict(os.environ)
+    os.environ.update(environ)
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(old_environ)
+
+
 class BaseScanner:
     _dirname = "odoo-repositories"
 
@@ -484,7 +511,10 @@ class MigrationScanner(BaseScanner):
             "fetch": False,
             "github_token": self.github_token,
         }
-        scan = oca_port.App(**params)
+        # Store oca_port cache in the same folder than cloned repositories
+        # to boost performance of further calls
+        with set_env(XDG_CACHE_HOME=str(self.repositories_path)):
+            scan = oca_port.App(**params)
         try:
             json_data = scan.run()
         except ValueError as exc:
