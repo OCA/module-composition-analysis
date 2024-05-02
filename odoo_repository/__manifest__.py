@@ -17,6 +17,7 @@
         "data/odoo_branch.xml",
         "data/queue_job.xml",
         "views/menu.xml",
+        "views/authentication_token.xml",
         "views/ssh_key.xml",
         "views/odoo_author.xml",
         "views/odoo_branch.xml",
