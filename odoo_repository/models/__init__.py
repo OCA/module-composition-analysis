@@ -1,3 +1,4 @@
+from . import authentication_token
 from . import ssh_key
 from . import odoo_author
 from . import odoo_branch
@@ -13,4 +14,5 @@ from . import odoo_repository
 from . import odoo_repository_branch
 from . import odoo_module_branch
 from . import odoo_module_branch_version
+from . import res_company
 from . import res_config_settings
