@@ -62,6 +62,12 @@ class OdooRepository(models.Model):
         string="SSH Key",
         help="SSH key used to clone/fetch this repository.",
     )
+    token_id = fields.Many2one(
+        comodel_name="authentication.token",
+        ondelete="restrict",
+        string="Token",
+        help="Token used to clone/fetch this repository.",
+    )
     clone_branch_id = fields.Many2one(
         comodel_name="odoo.branch",
         ondelete="restrict",
@@ -227,12 +233,24 @@ class OdooRepository(models.Model):
         except Exception as exc:
             raise RetryableJobError("Scanner error") from exc
 
+    def _get_token(self):
+        """Return the first available token found for this repository.
+
+        It will check the available tokens in this order:
+            - specific token linked to this repository
+            - default token defined in the global settings
+            - token defined through an environment variable
+        """
+        self.ensure_one()
+        return (
+            self.token_id.token
+            or self.env.company.config_odoo_repository_default_token_id.token
+            or os.environ.get("GITHUB_TOKEN")
+        )
+
     def _prepare_scanner_parameters(self, branch):
         ir_config = self.env["ir.config_parameter"]
         repositories_path = ir_config.get_param(self._repositories_path_key)
-        github_token = ir_config.get_param(
-            "odoo_repository_github_token", os.environ.get("GITHUB_TOKEN")
-        )
         return {
             "org": self.org_id.name,
             "name": self.name,
@@ -247,8 +265,9 @@ class OdooRepository(models.Model):
                 ]
             ),
             "repositories_path": repositories_path,
+            "repo_type": self.repo_type,
             "ssh_key": self.ssh_key_id.private_key,
-            "github_token": github_token,
+            "token": self._get_token(),
             "env": self.env,
         }
 

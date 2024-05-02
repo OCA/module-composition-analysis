@@ -10,6 +10,7 @@ import pathlib
 import re
 import tempfile
 import time
+from urllib.parse import urlparse, urlunparse
 
 import git
 import oca_port
@@ -65,23 +66,26 @@ class BaseScanner:
         clone_url: str,
         branches: list,
         repositories_path: str = None,
+        repo_type: str = None,
         ssh_key: str = None,
-        github_token: str = None,
+        token: str = None,
     ):
         self.org = org
         self.name = name
-        self.clone_url = clone_url
+        self.clone_url = self._prepare_clone_url(repo_type, clone_url, token)
         self.branches = branches
         self.repositories_path = self._prepare_repositories_path(repositories_path)
         self.path = self.repositories_path.joinpath(self.org, self.name)
+        self.repo_type = repo_type
         self.ssh_key = ssh_key
-        self.github_token = github_token
+        self.token = token
 
     def scan(self, fetch=True):
         # Clone or update the repository
         if not self.is_cloned:
             self._clone()
         self._apply_git_config()
+        self._set_git_remote_url()
         if fetch:
             self._fetch()
 
@@ -106,14 +110,29 @@ class BaseScanner:
             ssh_key_path = fp.name
             yield ssh_key_path
 
-    def _prepare_repositories_path(self, repositories_path=None):
+    @staticmethod
+    def _prepare_clone_url(repo_type, clone_url, token):
+        """Return the URL used to clone/fetch the repository.
+
+        If a token is provided it will be inserted automatically.
+        """
+        if repo_type in ("github", "gitlab") and token:
+            parts = list(urlparse(clone_url))
+            if parts[0].startswith("http"):
+                # Update 'netloc' part to prefix it with the OAuth token
+                parts[1] = f"oauth2:{token}@" + parts[1]
+                clone_url = urlunparse(parts)
+        return clone_url
+
+    @classmethod
+    def _prepare_repositories_path(cls, repositories_path=None):
         if not repositories_path:
             default_data_dir_path = (
                 pathlib.Path.home().joinpath(".local").joinpath("share")
             )
             repositories_path = pathlib.Path(
                 os.environ.get("XDG_DATA_HOME", default_data_dir_path),
-                self._dirname,
+                cls._dirname,
             )
         repositories_path = pathlib.Path(repositories_path)
         repositories_path.mkdir(parents=True, exist_ok=True)
@@ -128,6 +147,10 @@ class BaseScanner:
             writer.set_value("core", "packedGitWindowSize", "32m")
             writer.set_value("pack", "windowMemory", "64m")
             writer.set_value("pack", "threads", "1")
+
+    def _set_git_remote_url(self):
+        """Ensure that 'origin' remote is set with the right URL."""
+        self.repo.remotes["origin"].set_url(self.clone_url)
 
     @property
     def is_cloned(self):
@@ -317,12 +340,13 @@ class MigrationScanner(BaseScanner):
         clone_url: str,
         migration_paths: list[tuple[str]],
         repositories_path: str = None,
+        repo_type: str = None,
         ssh_key: str = None,
-        github_token: str = None,
+        token: str = None,
     ):
         branches = sorted(set(sum([tuple(mp) for mp in migration_paths], ())))
         super().__init__(
-            org, name, clone_url, branches, repositories_path, ssh_key, github_token
+            org, name, clone_url, branches, repositories_path, repo_type, ssh_key, token
         )
         self.migration_paths = migration_paths
 
@@ -509,7 +533,7 @@ class MigrationScanner(BaseScanner):
             "repo_name": self.name,
             "output": "json",
             "fetch": False,
-            "github_token": self.github_token,
+            "github_token": self.repo_type == "github" and self.token or None,
         }
         # Store oca_port cache in the same folder than cloned repositories
         # to boost performance of further calls
@@ -570,11 +594,12 @@ class RepositoryScanner(BaseScanner):
         branches: list,
         addons_paths_data: list,
         repositories_path: str = None,
+        repo_type: str = None,
         ssh_key: str = None,
-        github_token: str = None,
+        token: str = None,
     ):
         super().__init__(
-            org, name, clone_url, branches, repositories_path, ssh_key, github_token
+            org, name, clone_url, branches, repositories_path, repo_type, ssh_key, token
         )
         self.addons_paths_data = addons_paths_data
 

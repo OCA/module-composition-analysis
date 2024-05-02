@@ -10,8 +10,9 @@ class ResConfigSettings(models.TransientModel):
     config_odoo_repository_storage_path = fields.Char(
         string="Storage local path", config_parameter="odoo_repository_storage_path"
     )
-    config_odoo_repository_github_token = fields.Char(
-        string="GitHub Token", config_parameter="odoo_repository_github_token"
+    config_odoo_repository_default_token_id = fields.Many2one(
+        related="company_id.config_odoo_repository_default_token_id",
+        readonly=False,
     )
     config_odoo_repository_main_node_url = fields.Char(
         string="Endpoint URL", config_parameter="odoo_repository_main_node_url"

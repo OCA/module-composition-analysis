@@ -34,6 +34,19 @@ class TestBaseScanner(Common):
             scanner.full_name, f"{self._settings['user_org']}/{self.repo_name}"
         )
 
+    def test_clone_url_github_token(self):
+        # Without token
+        base_clone_url = "https://github.com/OCA/test"
+        scanner = self._init_scanner(repo_type="github", clone_url=base_clone_url)
+        self.assertEqual(scanner.clone_url, base_clone_url)
+        # With a token
+        token = "test"
+        scanner = self._init_scanner(
+            repo_type="github", clone_url=base_clone_url, token=token
+        )
+        token_clone_url = f"https://oauth2:{token}@github.com/OCA/test"
+        self.assertEqual(scanner.clone_url, token_clone_url)
+
     def test_scan(self):
         scanner = self._init_scanner(repositories_path=tempfile.mkdtemp())
         # Clone
