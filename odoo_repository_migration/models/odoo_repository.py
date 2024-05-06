@@ -1,7 +1,6 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-import os
 
 from odoo import fields, models, tools
 
@@ -73,17 +72,15 @@ class OdooRepository(models.Model):
     def _prepare_migration_scanner_parameters(self, migration_path):
         ir_config = self.env["ir.config_parameter"]
         repositories_path = ir_config.get_param(self._repositories_path_key)
-        github_token = ir_config.get_param(
-            "odoo_repository_github_token", os.environ.get("GITHUB_TOKEN")
-        )
         return {
             "org": self.org_id.name,
             "name": self.name,
             "clone_url": self.clone_url,
             "migration_paths": [migration_path],
             "repositories_path": repositories_path,
+            "repo_type": self.repo_type,
             "ssh_key": self.ssh_key_id.private_key,
-            "github_token": github_token,
+            "token": self._get_token(),
             "env": self.env,
         }
 

@@ -43,22 +43,22 @@
                             name="odoo_repository_github_token"
                         >
               <div class="o_setting_right_pane">
-                <span class="o_form_label">GitHub token (API)</span>
+                <span class="o_form_label">Default Authentication Token</span>
                 <div class="text-muted">
-                  GitHub token used to request the API.
+                  Default token used to clone repositories and authenticate on API like GitHub.
                 </div>
                 <div class="content-group">
                   <div class="mt16">
                     <field
-                                            name="config_odoo_repository_github_token"
-                                            password="True"
+                                            name="config_odoo_repository_default_token_id"
+                                            options="{'no_open': True}"
                                             colspan="2"
                                         />
                   </div>
                 </div>
                 <div class="text-muted">
-                  Another way is to define the <strong
-                                    >GITHUB_TOKEN</strong> environment variable on your system.
+                  If the environment variable <strong
+                                    >GITHUB_TOKEN</strong> is set on the running system, it will be used as fallback.
                 </div>
               </div>
             </div>

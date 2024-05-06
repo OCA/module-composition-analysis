@@ -51,9 +51,16 @@
                                     attrs="{'readonly': [('branch_ids', '!=', [])]}"
                                 />
                 <field
+                                    name="token_id"
+                                    options="{'no_open': True}"
+                                    groups="base.group_system"
+                                    attrs="{'invisible': [('ssh_key_id', '!=', False)]}"
+                                />
+                <field
                                     name="ssh_key_id"
                                     options="{'no_open': True}"
                                     groups="base.group_system"
+                                    attrs="{'invisible': [('token_id', '!=', False)]}"
                                 />
               </group>
             </group>
