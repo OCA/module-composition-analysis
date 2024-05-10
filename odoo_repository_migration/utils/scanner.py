@@ -42,6 +42,13 @@ class MigrationScannerOdooEnv(MigrationScanner):
             for mp in migration_paths
         ]
 
+    def _is_module_blacklisted(self, module):
+        return bool(
+            self.env["odoo.module"].search_count(
+                [("name", "=", module), ("blacklisted", "=", True)]
+            )
+        )
+
     def _get_odoo_module_branch_id(self, module: str, branch: str) -> int:
         args = [
             ("module_id", "=", module),

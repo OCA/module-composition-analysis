@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_module_server_environment_files" model="odoo.module">
+    <field name="name">server_environment_files</field>
+    <field name="blacklisted" eval="True" />
+  </record>
+
+  <record id="odoo_module_studio_customization" model="odoo.module">
+    <field name="name">studio_customization</field>
+    <field name="blacklisted" eval="True" />
+  </record>
+
+</odoo>

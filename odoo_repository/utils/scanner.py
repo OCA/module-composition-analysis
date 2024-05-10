@@ -59,6 +59,13 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
         repo_branch = repo_branch_model.browse(repo_branch_id)
         return repo_branch.last_scanned_commit
 
+    def _is_module_blacklisted(self, module):
+        return bool(
+            self.env["odoo.module"].search_count(
+                [("name", "=", module), ("blacklisted", "=", True)]
+            )
+        )
+
     def _get_module_last_scanned_commit(self, repo_branch_id, module_name):
         module_branch_model = self.env["odoo.module.branch"]
         args = [

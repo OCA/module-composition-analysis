@@ -13,6 +13,10 @@ class OdooModule(models.Model):
         comodel_name="odoo.module.branch",
         inverse_name="module_id",
         string="Modules",
+        readonly=True,
+    )
+    blacklisted = fields.Boolean(
+        help="Blacklisted modules won't be scanned.", readonly=True
     )
 
     _sql_constraints = [
