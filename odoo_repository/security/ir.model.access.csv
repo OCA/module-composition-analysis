@@ -9,6 +9,7 @@ access_odoo_branch_manager,odoo_branch_manager,model_odoo_branch,base.group_syst
 access_odoo_license_user,odoo_license_user,model_odoo_license,base.group_user,1,0,0,0
 access_odoo_maintainer_user,odoo_maintainer_user,model_odoo_maintainer,base.group_user,1,0,0,0
 access_odoo_module_user,odoo_module_user,model_odoo_module,base.group_user,1,0,0,0
+access_odoo_module_manager,odoo_module_manager,model_odoo_module,base.group_system,1,0,1,1
 access_odoo_module_category_user,odoo_module_category_user,model_odoo_module_category,base.group_user,1,0,0,0
 access_odoo_module_dev_status_user,odoo_module_dev_status_user,model_odoo_module_dev_status,base.group_user,1,0,0,0
 access_odoo_python_dependency_user,odoo_python_dependency_user,model_odoo_python_dependency,base.group_user,1,0,0,0
