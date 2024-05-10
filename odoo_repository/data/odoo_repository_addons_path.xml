@@ -36,4 +36,16 @@
     <field name="is_community" eval="True" />
   </record>
 
+  <record
+        id="odoo_repository_addons_path_enterprise"
+        model="odoo.repository.addons_path"
+    >
+    <field name="relative_path">.</field>
+    <field name="is_enterprise" eval="True" />
+  </record>
+
+  <record id="odoo_repository_addons_path_none" model="odoo.repository.addons_path">
+    <field name="relative_path">.</field>
+  </record>
+
 </odoo>
