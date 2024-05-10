@@ -75,7 +75,7 @@ class OdooProjectImportModules(models.TransientModel):
                 "branch_id": branch.id,
             }
             module_branch = module_branch_model.sudo().create(values)
-        if not module_branch.repository_branch_id:
+        if not module.blacklisted and not module_branch.repository_branch_id:
             # If the module hasn't been found in existing repositories content,
             # it could be available somewhere on GitHub as a PR that could help
             # to identity its repository

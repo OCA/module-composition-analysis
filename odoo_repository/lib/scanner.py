@@ -367,6 +367,13 @@ class MigrationScanner(BaseScanner):
         repo_target_commit = self._get_last_fetched_commit(target_branch)
         modules = self._get_module_paths(".", source_branch)
         for module, __ in modules:
+            if self._is_module_blacklisted(module):
+                _logger.info(
+                    "%s: '%s' is blacklisted (no migration scan)",
+                    self.full_name,
+                    module,
+                )
+                continue
             module_branch_id = self._get_odoo_module_branch_id(module, source_branch)
             if not module_branch_id:
                 _logger.warning(
@@ -691,6 +698,14 @@ class RepositoryScanner(BaseScanner):
         addons_path_data,
     ):
         module = module_path.split("/")[-1]
+        if self._is_module_blacklisted(module):
+            _logger.info(
+                "%s#%s: '%s' is blacklisted (no scan)",
+                self.full_name,
+                branch,
+                module_path,
+            )
+            return
         last_module_scanned_commit = self._get_module_last_scanned_commit(
             repo_branch_id, module
         )
@@ -829,6 +844,10 @@ class RepositoryScanner(BaseScanner):
 
     def _get_repo_last_scanned_commit(self, repo_branch_id):
         """Return the last scanned commit of the repository/branch."""
+        raise NotImplementedError
+
+    def _is_module_blacklisted(self, module):
+        """Check if `module` is blacklisted (and should not be scanned)."""
         raise NotImplementedError
 
     def _get_module_last_scanned_commit(self, repo_branch_id, module):

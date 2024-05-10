@@ -10,6 +10,7 @@
     "data": [
         "security/ir.model.access.csv",
         "data/ir_cron.xml",
+        "data/odoo_module.xml",
         "data/odoo_repository_org.xml",
         "data/odoo_repository_addons_path.xml",
         "data/odoo_repository.xml",
