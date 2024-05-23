@@ -55,7 +55,7 @@ class OdooRepositoryBranch(models.Model):
     def action_scan(self, force=False):
         """Scan the repository/branch."""
         return self.repository_id.action_scan(
-            branches=[self.branch_id.name], force=force
+            branches=self.branch_id.mapped("name"), force=force
         )
 
     def action_force_scan(self):
