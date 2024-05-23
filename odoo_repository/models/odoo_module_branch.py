@@ -146,6 +146,7 @@ class OdooModuleBranch(models.Model):
     sloc_js = fields.Integer("JS", help="JavaScript source lines of code")
     sloc_css = fields.Integer("CSS", help="CSS source lines of code")
     last_scanned_commit = fields.Char()
+    removed = fields.Boolean()
     addons_path = fields.Char(
         help="Technical field. Where the module is located in the repository."
     )
@@ -247,51 +248,74 @@ class OdooModuleBranch(models.Model):
         # Get existing module.branch if any
         module_branch = self._get_module_branch(repo_branch, module)
         # Prepare the 'odoo.module.branch' values
-        manifest = data["manifest"]
-        category_id = self._get_module_category_id(manifest.get("category", ""))
-        author_ids = self._get_author_ids(manifest.get("author", ""))
-        maintainer_ids = self._get_maintainer_ids(
-            tuple(manifest.get("maintainers", []))
-        )
-        dev_status_id = self._get_dev_status_id(manifest.get("development_status", ""))
-        dependency_ids = self._get_dependency_ids(
-            repo_branch, manifest.get("depends", [])
-        )
-        external_dependencies = manifest.get("external_dependencies", {})
-        python_dependency_ids = self._get_python_dependency_ids(
-            tuple(external_dependencies.get("python", []))
-        )
-        license_id = self._get_license_id(manifest.get("license", ""))
+        manifest = data.get("manifest", {})
         values = {
             "repository_branch_id": repo_branch.id,
             "branch_id": repo_branch.branch_id.id,
             "module_id": module.id,
-            "title": manifest.get("name", False),
-            "summary": manifest.get("summary", manifest.get("description", False)),
-            "category_id": category_id,
-            "author_ids": [(6, 0, author_ids)],
-            "maintainer_ids": [(6, 0, maintainer_ids)],
-            "dependency_ids": [(6, 0, dependency_ids)],
-            "external_dependencies": external_dependencies,
-            "python_dependency_ids": [(6, 0, python_dependency_ids)],
-            "license_id": license_id,
-            "version": manifest.get("version", False),
-            "development_status_id": dev_status_id,
-            "application": manifest.get("application", False),
-            "installable": manifest.get("installable", True),
-            "auto_install": manifest.get("auto_install", False),
             "is_standard": data["is_standard"],
             "is_enterprise": data["is_enterprise"],
             "is_community": data["is_community"],
-            "sloc_python": data["code"]["Python"],
-            "sloc_xml": data["code"]["XML"],
-            "sloc_js": data["code"]["JavaScript"],
-            "sloc_css": data["code"]["CSS"],
             "last_scanned_commit": data.get("last_scanned_commit", False),
             "addons_path": data["relative_path"],
             # Unset PR URL once the module is available in the repository.
             "pr_url": False,
         }
+        if manifest:
+            category_id = self._get_module_category_id(manifest.get("category", ""))
+            author_ids = self._get_author_ids(manifest.get("author", ""))
+            maintainer_ids = self._get_maintainer_ids(
+                tuple(manifest.get("maintainers", []))
+            )
+            dev_status_id = self._get_dev_status_id(
+                manifest.get("development_status", "")
+            )
+            dependency_ids = self._get_dependency_ids(
+                repo_branch, manifest.get("depends", [])
+            )
+            external_dependencies = manifest.get("external_dependencies", {})
+            python_dependency_ids = self._get_python_dependency_ids(
+                tuple(external_dependencies.get("python", []))
+            )
+            license_id = self._get_license_id(manifest.get("license", ""))
+            values.update(
+                {
+                    "title": manifest.get("name", False),
+                    "summary": manifest.get(
+                        "summary", manifest.get("description", False)
+                    ),
+                    "category_id": category_id,
+                    "author_ids": [(6, 0, author_ids)],
+                    "maintainer_ids": [(6, 0, maintainer_ids)],
+                    "dependency_ids": [(6, 0, dependency_ids)],
+                    "external_dependencies": external_dependencies,
+                    "python_dependency_ids": [(6, 0, python_dependency_ids)],
+                    "license_id": license_id,
+                    "version": manifest.get("version", False),
+                    "development_status_id": dev_status_id,
+                    "application": manifest.get("application", False),
+                    "installable": manifest.get("installable", True),
+                    "auto_install": manifest.get("auto_install", False),
+                }
+            )
+        if data.get("last_scanned_commit"):
+            values.update(
+                {
+                    "sloc_python": data["code"]["Python"],
+                    "sloc_xml": data["code"]["XML"],
+                    "sloc_js": data["code"]["JavaScript"],
+                    "sloc_css": data["code"]["CSS"],
+                }
+            )
+        # Handle module removal
+        elif module_branch:
+            values.update(
+                {
+                    "installable": False,
+                    "removed": True,
+                }
+            )
+        # Handle versions history
         versions = self._prepare_module_branch_version_ids_values(
             repo_branch,
             module_branch,
@@ -321,11 +345,7 @@ class OdooModuleBranch(models.Model):
         #      attached to repo OCA/x
         #   5. we scan odoo/odoo and find module A there, as odoo/odoo has a
         #      higher priority, it is replacing OCA/x as original repo of module A
-        args = [
-            ("branch_id", "=", repo_branch.branch_id.id),
-            ("module_id", "=", module.id),
-        ]
-        module_branch = self.search(args)
+        module_branch = self._get_module_branch(repo_branch, module)
         if module_branch:
             if (
                 module_branch.repository_id.sequence

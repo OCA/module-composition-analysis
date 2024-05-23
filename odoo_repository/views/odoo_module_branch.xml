@@ -39,6 +39,7 @@
                                     attrs="{'invisible': [('pr_url', '=', True)]}"
                                 />
                 <field name="last_scanned_commit" />
+                <field name="removed" />
                 <field name="is_standard" />
                 <field name="is_enterprise" />
                 <field name="is_community" />
