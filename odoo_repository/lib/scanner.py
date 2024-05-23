@@ -241,6 +241,7 @@ class BaseScanner:
         """Return modules updated between `from_commit` and `to_commit`.
 
         It returns a list of tuples `[(module, last_commit), ...]`.
+        If a module has been removed, the tuple returned will be `(module, None)`.
         """
         # Clean up 'relative_path' to make it compatible with 'git.Tree' object
         relative_tree_path = "/".join(
@@ -269,15 +270,22 @@ class BaseScanner:
             rel_path = pathlib.Path(relative_path)
             diff_path = pathlib.Path(diff.a_path)
             module_path = pathlib.Path(*diff_path.parts[: len(rel_path.parts) + 1])
-            tree = to_commit.tree / str(module_path)
-            if self._odoo_module(tree):
-                module_paths.add(
-                    # FIXME: should we return pathlib.Path objects?
-                    (
-                        tree.path,
-                        self._get_last_commit_of_git_tree(f"origin/{branch}", tree),
+            tree = self._get_subtree(to_commit.tree, str(module_path))
+            if tree:
+                # Module still exists
+                if self._odoo_module(tree):
+                    module_paths.add(
+                        # FIXME: should we return pathlib.Path objects?
+                        (
+                            tree.path,
+                            self._get_last_commit_of_git_tree(f"origin/{branch}", tree),
+                        )
                     )
-                )
+            else:
+                # Module removed
+                tree = self._get_subtree(from_commit.tree, str(module_path))
+                if self._odoo_module(tree):
+                    module_paths.add((tree.path, None))
         return module_paths
 
     def _filter_file_path(self, path):
@@ -716,21 +724,29 @@ class RepositoryScanner(BaseScanner):
         # modules.
         if last_module_scanned_commit == last_module_commit:
             return
-        _logger.info(
-            "%s#%s: scan '%s' ",
-            self.full_name,
-            branch,
-            module_path,
-        )
-        data = self._run_module_code_analysis(
-            module_path, branch, last_module_scanned_commit, last_module_commit
-        )
-        if data["manifest"]:
-            # Insert all flags 'is_standard', 'is_enterprise', etc
-            data.update(addons_path_data)
-            # Set the last fetched commit as last scanned commit
-            data["last_scanned_commit"] = last_module_commit
-            self._push_scanned_data(repo_branch_id, module, data)
+        data = {}
+        if last_module_commit:
+            _logger.info(
+                "%s#%s: scan '%s' ",
+                self.full_name,
+                branch,
+                module_path,
+            )
+            data = self._run_module_code_analysis(
+                module_path, branch, last_module_scanned_commit, last_module_commit
+            )
+        else:
+            _logger.info(
+                "%s#%s: '%s' removed",
+                self.full_name,
+                branch,
+                module_path,
+            )
+        # Insert all flags 'is_standard', 'is_enterprise', etc
+        data.update(addons_path_data)
+        # Set the last fetched commit as last scanned commit
+        data["last_scanned_commit"] = last_module_commit
+        self._push_scanned_data(repo_branch_id, module, data)
         return data
 
     def _run_module_code_analysis(self, module_path, branch, from_commit, to_commit):
