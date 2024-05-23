@@ -8,6 +8,15 @@
     <field name="model">odoo.migration.path</field>
     <field name="arch" type="xml">
       <form>
+        <header>
+          <button
+                        name="action_force_scan"
+                        type="object"
+                        string="Force Scan"
+                        class="btn-secondary"
+                        confirm="This operation will restart the scan on all relevant repositories. Are you sure?"
+                    />
+        </header>
         <sheet>
           <group>
             <field name="source_branch_id" />
