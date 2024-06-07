@@ -29,6 +29,20 @@ IGNORE_FILES = [".po", ".pot", "README.rst", "index.html"]
 
 MANIFEST_FILES = ("__manifest__.py", "__openerp__.py")
 
+AUTHOR_EMAILS_TO_SKIP = [
+    "transbot@odoo-community.org",
+    "noreply@weblate.org",
+    "oca-git-bot@odoo-community.org",
+    "oca+oca-travis@odoo-community.org",
+    "oca-ci@odoo-community.org",
+    "shopinvader-git-bot@shopinvader.com",
+]
+
+SUMMARY_TERMS_TO_SKIP = [
+    "Translated using Weblate",
+    "Added translation using Weblate",
+]
+
 
 @contextlib.contextmanager
 def set_env(**environ):
@@ -372,19 +386,32 @@ class BaseScanner:
     def _get_last_commit_of_git_tree(self, ref, tree):
         return tree.repo.git.log("--pretty=%H", "-n 1", ref, "--", tree.path)
 
-    def _get_commits_of_git_tree(self, from_, to_, tree):
+    def _get_commits_of_git_tree(self, from_, to_, tree, patterns=None):
         """Returns commits between `from_` and `to_` in chronological order.
 
         The list of commits can be limited to a `tree`.
         """
+        if not patterns:
+            patterns = tuple()
         rev_pattern = f"{from_}..{to_}"
         if not from_:
             rev_pattern = to_
         elif not to_:
             rev_pattern = from_
-        commits = tree.repo.git.log(
-            "--pretty=%H", "-r", rev_pattern, "--reverse", "--", tree.path
-        )
+        cmd = [
+            "--pretty=%H",
+            "-r",
+            rev_pattern,
+            "--reverse",
+            "--",
+            tree.path,
+            *patterns,
+        ]
+        if patterns:
+            # It's mandatory to use shell here to leverage file patterns
+            commits = tree.repo.git.execute(" ".join(["git", "log"] + cmd), shell=True)
+        else:
+            commits = tree.repo.git.log(cmd)
         return commits.split()
 
     def _odoo_module(self, tree):
@@ -1087,4 +1114,185 @@ class RepositoryScanner(BaseScanner):
 
     def _update_last_scanned_commit(self, repo_branch_id, last_scanned_commit):
         """Update the last scanned commit for the repository/branch."""
+        raise NotImplementedError
+
+
+class ChangelogScanner(BaseScanner):
+    """Generate a changelog for a repository used in a project."""
+
+    def __init__(
+        self,
+        org: str,
+        name: str,
+        clone_url: str,
+        odoo_project_repository_id: int,
+        repositories_path: str = None,
+        repo_type: str = None,
+        ssh_key: str = None,
+        token: str = None,
+    ):
+        self.odoo_project_repository_id = odoo_project_repository_id
+        data = self._get_odoo_project_repository_data(odoo_project_repository_id)
+        self.branch = data["branch"]
+        self.source_commit = data["source_commit"]
+        self.target_commit = data["target_commit"] or f"origin/{self.branch}"
+        self.modules = data["modules"]
+        super().__init__(
+            org,
+            name,
+            clone_url,
+            [self.branch],
+            repositories_path,
+            repo_type,
+            ssh_key,
+            token,
+        )
+
+    def scan(self):
+        res = self.sync()
+        changelog = self._generate_changelog()
+        self._push_odoo_project_repository_changelog(
+            self.odoo_project_repository_id, changelog
+        )
+        return res
+
+    def _generate_changelog(self):
+        with self.repo() as repo:
+            if not self._branch_exists(repo, self.branch):
+                return
+            last_commit = self._get_last_fetched_commit(repo, self.branch)
+            changelog = {
+                "source_commit": self.source_commit,
+                "target_commit": last_commit,
+                "modules": {},
+            }
+            for module_data in self.modules:
+                module_path = module_data["path"]
+                _logger.info(
+                    "%s#%s: generate changelog for %s",
+                    self.full_name,
+                    self.branch,
+                    module_path,
+                )
+                module_changelog = self._generate_module_changelog(repo, module_path)
+                if module_changelog:
+                    changelog["modules"][module_data["id"]] = module_changelog
+            return changelog
+
+    def _generate_module_changelog(self, repo, module_path):
+        changelog = []
+        tree = self._get_subtree(repo.commit(self.source_commit).tree, module_path)
+        if not tree:
+            return changelog
+        # Leverage git pathspecs magic (patterns) as it is faster than checking
+        # the content (diffs) within Python process to get only relevant commits..
+        commits = self._get_commits_of_git_tree(
+            self.source_commit,
+            self.target_commit,
+            tree,
+            patterns=(
+                "':^*/i18n/*'",
+                "':^*/i18n_extra/*'",
+                "':^*.html'",
+                "':^*.rst'",
+                "':^*/tests/*'",
+                "':^*/demo/*'",
+                "':^*/doc/*'",
+            ),
+        )
+        for commit_sha in commits:
+            commit = repo.commit(commit_sha)
+            if self._skip_commit(commit):
+                continue
+            changelog.append(self._prepare_module_changelog(commit))
+        return changelog
+
+    @staticmethod
+    def _skip_commit(commit):
+        """Check if a commit should be skipped or not.
+
+        E.g merge or translations commits are skipped.
+        """
+        return (
+            # Skip merge commit
+            len(commit.parents) > 1
+            or commit.author.email in AUTHOR_EMAILS_TO_SKIP
+            or any([term in commit.summary for term in SUMMARY_TERMS_TO_SKIP])
+        )
+
+    def _prepare_module_changelog(self, commit):
+        message = commit.message.split("\n")
+        message.pop(0)  # Remove redundant summary (first line)
+        message = "\n".join(message).strip()
+        return {
+            "hexsha": commit.hexsha,
+            "authored_datetime": commit.authored_datetime.replace(
+                tzinfo=None
+            ).isoformat(),
+            "summary": commit.summary,
+            "message": message,
+        }
+
+    # def _filter_relevant_commits(self, commits, module_path="."):
+    #     repo = self.repo
+    #     # TODO: common part with '_check_relevant_commits', to refactor
+    #     relevant_commits = []
+    #     for commit_sha in commits:
+    #         if self._check_commit_relevance(repo, module_path, commit_sha):
+    #             if commit_sha not in relevant_commits:
+    #                 relevant_commits.append(commit_sha)
+    #         # paths = set()
+    #         # commit = repo.commit(commit_sha)
+    #         # if commit.parents:
+    #         #     diffs = commit.diff(commit.parents[0], paths=[module_path], R=True)
+    #         # else:
+    #         #     diffs = commit.diff(git.NULL_TREE)
+    #         # for diff in diffs:
+    #         #     paths.add(diff.a_path)
+    #         #     paths.add(diff.b_path)
+    #         # for path in paths:
+    #         #     if all(not path.endswith(pattern) for pattern in IGNORE_FILES):
+    #         #         if commit_sha not in relevant_commits:
+    #         #             relevant_commits.append(commit_sha)
+    #     return relevant_commits
+
+    # def _check_commit_relevance(self, repo, module_path, commit_sha):
+    #     paths = set()
+    #     commit = repo.commit(commit_sha)
+    #     if commit.parents:
+    #         diffs = commit.diff(commit.parents[0], paths=[module_path], R=True)
+    #     else:
+    #         diffs = commit.diff(git.NULL_TREE)
+    #     for diff in diffs:
+    #         paths.add(diff.a_path)
+    #         paths.add(diff.b_path)
+    #     for path in paths:
+    #         if all(not path.endswith(pattern) for pattern in IGNORE_FILES):
+    #             return True
+    #     return False
+
+    def _get_odoo_project_repository_data(self, project_repo_id):
+        """Return required data to generate the changelog.
+
+        Return a dictionary such as:
+
+            {
+                "odoo_project_id": 10,
+                "branch": "17.0",
+                "source_commit": "7b58a288b3d79fbdc91dbf14aaeac0d69d65c327",
+                "target_commit": None,
+                "modules": [
+                    # List of dicts {"id": PROJECT_MODULE_ID, ...}
+                    {"id": 1, "name": "base", "path": "odoo/addons/base"},
+                    {"id": 2, "name": "account", "path": "addons/account"},
+                ]
+            }
+        """
+        raise NotImplementedError
+
+    def _push_odoo_project_repository_changelog(self, project_repo_id, changelog):
+        """Push the resulting changelog to its 'odoo.project.repository' object.
+
+        It has to use the 'odoo.project.repository.push_changelog' RPC endpoint.
+        """
         raise NotImplementedError

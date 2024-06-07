@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <template id="report_changelog">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="o">
+        <t t-call="web.internal_layout">
+          <t t-set="company" t-value="o" />
+          <div class="page">
+            <h1 class="mt-4">
+              <span t-field="o.name" /> - CHANGELOG
+            </h1>
+            <t t-foreach="o.used_repository_ids.filtered('active')" t-as="repo">
+              <t t-set="report_data" t-value="repo._get_report_data()" />
+              <h2 class="mt-4">
+                <span t-field="repo.repository_branch_id.display_name" /> (<t
+                                    t-esc="report_data['count']"
+                                /> modules)
+              </h2>
+              <div style="padding-left: 2em;">
+                <p>From <code t-field="repo.deployed_commit" /> to <code
+                                        t-esc="repo.target_commit or 'latest'"
+                                    /></p>
+                <t t-foreach="report_data['categories']" t-as="categ">
+                  <h3 class="mt-4">
+                    <t t-set="anchor" t-value="'%s-%s' % (repo.id, categ.id or 0)" />
+                    <a t-att-name="anchor" t-att-href="'#%s' % anchor"><span
+                                                t-field="categ.name"
+                                            /></a>
+                  </h3>
+                  <t
+                                        t-set="changelog_data"
+                                        t-value="report_data['categories'][categ]"
+                                    />
+                  <t t-foreach="changelog_data" t-as="module">
+                    <details>
+                      <summary>
+                        <strong><span t-field="module.module_name" /> (<span
+                                                        t-field="module.title"
+                                                    />)</strong> - <t
+                                                    t-esc="len(changelog_data[module])"
+                                                /> change<t
+                                                    t-esc="'s'"
+                                                    t-if="len(changelog_data[module]) > 1"
+                                                />
+                      </summary>
+                      <t t-set="changelog" t-value="changelog_data[module]" />
+                      <ul>
+                        <t t-foreach="changelog" t-as="commit">
+                            <details>
+                              <summary><span t-esc="commit['summary']" /></summary>
+                              <div style="padding-left: 2em;">
+                                <pre><t t-esc="commit['message']" /></pre>
+                                <pre>Date: <span
+                                                                    t-esc="commit['authored_datetime']"
+                                                                /></pre>
+                                <t
+                                                                t-set="commit_url"
+                                                                t-value="repo.repository_branch_id.repository_id.repo_url + '/commit/' + commit['hexsha']"
+                                                            />
+                                <a t-att-href="commit_url" target="blank_">Link</a>
+                              </div>
+                            </details>
+                        </t>
+                      </ul>
+                    </details>
+                  </t>
+                </t>
+              </div>
+            </t>
+          </div>
+        </t>
+      </t>
+    </t>
+  </template>
+
+</odoo>

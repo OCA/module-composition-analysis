@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="action_report_changelog" model="ir.actions.report">
+    <field name="name">CHANGELOG</field>
+    <field name="model">odoo.project</field>
+    <field name="report_type">qweb-html</field>
+    <field name="report_name">odoo_project_changelog.report_changelog</field>
+    <field name="report_file">odoo_project_changelog.report_changelog</field>
+    <field name="print_report_name">CHANGELOG</field>
+    <field name="binding_model_id" ref="model_odoo_project" />
+    <field name="binding_type">report</field>
+  </record>
+
+</odoo>
