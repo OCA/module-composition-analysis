@@ -301,6 +301,7 @@ class OdooModuleBranch(models.Model):
         if data.get("last_scanned_commit"):
             values.update(
                 {
+                    "removed": False,
                     "sloc_python": data["code"]["Python"],
                     "sloc_xml": data["code"]["XML"],
                     "sloc_js": data["code"]["JavaScript"],
@@ -325,7 +326,11 @@ class OdooModuleBranch(models.Model):
             # current manifest version if any but without commit.
             versions=(
                 data.get("versions")
-                or ({values["version"]: {"commit": None}} if values["version"] else {})
+                or (
+                    {values["version"]: {"commit": None}}
+                    if values.get("version")
+                    else {}
+                )
             ),
         )
         if versions:
