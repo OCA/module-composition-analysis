@@ -54,7 +54,6 @@ class OdooRepository(models.Model):
             ("github", "GitHub"),
             ("gitlab", "GitLab"),
         ],
-        required=True,
     )
     ssh_key_id = fields.Many2one(
         comodel_name="ssh.key",
