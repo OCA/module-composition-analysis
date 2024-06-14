@@ -48,7 +48,7 @@
                                 />
                 <field
                                     name="repo_type"
-                                    attrs="{'readonly': [('branch_ids', '!=', [])]}"
+                                    attrs="{'readonly': [('branch_ids', '!=', [])], 'required': [('to_scan', '=', True)]}"
                                 />
                 <field
                                     name="token_id"
