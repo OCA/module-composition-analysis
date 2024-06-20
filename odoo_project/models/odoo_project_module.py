@@ -42,6 +42,16 @@ class OdooProjectModule(models.Model):
         store=True,
         help="Available migration scripts between installed and last version.",
     )
+    installed_reverse_dependency_ids = fields.Many2many(
+        comodel_name="odoo.project.module",
+        compute="_compute_installed_reverse_dependency_ids",
+        string="Installed Reverse Dependencies",
+    )
+    not_installed_reverse_dependency_ids = fields.Many2many(
+        comodel_name="odoo.module.branch",
+        compute="_compute_installed_reverse_dependency_ids",
+        string="Not Installed Reverse Dependencies",
+    )
 
     @api.depends("installed_version")
     def _compute_installed_version_id(self):
@@ -88,3 +98,22 @@ class OdooProjectModule(models.Model):
                 )
             )
             rec.migration_scripts = bool(versions_with_mig_script)
+
+    @api.depends("odoo_project_id", "reverse_dependency_ids")
+    def _compute_installed_reverse_dependency_ids(self):
+        for rec in self:
+            installed_project_modules = rec.odoo_project_id.project_module_ids
+            installed_modules = installed_project_modules.module_branch_id
+            installed_reverse_dependencies = rec.reverse_dependency_ids.filtered(
+                lambda dep: dep in installed_modules
+            )
+            # Installed rev. deps. are 'odoo.project.module' records
+            rec.installed_reverse_dependency_ids = (
+                installed_reverse_dependencies.odoo_project_module_ids.filtered_domain(
+                    [("odoo_project_id", "=", rec.odoo_project_id.id)]
+                )
+            )
+            # Not installed rev. deps. are 'odoo.module.branch' records
+            rec.not_installed_reverse_dependency_ids = (
+                rec.reverse_dependency_ids - installed_reverse_dependencies
+            )
