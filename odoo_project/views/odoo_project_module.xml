@@ -18,6 +18,36 @@
       <field name="version" position="attributes">
         <attribute name="string">Last Version</attribute>
       </field>
+      <!-- Split reverse dependencies in two: installed/not installed -->
+      <field name="reverse_dependency_ids" position="before">
+        <separator string="Installed reverse dependencies" />
+        <field name="installed_reverse_dependency_ids" nolabel="1">
+          <tree decoration-warning="to_upgrade" decoration_danger="pr_url">
+            <field name="module_id" />
+            <field name="repository_branch_id" />
+            <field name="installed_version" />
+            <field name="to_upgrade" invisible="1" />
+            <field name="version" />
+            <field name="migration_scripts" />
+            <field name="license_id" />
+            <field name="development_status_id" />
+            <field name="pr_url" optional="show" />
+          </tree>
+        </field>
+        <separator string="Not installed reverse dependencies" />
+        <field name="not_installed_reverse_dependency_ids" nolabel="1">
+          <tree>
+            <field name="module_id" />
+            <field name="repository_branch_id" />
+            <field name="version" />
+            <field name="license_id" />
+            <field name="development_status_id" />
+          </tree>
+        </field>
+      </field>
+      <field name="reverse_dependency_ids" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
     </field>
   </record>
 
