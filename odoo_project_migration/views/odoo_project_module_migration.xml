@@ -48,6 +48,8 @@
         <field name="is_enterprise" />
         <field name="is_community" />
         <field name="auto_install" />
+        <field name="global_dependency_level" />
+        <field name="non_std_dependency_level" />
         <field name="sloc_python" sum="Python" />
         <field name="sloc_xml" sum="XML" />
         <field name="sloc_js" sum="JS" />

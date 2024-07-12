@@ -105,6 +105,8 @@ class OdooProjectExportMigrationReport(models.TransientModel):
             "Repository",
             "Module",
             "Dependencies",
+            "Global Dep. Level",
+            "Non-Std Dep. Level",
             "Python",
             "XML",
             "JavaScript",
@@ -118,6 +120,8 @@ class OdooProjectExportMigrationReport(models.TransientModel):
         line = {
             "Module": module.module_name,
             "Dependencies": "\n".join(module.dependency_ids.mapped("module_name")),
+            "Global Dep. Level": module.global_dependency_level,
+            "Non-Std Dep. Level": module.non_std_dependency_level,
             "Python": module.sloc_python,
             "XML": module.sloc_xml,
             "JavaScript": module.sloc_js,
