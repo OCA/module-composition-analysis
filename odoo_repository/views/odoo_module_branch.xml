@@ -43,6 +43,8 @@
                 <field name="is_standard" />
                 <field name="is_enterprise" />
                 <field name="is_community" />
+                <field name="global_dependency_level" />
+                <field name="non_std_dependency_level" />
               </group>
               <group name="code" string="Code analysis">
                 <field name="sloc_python" />
@@ -68,8 +70,10 @@
                   <field name="module_id" />
                   <field name="repository_branch_id" />
                   <field name="version" />
-                  <field name="license_id" />
-                  <field name="development_status_id" />
+                  <field name="license_id" optional="show" />
+                  <field name="development_status_id" optional="show" />
+                  <field name="global_dependency_level" optional="show" />
+                  <field name="non_std_dependency_level" optional="show" />
                 </tree>
               </field>
             </page>
@@ -79,8 +83,10 @@
                   <field name="module_id" />
                   <field name="repository_branch_id" />
                   <field name="version" />
-                  <field name="license_id" />
-                  <field name="development_status_id" />
+                  <field name="license_id" optional="show" />
+                  <field name="development_status_id" optional="show" />
+                  <field name="global_dependency_level" optional="show" />
+                  <field name="non_std_dependency_level" optional="show" />
                 </tree>
               </field>
             </page>
@@ -118,6 +124,8 @@
         <field name="auto_install" optional="hide" />
         <field name="last_scanned_commit" optional="hide" />
         <field name="pr_url" optional="hide" widget="url" />
+        <field name="global_dependency_level" optional="hide" />
+        <field name="non_std_dependency_level" optional="hide" />
         <field name="sloc_python" sum="Python" />
         <field name="sloc_xml" sum="XML" />
         <field name="sloc_js" sum="JS" />

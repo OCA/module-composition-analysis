@@ -112,6 +112,20 @@ class OdooModuleBranch(models.Model):
         column2="module_branch_id",
         string="Reverse Dependencies",
     )
+    global_dependency_level = fields.Integer(
+        compute="_compute_dependency_level",
+        recursive=True,
+        store=True,
+        string="Global Dep. Level",
+        help="Dependency level including all standard Odoo modules.",
+    )
+    non_std_dependency_level = fields.Integer(
+        compute="_compute_dependency_level",
+        recursive=True,
+        store=True,
+        string="Non-Std Dep. Level",
+        help="Dependency level excluding all standard Odoo modules.",
+    )
     license_id = fields.Many2one(
         comodel_name="odoo.license",
         ondelete="restrict",
@@ -176,6 +190,33 @@ class OdooModuleBranch(models.Model):
         for rec in self:
             rec.name = (
                 f"{rec.repository_branch_id.name or '?'}" f" - {rec.module_id.name}"
+            )
+
+    @api.depends(
+        "dependency_ids.global_dependency_level",
+        "dependency_ids.non_std_dependency_level",
+        "dependency_ids.is_standard",
+    )
+    def _compute_dependency_level(self):
+        for rec in self:
+            global_max_parent_level = max(
+                [dep.global_dependency_level for dep in rec.dependency_ids] + [0]
+            )
+            rec.global_dependency_level = global_max_parent_level + 1
+            non_std_max_parent_level = max(
+                [
+                    dep.non_std_dependency_level
+                    for dep in rec.dependency_ids
+                    if not dep.is_standard
+                ]
+                + [0]
+            )
+            rec.non_std_dependency_level = (
+                # Set 0 on all std modules so they will always have a dependency
+                # level inferior to non-std modules
+                (non_std_max_parent_level + 1)
+                if not rec.is_standard
+                else 0
             )
 
     def action_find_pr_url(self):

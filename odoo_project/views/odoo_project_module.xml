@@ -29,9 +29,11 @@
             <field name="to_upgrade" invisible="1" />
             <field name="version" />
             <field name="migration_scripts" />
-            <field name="license_id" />
-            <field name="development_status_id" />
+            <field name="license_id" optional="show" />
+            <field name="development_status_id" optional="show" />
             <field name="pr_url" optional="show" />
+            <field name="global_dependency_level" optional="show" />
+            <field name="non_std_dependency_level" optional="show" />
           </tree>
         </field>
         <separator string="Not installed reverse dependencies" />
@@ -40,8 +42,10 @@
             <field name="module_id" />
             <field name="repository_branch_id" />
             <field name="version" />
-            <field name="license_id" />
-            <field name="development_status_id" />
+            <field name="license_id" optional="show" />
+            <field name="development_status_id" optional="show" />
+            <field name="global_dependency_level" optional="show" />
+            <field name="non_std_dependency_level" optional="show" />
           </tree>
         </field>
       </field>
