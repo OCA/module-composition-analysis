@@ -12,3 +12,12 @@ class ResCompany(models.Model):
         string="Default token",
         help="Default token used to clone repositories and authenticate on API like GitHub.",
     )
+    config_odoo_repository_workaround_fs_errors = fields.Boolean(
+        string="Workaround FS errors",
+        help=(
+            "Fix file system permissions when cloning repositories. "
+            "Errors could be triggered on some file systems when git tries to "
+            "execute 'chown' commands on its internal configuration files. "
+            "This option will workaround this issue."
+        ),
+    )

@@ -10,6 +10,10 @@ class ResConfigSettings(models.TransientModel):
     config_odoo_repository_storage_path = fields.Char(
         string="Storage local path", config_parameter="odoo_repository_storage_path"
     )
+    config_odoo_repository_workaround_fs_errors = fields.Boolean(
+        related="company_id.config_odoo_repository_workaround_fs_errors",
+        readonly=False,
+    )
     config_odoo_repository_default_token_id = fields.Many2one(
         related="company_id.config_odoo_repository_default_token_id",
         readonly=False,
