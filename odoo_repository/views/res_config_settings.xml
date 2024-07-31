@@ -40,6 +40,22 @@
             </div>
             <div
                             class="row mt16 o_settings_container"
+                            name="odoo_repository_workaround_fs_errors"
+                        >
+              <div class="col-xs-12 col-lg-6 o_setting_box">
+                <div class="o_setting_left_pane">
+                  <field name="config_odoo_repository_workaround_fs_errors" />
+                </div>
+                <div class="o_setting_right_pane">
+                  <span class="o_form_label">Workaround FS errors</span>
+                  <div class="text-muted">
+                    Fix file system permissions when cloning repositories.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+                            class="row mt16 o_settings_container"
                             name="odoo_repository_github_token"
                         >
               <div class="o_setting_right_pane">
