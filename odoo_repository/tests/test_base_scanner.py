@@ -195,3 +195,16 @@ class TestBaseScanner(Common):
         self.assertTrue(scanner._get_subtree(repo.tree(remote_branch), module))
         # Module/folder doesn't exist: KO
         self.assertFalse(scanner._get_subtree(repo.tree(remote_branch), "none"))
+
+    def test_workaround_fs_errors(self):
+        scanner = self._init_scanner(
+            repositories_path=tempfile.mkdtemp(),
+            workaround_fs_errors=True,
+        )
+        # Clone
+        self.assertFalse(scanner.path.exists())
+        self.assertFalse(scanner.is_cloned)
+        scanner.scan()
+        self.assertTrue(scanner.is_cloned)
+        # Fetch once cloned
+        scanner.scan()
