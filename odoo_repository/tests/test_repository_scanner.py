@@ -201,3 +201,7 @@ class TestRepositoryScanner(Common):
         # Second scan: no new commits to scan
         res = scanner._scan_branch(repo_id, self.branch.name)
         self.assertFalse(res)
+
+    def test_workaround_fs_errors(self):
+        scanner = self._init_scanner(workaround_fs_errors=True)
+        scanner.scan()

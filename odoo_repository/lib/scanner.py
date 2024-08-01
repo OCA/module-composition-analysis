@@ -8,6 +8,7 @@ import logging
 import os
 import pathlib
 import re
+import shutil
 import tempfile
 import time
 from urllib.parse import urlparse, urlunparse
@@ -69,6 +70,7 @@ class BaseScanner:
         repo_type: str = None,
         ssh_key: str = None,
         token: str = None,
+        workaround_fs_errors: bool = False,
     ):
         self.org = org
         self.name = name
@@ -79,8 +81,10 @@ class BaseScanner:
         self.repo_type = repo_type
         self.ssh_key = ssh_key
         self.token = token
+        self.workaround_fs_errors = workaround_fs_errors
 
     def scan(self, fetch=True):
+        self._apply_git_global_config()
         # Clone or update the repository
         if not self.is_cloned:
             self._clone()
@@ -138,15 +142,27 @@ class BaseScanner:
         repositories_path.mkdir(parents=True, exist_ok=True)
         return repositories_path
 
+    def _apply_git_global_config(self):
+        # Avoid 'fatal: detected dubious ownership in repository' errors
+        # when performing operations in git repositories in case they are
+        # cloned on an mounted filesystem with specific options.
+        # NOTE: ensure to unset existing entry before adding one, as git doesn't
+        # check if an entry already exists, generating duplicates
+        os.system('git config --global --unset safe.directory "%s"' % (self.path))
+        os.system('git config --global --add safe.directory "%s"' % (self.path))
+
     def _apply_git_config(self):
-        # This avoids too high memory consumption (default git config could
-        # crash the Odoo workers when the scanner is run by Odoo itself).
-        # This is especially useful to checkout big repositories like odoo/odoo.
         with self.repo.config_writer() as writer:
+            # This avoids too high memory consumption (default git config could
+            # crash the Odoo workers when the scanner is run by Odoo itself).
+            # This is especially useful to checkout big repositories like odoo/odoo.
             writer.set_value("core", "packedGitLimit", "128m")
             writer.set_value("core", "packedGitWindowSize", "32m")
             writer.set_value("pack", "windowMemory", "64m")
             writer.set_value("pack", "threads", "1")
+            # Avoid issues with file permissions for mounted filesystems
+            # with specific options.
+            writer.set_value("core", "filemode", "false")
 
     def _set_git_remote_url(self):
         """Ensure that 'origin' remote is set with the right URL."""
@@ -164,19 +180,42 @@ class BaseScanner:
     def full_name(self):
         return f"{self.org}/{self.name}"
 
-    def _clone(self):
-        _logger.info("Cloning %s...", self.full_name)
-        with self._get_git_env() as git_env:
+    def _clone_params(self, **extra):
+        params = {
+            "url": self.clone_url,
+            "to_path": self.path,
             # NOTE: adding 'no_checkout' and 'filter=blob:none' allows fast
             # cloning and reduce memory usage. Blobs will be fetched later on
             # demand, once the git config to reduce memory usage is applied.
-            git.Repo.clone_from(
-                self.clone_url,
-                self.path,
-                env=git_env,
-                no_checkout=True,
-                filter="blob:none",
-            )
+            "no_checkout": True,
+            "filter": "blob:none",
+            # Avoid issues with file permissions
+            # "allow_unsafe_options": True,
+            # "multi_options": ["--config core.filemode=false"],
+        }
+        params.update(extra)
+        return params
+
+    def _clone(self):
+        _logger.info("Cloning %s...", self.full_name)
+        tmp_git_dir_path = None
+        repo_git_dir_path = pathlib.Path(self.path, ".git")
+        with tempfile.TemporaryDirectory() as tmp_git_dir:
+            if self.workaround_fs_errors:
+                tmp_git_dir_path = pathlib.Path(tmp_git_dir).joinpath(".git")
+            with self._get_git_env() as git_env:
+                extra = {"env": git_env}
+                if self.workaround_fs_errors:
+                    extra["separate_git_dir"] = str(tmp_git_dir_path)
+                params = self._clone_params(**extra)
+                git.Repo.clone_from(**params)
+                if tmp_git_dir_path:
+                    # {repo_path}/.git folder is a hardlink, replace
+                    # it by the .git folder created in /tmp
+                    # NOTE: use shutil instead of 'pathlib.Path.replace()' as
+                    # file systems could be different
+                    repo_git_dir_path.unlink()
+                    shutil.move(tmp_git_dir_path, repo_git_dir_path)
 
     def _fetch(self):
         repo = self.repo
@@ -351,10 +390,19 @@ class MigrationScanner(BaseScanner):
         repo_type: str = None,
         ssh_key: str = None,
         token: str = None,
+        workaround_fs_errors: bool = False,
     ):
         branches = sorted(set(sum([tuple(mp) for mp in migration_paths], ())))
         super().__init__(
-            org, name, clone_url, branches, repositories_path, repo_type, ssh_key, token
+            org,
+            name,
+            clone_url,
+            branches,
+            repositories_path,
+            repo_type,
+            ssh_key,
+            token,
+            workaround_fs_errors,
         )
         self.migration_paths = migration_paths
 
@@ -612,9 +660,18 @@ class RepositoryScanner(BaseScanner):
         repo_type: str = None,
         ssh_key: str = None,
         token: str = None,
+        workaround_fs_errors: bool = False,
     ):
         super().__init__(
-            org, name, clone_url, branches, repositories_path, repo_type, ssh_key, token
+            org,
+            name,
+            clone_url,
+            branches,
+            repositories_path,
+            repo_type,
+            ssh_key,
+            token,
+            workaround_fs_errors,
         )
         self.addons_paths_data = addons_paths_data
 
