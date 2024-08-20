@@ -117,3 +117,15 @@ class OdooProjectModule(models.Model):
             rec.not_installed_reverse_dependency_ids = (
                 rec.reverse_dependency_ids - installed_reverse_dependencies
             )
+
+    def open_recursive_dependencies(self):
+        self.ensure_one()
+        xml_id = "odoo_project.odoo_project_module_action_recursive_dependencies"
+        action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
+        action["name"] = "All dependencies"
+        dependencies = self.module_branch_id._get_recursive_dependencies()
+        project_dependencies = dependencies.odoo_project_module_ids.filtered(
+            lambda o: o.odoo_project_id == self.odoo_project_id
+        )
+        action["domain"] = [("id", "in", project_dependencies.ids)]
+        return action
