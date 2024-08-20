@@ -24,6 +24,13 @@ class OdooProjectImportModules(models.TransientModel):
         ),
         required=True,
     )
+    import_missing_dependencies = fields.Boolean(
+        default=False,
+        help=(
+            "Import module dependencies that are not part of the list above "
+            "to get an exhaustive list of modules installed in the project."
+        ),
+    )
 
     def action_import(self):
         """Import the modules for the given Odoo project."""
@@ -42,6 +49,17 @@ class OdooProjectImportModules(models.TransientModel):
             module_branch = self._get_module_branch(module)
             project_module = self._get_project_module(module_branch, version)
             project_module_ids.append(project_module.id)
+        # Complete list of modules by adding all dependencies
+        if self.import_missing_dependencies:
+            project_modules = self.env["odoo.project.module"].browse(project_module_ids)
+            branch_modules = project_modules.module_branch_id
+            all_dependencies = branch_modules._get_recursive_dependencies()
+            missing_dependencies = all_dependencies - branch_modules
+            for missing_dependency in missing_dependencies:
+                project_module = self._get_project_module(
+                    missing_dependency, missing_dependency.version
+                )
+                project_module_ids.append(project_module.id)
         self.odoo_project_id.sudo().project_module_ids = project_module_ids
         return True
 
