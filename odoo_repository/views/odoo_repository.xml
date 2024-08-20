@@ -33,22 +33,15 @@
               <group colspan="2">
                 <field name="org_id" attrs="{'readonly': [('branch_ids', '!=', [])]}" />
                 <field name="name" attrs="{'readonly': [('branch_ids', '!=', [])]}" />
-                <field
-                                    name="repo_url"
-                                    widget="url"
-                                    attrs="{'readonly': [('branch_ids', '!=', [])]}"
-                                />
+                <field name="repo_url" widget="url" />
                 <field name="to_scan" />
                 <field name="sequence" />
               </group>
               <group attrs="{'invisible': [('to_scan', '=', False)]}" colspan="2">
-                <field
-                                    name="clone_url"
-                                    attrs="{'readonly': [('branch_ids', '!=', [])]}"
-                                />
+                <field name="clone_url" />
                 <field
                                     name="repo_type"
-                                    attrs="{'readonly': [('branch_ids', '!=', [])], 'required': [('to_scan', '=', True)]}"
+                                    attrs="{'required': [('to_scan', '=', True)]}"
                                 />
                 <field
                                     name="token_id"
