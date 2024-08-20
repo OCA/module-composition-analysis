@@ -166,7 +166,11 @@ class BaseScanner:
 
     def _set_git_remote_url(self):
         """Ensure that 'origin' remote is set with the right URL."""
-        self.repo.remotes["origin"].set_url(self.clone_url)
+        # Check first the URL before setting it, as this triggers a 'chmod'
+        # command on '.git/config' file (to protect sensitive data) that could
+        # be not allowed on some mounted file systems.
+        if self.repo.remotes["origin"].url != self.clone_url:
+            self.repo.remotes["origin"].set_url(self.clone_url)
 
     @property
     def is_cloned(self):
@@ -227,9 +231,22 @@ class BaseScanner:
             try:
                 with self._get_git_env() as git_env:
                     with repo.git.custom_environment(**git_env):
-                        repo.remotes.origin.fetch(branch)
+                        # Make sure to use up-to-date `clone_url` when fetching
+                        # repository (e.g. it could have been cloned without a
+                        # OAuth token at first, and one could have been set
+                        # later on).
+                        # By doing so we are not forced to store the remote URL
+                        # in the configuration file that is triggering a 'chmod'
+                        # command by git (to protect sensitive data) and such
+                        # command could not work on some mounted file systems.
+                        repo.git.fetch(
+                            self.clone_url,
+                            f"refs/heads/{branch}:origin/{branch}",
+                            "--update-head-ok",
+                        )
             except git.exc.GitCommandError as exc:
-                _logger.info(exc)
+                _logger.error(exc)
+                raise
             else:
                 _logger.info("%s: branch %s fetched", self.full_name, branch)
 
