@@ -9,6 +9,16 @@
     <field name="arch" type="xml">
       <form>
         <sheet>
+          <div class="oe_button_box" name="button_box">
+              <button
+                            name="open_recursive_dependencies"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-sitemap icon"
+                        >
+              <span>Dependencies</span>
+              </button>
+          </div>
           <group>
             <group name="manifest" string="Manifest">
               <field name="title" />
@@ -134,6 +144,30 @@
     </field>
   </record>
 
+  <record id="odoo_module_branch_view_tree_recursive_dependencies" model="ir.ui.view">
+    <field name="name">odoo.module.branch.tree.recursive_dependencies</field>
+    <field name="model">odoo.module.branch</field>
+    <field name="inherit_id" ref="odoo_module_branch_view_tree" />
+    <field name="mode">primary</field>
+    <field name="priority">100</field>
+    <field name="arch" type="xml">
+      <tree position="attributes">
+        <attribute
+                    name="default_order"
+                >global_dependency_level, non_std_dependency_level, module_name</attribute>
+      </tree>
+      <field name="application" position="attributes">
+        <attribute name="optional">show</attribute>
+      </field>
+      <field name="global_dependency_level" position="attributes">
+        <attribute name="optional">show</attribute>
+      </field>
+      <field name="non_std_dependency_level" position="attributes">
+        <attribute name="optional">show</attribute>
+      </field>
+    </field>
+  </record>
+
   <record id="odoo_module_branch_view_search" model="ir.ui.view">
     <field name="name">odoo.module.branch.search</field>
     <field name="model">odoo.module.branch</field>
@@ -234,6 +268,16 @@
     <field name="res_model">odoo.module.branch</field>
     <field name="view_id" ref="odoo_module_branch_view_tree" />
     <field name="context">{'search_default_installable': 1}</field>
+  </record>
+
+  <record
+        id="odoo_module_branch_action_recursive_dependencies"
+        model="ir.actions.act_window"
+    >
+    <field name="name">Dependencies</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.module.branch</field>
+    <field name="view_id" ref="odoo_module_branch_view_tree_recursive_dependencies" />
   </record>
 
   <menuitem

@@ -219,6 +219,32 @@ class OdooModuleBranch(models.Model):
                 else 0
             )
 
+    def _get_recursive_dependencies(self, domain=None):
+        """Return all dependencies recursively.
+
+        A domain can be applied to restrict the modules to return, e.g:
+
+        >>> mod._get_recursive_dependencies([("org_id", "=", "OCA")])
+
+        """
+        if not domain:
+            domain = []
+        dependencies = self.dependency_ids.filtered_domain(domain)
+        dep_ids = set(dependencies.ids)
+        for dep in dependencies:
+            dep_ids |= set(
+                dep._get_recursive_dependencies().filtered_domain(domain).ids
+            )
+        return self.browse(dep_ids)
+
+    def open_recursive_dependencies(self):
+        self.ensure_one()
+        xml_id = "odoo_repository.odoo_module_branch_action_recursive_dependencies"
+        action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
+        action["name"] = "All dependencies"
+        action["domain"] = [("id", "in", self._get_recursive_dependencies().ids)]
+        return action
+
     def action_find_pr_url(self):
         """Find the PR on GitHub that adds this module."""
         self.ensure_one()
