@@ -247,6 +247,8 @@ class BaseScanner:
                             self.clone_url,
                             f"{refs_heads_branch}:origin/{branch}",
                             "--update-head-ok",
+                            # Increase performance
+                            "--filter=blob:none",
                         )
             except git.exc.GitCommandError as exc:
                 _logger.error(exc)
