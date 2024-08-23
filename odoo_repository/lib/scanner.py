@@ -87,11 +87,12 @@ class BaseScanner:
         self._apply_git_global_config()
         # Clone or update the repository
         if not self.is_cloned:
-            self._clone()
+            res = self._clone()
         self._apply_git_config()
         self._set_git_remote_url()
         if fetch:
-            self._fetch()
+            res = self._fetch()
+        return res
 
     @contextlib.contextmanager
     def _get_git_env(self):
@@ -220,14 +221,17 @@ class BaseScanner:
                     # file systems could be different
                     repo_git_dir_path.unlink()
                     shutil.move(tmp_git_dir_path, repo_git_dir_path)
+        return True
 
     def _fetch(self):
         repo = self.repo
         _logger.info(
             "%s: fetch branch(es) %s", self.full_name, ", ".join(self.branches)
         )
+        branches_fetched = []
         for branch in self.branches:
             # Do not block the process if the branch doesn't exist on this repo
+            refs_heads_branch = f"refs/heads/{branch}"
             try:
                 with self._get_git_env() as git_env:
                     with repo.git.custom_environment(**git_env):
@@ -241,14 +245,23 @@ class BaseScanner:
                         # command could not work on some mounted file systems.
                         repo.git.fetch(
                             self.clone_url,
-                            f"refs/heads/{branch}:origin/{branch}",
+                            f"{refs_heads_branch}:origin/{branch}",
                             "--update-head-ok",
                         )
             except git.exc.GitCommandError as exc:
                 _logger.error(exc)
+                branch_not_find_error = f"couldn't find remote ref {refs_heads_branch}"
+                if branch_not_find_error in str(exc):
+                    _logger.info(
+                        "Couldn't find remote branch %s, skipping.", self.full_name
+                    )
+                    return False
                 raise
             else:
                 _logger.info("%s: branch %s fetched", self.full_name, branch)
+                branches_fetched.append(branch)
+        # Return True as soon as we fetched at least one branch
+        return bool(branches_fetched)
 
     def _branch_exists(self, branch):
         repo = self.repo
@@ -427,6 +440,10 @@ class MigrationScanner(BaseScanner):
         # Clone/fetch has been done during the repository scan, the migration
         # scan will be processed on the current history of commits
         res = super().scan(fetch=False)
+        # 'super()' could return False if the branch to scan doesn't exist,
+        # there is nothing to scan then.
+        if not res:
+            return False
         for source_branch, target_branch in self.migration_paths:
             if self._branch_exists(source_branch) and self._branch_exists(
                 target_branch
@@ -694,6 +711,10 @@ class RepositoryScanner(BaseScanner):
 
     def scan(self):
         res = super().scan()
+        # 'super()' could return False if the branch to scan doesn't exist,
+        # there is nothing to scan then.
+        if not res:
+            return False
         repo_id = self._get_odoo_repository_id()
         branches_scanned = {}
         for branch in self.branches:
