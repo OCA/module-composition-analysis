@@ -7,7 +7,7 @@ from .common import Common
 class TestSyncNode(Common):
     def test_sync_node(self):
         # Scan a repository
-        self.odoo_repository.with_context(test_queue_job_no_delay=True).action_scan(
+        self.odoo_repository.with_context(queue_job__no_delay=True).action_scan(
             [self.branch.name]
         )
         # Check data to sync
