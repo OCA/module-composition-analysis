@@ -11,7 +11,7 @@ class TestOdooRepositoryScan(Common):
     def test_action_scan(self):
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         self.assertFalse(module)
-        self.odoo_repository.with_context(test_queue_job_no_delay=True).action_scan(
+        self.odoo_repository.with_context(queue_job__no_delay=True).action_scan(
             [self.branch.name]
         )
         # Check module technical name
