@@ -164,6 +164,15 @@ class BaseScanner:
             # Avoid issues with file permissions for mounted filesystems
             # with specific options.
             writer.set_value("core", "filemode", "false")
+            # Disable some GC features for performance (memory and IO)
+            # Reflog clean up is triggered automatically by some commands.
+            # We assume that we scan upstream branches that will never contain
+            # orphaned commits to clean up, so some GC features are useless in
+            # this context.
+            writer.set_value("gc", "pruneExpire", "never")
+            writer.set_value("gc", "worktreePruneExpire", "never")
+            writer.set_value("gc", "reflogExpire", "never")
+            writer.set_value("gc", "reflogExpireUnreachable", "never")
 
     def _set_git_remote_url(self):
         """Ensure that 'origin' remote is set with the right URL."""
