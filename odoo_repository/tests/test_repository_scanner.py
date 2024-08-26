@@ -77,27 +77,34 @@ class TestRepositoryScanner(Common):
         self.assertFalse(scanner._get_repo_last_scanned_commit(repo_branch_id))
         # Launch the scan and check again
         scanner.scan()
-        last_fetched_commit = scanner._get_last_fetched_commit(self.branch.name)
-        last_scanned_commit = scanner._get_repo_last_scanned_commit(repo_branch_id)
-        self.assertEqual(last_fetched_commit, last_scanned_commit)
+        with scanner.repo() as repo:
+            last_fetched_commit = scanner._get_last_fetched_commit(
+                repo, self.branch.name
+            )
+            last_scanned_commit = scanner._get_repo_last_scanned_commit(repo_branch_id)
+            self.assertEqual(last_fetched_commit, last_scanned_commit)
 
     def test_scan_addons_path(self):
         scanner = self._init_scanner()
         scanner._clone()
-        scanner._checkout_branch(self.branch.name)
-        repo_id = scanner._get_odoo_repository_id()
-        branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
-        repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
-        last_fetched_commit = scanner._get_last_fetched_commit(self.branch.name)
-        last_scanned_commit = scanner._get_repo_last_scanned_commit(repo_branch_id)
-        # Scan the addons_path (root of the repository here)
-        modules_scanned = scanner._scan_addons_path(
-            scanner.addons_paths_data[0],
-            self.branch.name,
-            repo_branch_id,
-            last_fetched_commit,
-            last_scanned_commit,
-        )
+        with scanner.repo() as repo:
+            scanner._checkout_branch(repo, self.branch.name)
+            repo_id = scanner._get_odoo_repository_id()
+            branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+            repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
+            last_fetched_commit = scanner._get_last_fetched_commit(
+                repo, self.branch.name
+            )
+            last_scanned_commit = scanner._get_repo_last_scanned_commit(repo_branch_id)
+            # Scan the addons_path (root of the repository here)
+            modules_scanned = scanner._scan_addons_path(
+                repo,
+                scanner.addons_paths_data[0],
+                self.branch.name,
+                repo_branch_id,
+                last_fetched_commit,
+                last_scanned_commit,
+            )
         module = self._settings["addon"]
         self.assertIn(module, modules_scanned)
         self.assertTrue(modules_scanned[module])
@@ -105,25 +112,27 @@ class TestRepositoryScanner(Common):
     def test_scan_module(self):
         scanner = self._init_scanner()
         scanner._clone()
-        scanner._checkout_branch(self.branch.name)
-        repo_id = scanner._get_odoo_repository_id()
-        branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
-        repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
-        module_path = self._settings["addon"]
-        remote_branch = f"origin/{self.branch.name}"
-        module_tree = scanner.repo.tree(remote_branch) / module_path
-        last_module_commit = scanner._get_last_commit_of_git_tree(
-            remote_branch, module_tree
-        )
-        # Scan module
-        addons_path_data = scanner.addons_paths_data[0]
-        data = scanner._scan_module(
-            self.branch.name,
-            repo_branch_id,
-            module_path,
-            last_module_commit,
-            addons_path_data,
-        )
+        with scanner.repo() as repo:
+            scanner._checkout_branch(repo, self.branch.name)
+            repo_id = scanner._get_odoo_repository_id()
+            branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+            repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
+            module_path = self._settings["addon"]
+            remote_branch = f"origin/{self.branch.name}"
+            module_tree = repo.tree(remote_branch) / module_path
+            last_module_commit = scanner._get_last_commit_of_git_tree(
+                remote_branch, module_tree
+            )
+            # Scan module
+            addons_path_data = scanner.addons_paths_data[0]
+            data = scanner._scan_module(
+                repo,
+                self.branch.name,
+                repo_branch_id,
+                module_path,
+                last_module_commit,
+                addons_path_data,
+            )
         self.assertTrue(data)
         self.assertTrue(data["code"])
         self.assertTrue(data["manifest"])
@@ -138,24 +147,26 @@ class TestRepositoryScanner(Common):
     def test_push_scanned_data(self):
         scanner = self._init_scanner()
         scanner._clone()
-        scanner._checkout_branch(self.branch.name)
-        repo_id = scanner._get_odoo_repository_id()
-        branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
-        repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
-        module = self._settings["addon"]
-        remote_branch = f"origin/{self.branch.name}"
-        module_tree = scanner.repo.tree(remote_branch) / module
-        last_module_commit = scanner._get_last_commit_of_git_tree(
-            remote_branch, module_tree
-        )
-        addons_path_data = scanner.addons_paths_data[0]
-        data = scanner._scan_module(
-            self.branch.name,
-            repo_branch_id,
-            module,
-            last_module_commit,
-            addons_path_data,
-        )
+        with scanner.repo() as repo:
+            scanner._checkout_branch(repo, self.branch.name)
+            repo_id = scanner._get_odoo_repository_id()
+            branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+            repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
+            module = self._settings["addon"]
+            remote_branch = f"origin/{self.branch.name}"
+            module_tree = repo.tree(remote_branch) / module
+            last_module_commit = scanner._get_last_commit_of_git_tree(
+                remote_branch, module_tree
+            )
+            addons_path_data = scanner.addons_paths_data[0]
+            data = scanner._scan_module(
+                repo,
+                self.branch.name,
+                repo_branch_id,
+                module,
+                last_module_commit,
+                addons_path_data,
+            )
         # Push scanned data
         module_branch = scanner._push_scanned_data(repo_branch_id, module, data)
         self.assertEqual(module_branch.module_id.name, module)
@@ -186,21 +197,23 @@ class TestRepositoryScanner(Common):
         branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
         repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
         repo_branch = self.env["odoo.repository.branch"].browse(repo_branch_id)
-        last_repo_commit = scanner._get_last_fetched_commit(self.branch.name)
-        self.assertFalse(repo_branch.last_scanned_commit)
-        scanner._update_last_scanned_commit(repo_branch_id, last_repo_commit)
-        self.assertEqual(repo_branch.last_scanned_commit, last_repo_commit)
+        with scanner.repo() as repo:
+            last_repo_commit = scanner._get_last_fetched_commit(repo, self.branch.name)
+            self.assertFalse(repo_branch.last_scanned_commit)
+            scanner._update_last_scanned_commit(repo_branch_id, last_repo_commit)
+            self.assertEqual(repo_branch.last_scanned_commit, last_repo_commit)
 
     def test_scan_branch(self):
         scanner = self._init_scanner()
         scanner._clone()
         repo_id = scanner._get_odoo_repository_id()
-        # First scan: new commits detected
-        res = scanner._scan_branch(repo_id, self.branch.name)
-        self.assertTrue(res)
-        # Second scan: no new commits to scan
-        res = scanner._scan_branch(repo_id, self.branch.name)
-        self.assertFalse(res)
+        with scanner.repo() as repo:
+            # First scan: new commits detected
+            res = scanner._scan_branch(repo, repo_id, self.branch.name)
+            self.assertTrue(res)
+            # Second scan: no new commits to scan
+            res = scanner._scan_branch(repo, repo_id, self.branch.name)
+            self.assertFalse(res)
 
     def test_workaround_fs_errors(self):
         scanner = self._init_scanner(workaround_fs_errors=True)

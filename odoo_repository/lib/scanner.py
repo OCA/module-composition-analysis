@@ -88,10 +88,11 @@ class BaseScanner:
         # Clone or update the repository
         if not self.is_cloned:
             res = self._clone()
-        self._apply_git_config()
-        self._set_git_remote_url()
-        if fetch:
-            res = self._fetch()
+        with self.repo() as repo:
+            self._apply_git_config(repo)
+            self._set_git_remote_url(repo)
+            if fetch:
+                res = self._fetch(repo)
         return res
 
     @contextlib.contextmanager
@@ -152,8 +153,8 @@ class BaseScanner:
         os.system('git config --global --unset safe.directory "%s"' % (self.path))
         os.system('git config --global --add safe.directory "%s"' % (self.path))
 
-    def _apply_git_config(self):
-        with self.repo.config_writer() as writer:
+    def _apply_git_config(self, repo):
+        with repo.config_writer() as writer:
             # This avoids too high memory consumption (default git config could
             # crash the Odoo workers when the scanner is run by Odoo itself).
             # This is especially useful to checkout big repositories like odoo/odoo.
@@ -174,21 +175,25 @@ class BaseScanner:
             writer.set_value("gc", "reflogExpire", "never")
             writer.set_value("gc", "reflogExpireUnreachable", "never")
 
-    def _set_git_remote_url(self):
+    def _set_git_remote_url(self, repo):
         """Ensure that 'origin' remote is set with the right URL."""
         # Check first the URL before setting it, as this triggers a 'chmod'
         # command on '.git/config' file (to protect sensitive data) that could
         # be not allowed on some mounted file systems.
-        if self.repo.remotes["origin"].url != self.clone_url:
-            self.repo.remotes["origin"].set_url(self.clone_url)
+        if repo.remotes["origin"].url != self.clone_url:
+            repo.remotes["origin"].set_url(self.clone_url)
 
     @property
     def is_cloned(self):
         return self.path.joinpath(".git").exists()
 
-    @property
+    @contextlib.contextmanager
     def repo(self):
-        return git.Repo(self.path)
+        repo = git.Repo(self.path)
+        try:
+            yield repo
+        finally:
+            del repo
 
     @property
     def full_name(self):
@@ -232,8 +237,7 @@ class BaseScanner:
                     shutil.move(tmp_git_dir_path, repo_git_dir_path)
         return True
 
-    def _fetch(self):
-        repo = self.repo
+    def _fetch(self, repo):
         _logger.info(
             "%s: fetch branch(es) %s", self.full_name, ", ".join(self.branches)
         )
@@ -274,24 +278,22 @@ class BaseScanner:
         # Return True as soon as we fetched at least one branch
         return bool(branches_fetched)
 
-    def _branch_exists(self, branch):
-        repo = self.repo
+    def _branch_exists(self, repo, branch):
         refs = [r.name for r in repo.remotes.origin.refs]
         branch = f"origin/{branch}"
         return branch in refs
 
-    def _checkout_branch(self, branch):
+    def _checkout_branch(self, repo, branch):
         # Ensure to clean up the repository before a checkout
-        self.repo.git.reset("--hard")
-        self.repo.git.clean("-xdf")
-        self.repo.refs[f"origin/{branch}"].checkout()
+        repo.git.reset("--hard")
+        repo.git.clean("-xdf")
+        repo.refs[f"origin/{branch}"].checkout()
 
-    def _get_last_fetched_commit(self, branch):
+    def _get_last_fetched_commit(self, repo, branch):
         """Return the last fetched commit for the given `branch`."""
-        repo = self.repo
         return repo.rev_parse(f"origin/{branch}").hexsha
 
-    def _get_module_paths(self, relative_path, branch):
+    def _get_module_paths(self, repo, relative_path, branch):
         """Return modules available in `branch`.
 
         It returns a list of tuples `[(module, last_commit), ...]`.
@@ -301,18 +303,20 @@ class BaseScanner:
             [dir_ for dir_ in relative_path.split("/") if dir_ and dir_ != "."]
         )
         # No from_commit means first scan: return all available modules
-        branch_commit = self.repo.refs[f"origin/{branch}"].commit
+        branch_commit = repo.refs[f"origin/{branch}"].commit
         addons_trees = branch_commit.tree.trees
         if relative_tree_path:
             addons_trees = (branch_commit.tree / relative_tree_path).trees
-        return [
+        module_paths = [
             (tree.path, self._get_last_commit_of_git_tree(f"origin/{branch}", tree))
             for tree in addons_trees
             if self._odoo_module(tree)
         ]
+        return module_paths
 
     def _get_module_paths_updated(
         self,
+        repo,
         relative_path,
         from_commit,
         to_commit,
@@ -331,7 +335,6 @@ class BaseScanner:
         # Same commits: nothing has changed
         if from_commit == to_commit:
             return module_paths
-        repo = self.repo
         # Get only modules updated between the two commits
         from_commit = repo.commit(from_commit)
         to_commit = repo.commit(to_commit)
@@ -456,17 +459,17 @@ class MigrationScanner(BaseScanner):
         if not res:
             return False
         for source_branch, target_branch in self.migration_paths:
-            if self._branch_exists(source_branch) and self._branch_exists(
-                target_branch
-            ):
-                self._scan_migration_path(source_branch, target_branch)
+            with self.repo() as repo:
+                if self._branch_exists(repo, source_branch) and self._branch_exists(
+                    repo, target_branch
+                ):
+                    self._scan_migration_path(repo, source_branch, target_branch)
         return res
 
-    def _scan_migration_path(self, source_branch, target_branch):
-        repo = self.repo
-        repo_source_commit = self._get_last_fetched_commit(source_branch)
-        repo_target_commit = self._get_last_fetched_commit(target_branch)
-        modules = self._get_module_paths(".", source_branch)
+    def _scan_migration_path(self, repo, source_branch, target_branch):
+        repo_source_commit = self._get_last_fetched_commit(repo, source_branch)
+        repo_target_commit = self._get_last_fetched_commit(repo, target_branch)
+        modules = self._get_module_paths(repo, ".", source_branch)
         for module, __ in modules:
             if self._is_module_blacklisted(module):
                 _logger.info(
@@ -511,6 +514,7 @@ class MigrationScanner(BaseScanner):
                 or data.get("last_target_scanned_commit") != module_target_commit
             ):
                 self._scan_module(
+                    repo,
                     module,
                     module_branch_id,
                     source_branch,
@@ -523,6 +527,7 @@ class MigrationScanner(BaseScanner):
 
     def _scan_module(
         self,
+        repo: git.Repo,
         module: str,
         module_branch_id: int,
         source_branch: str,
@@ -544,6 +549,7 @@ class MigrationScanner(BaseScanner):
         # (e.g. all new commits are updating PO files), we skip the scan but
         # we still push the new source/target commits to Odoo.
         scan_relevant = self._is_scan_module_relevant(
+            repo,
             module,
             source_commit,
             target_commit,
@@ -568,6 +574,7 @@ class MigrationScanner(BaseScanner):
 
     def _is_scan_module_relevant(
         self,
+        repo: git.Repo,
         module: str,
         source_commit: str,
         target_commit: str,
@@ -592,21 +599,19 @@ class MigrationScanner(BaseScanner):
             return True
         # Other cases: check files impacted by new commits both on source & target
         # branches to tell if a scan should be processed
-        repo = self.repo
         source_tree = self._get_subtree(repo.commit(source_commit).tree, module)
         target_tree = self._get_subtree(repo.commit(target_commit).tree, module)
         source_new_commits = self._get_commits_of_git_tree(
             source_last_scanned_commit, source_commit, source_tree
         )
-        source_to_scan = self._check_relevant_commits(module, source_new_commits)
+        source_to_scan = self._check_relevant_commits(repo, module, source_new_commits)
         target_new_commits = self._get_commits_of_git_tree(
             target_last_scanned_commit, target_commit, target_tree
         )
-        target_to_scan = self._check_relevant_commits(module, target_new_commits)
+        target_to_scan = self._check_relevant_commits(repo, module, target_new_commits)
         return source_to_scan or target_to_scan
 
-    def _check_relevant_commits(self, module, commits):
-        repo = self.repo
+    def _check_relevant_commits(self, repo, module, commits):
         paths = set()
         for commit_sha in commits:
             commit = repo.commit(commit_sha)
@@ -728,25 +733,27 @@ class RepositoryScanner(BaseScanner):
             return False
         repo_id = self._get_odoo_repository_id()
         branches_scanned = {}
-        for branch in self.branches:
-            branches_scanned[branch] = self._scan_branch(repo_id, branch)
+        with self.repo() as repo:
+            for branch in self.branches:
+                branches_scanned[branch] = self._scan_branch(repo, repo_id, branch)
         return res
 
-    def _scan_branch(self, repo_id, branch):
-        if not self._branch_exists(branch):
+    def _scan_branch(self, repo, repo_id, branch):
+        if not self._branch_exists(repo, branch):
             return
         branch_id = self._get_odoo_branch_id(repo_id, branch)
         repo_branch_id = self._create_odoo_repository_branch(repo_id, branch_id)
-        last_fetched_commit = self._get_last_fetched_commit(branch)
+        last_fetched_commit = self._get_last_fetched_commit(repo, branch)
         last_scanned_commit = self._get_repo_last_scanned_commit(repo_branch_id)
         if last_fetched_commit != last_scanned_commit:
             # Checkout the source branch to:
             #   - get the last commit of a module working tree
             #   - perform module code analysis
-            self._checkout_branch(branch)
+            self._checkout_branch(repo, branch)
             # Scan relevant subfolders of the repository
             for addons_path_data in self.addons_paths_data:
                 self._scan_addons_path(
+                    repo,
                     addons_path_data,
                     branch,
                     repo_branch_id,
@@ -760,6 +767,7 @@ class RepositoryScanner(BaseScanner):
 
     def _scan_addons_path(
         self,
+        repo,
         addons_path_data,
         branch,
         repo_branch_id,
@@ -768,12 +776,13 @@ class RepositoryScanner(BaseScanner):
     ):
         if not last_scanned_commit:
             module_paths = sorted(
-                self._get_module_paths(addons_path_data["relative_path"], branch)
+                self._get_module_paths(repo, addons_path_data["relative_path"], branch)
             )
         else:
             # Get module paths updated since the last scanned commit
             module_paths = sorted(
                 self._get_module_paths_updated(
+                    repo,
                     addons_path_data["relative_path"],
                     from_commit=last_scanned_commit,
                     to_commit=last_fetched_commit,
@@ -793,6 +802,7 @@ class RepositoryScanner(BaseScanner):
         modules_scanned = {}
         for module_path, last_module_commit in module_paths:
             self._scan_module(
+                repo,
                 branch,
                 repo_branch_id,
                 module_path,
@@ -805,6 +815,7 @@ class RepositoryScanner(BaseScanner):
 
     def _scan_module(
         self,
+        repo,
         branch,
         repo_branch_id,
         module_path,
@@ -839,7 +850,11 @@ class RepositoryScanner(BaseScanner):
                 module_path,
             )
             data = self._run_module_code_analysis(
-                module_path, branch, last_module_scanned_commit, last_module_commit
+                repo,
+                module_path,
+                branch,
+                last_module_scanned_commit,
+                last_module_commit,
             )
         else:
             _logger.info(
@@ -855,22 +870,23 @@ class RepositoryScanner(BaseScanner):
         self._push_scanned_data(repo_branch_id, module, data)
         return data
 
-    def _run_module_code_analysis(self, module_path, branch, from_commit, to_commit):
+    def _run_module_code_analysis(
+        self, repo, module_path, branch, from_commit, to_commit
+    ):
         """Perform a code analysis of `module_path`."""
         # Get current code analysis data
         module_analysis = ModuleAnalysis(f"{self.path}/{module_path}")
         data = module_analysis.to_dict()
         # Append the history of versions
         versions = self._read_module_versions(
-            module_path, branch, from_commit, to_commit
+            repo, module_path, branch, from_commit, to_commit
         )
         data["versions"] = versions
         return data
 
-    def _read_module_versions(self, module_path, branch, from_commit, to_commit):
+    def _read_module_versions(self, repo, module_path, branch, from_commit, to_commit):
         """Return versions data introduced between `from_commit` and `to_commit`."""
         versions = {}
-        repo = self.repo
         for manifest_file in MANIFEST_FILES:
             manifest_path = "/".join([module_path, manifest_file])
             manifest_tree = self._get_subtree(
@@ -882,17 +898,16 @@ class RepositoryScanner(BaseScanner):
                 from_commit, to_commit, manifest_tree
             )
             versions_ = self._parse_module_versions_from_commits(
-                module_path, manifest_path, branch, new_commits
+                repo, module_path, manifest_path, branch, new_commits
             )
             versions.update(versions_)
         return versions
 
     def _parse_module_versions_from_commits(
-        self, module_path, manifest_path, branch, new_commits
+        self, repo, module_path, manifest_path, branch, new_commits
     ):
         """Parse module versions introduced in `new_commits`."""
         versions = {}
-        repo = self.repo
         for commit_sha in new_commits:
             commit = repo.commit(commit_sha)
             if commit.parents:
