@@ -244,29 +244,13 @@ class BaseScanner:
         branches_fetched = []
         for branch in self.branches:
             # Do not block the process if the branch doesn't exist on this repo
-            refs_heads_branch = f"refs/heads/{branch}"
             try:
                 with self._get_git_env() as git_env:
                     with repo.git.custom_environment(**git_env):
-                        # Make sure to use up-to-date `clone_url` when fetching
-                        # repository (e.g. it could have been cloned without a
-                        # OAuth token at first, and one could have been set
-                        # later on).
-                        # By doing so we are not forced to store the remote URL
-                        # in the configuration file that is triggering a 'chmod'
-                        # command by git (to protect sensitive data) and such
-                        # command could not work on some mounted file systems.
-                        repo.git.fetch(
-                            self.clone_url,
-                            f"{refs_heads_branch}:origin/{branch}",
-                            "--update-head-ok",
-                            # Increase performance
-                            "--filter=blob:none",
-                        )
+                        repo.remotes.origin.fetch(branch)
             except git.exc.GitCommandError as exc:
                 _logger.error(exc)
-                branch_not_find_error = f"couldn't find remote ref {refs_heads_branch}"
-                if branch_not_find_error in str(exc):
+                if "couldn't find remote ref" in str(exc):
                     _logger.info(
                         "Couldn't find remote branch %s, skipping.", self.full_name
                     )
