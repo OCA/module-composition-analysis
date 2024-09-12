@@ -84,6 +84,7 @@ class BaseScanner:
         self.workaround_fs_errors = workaround_fs_errors
 
     def scan(self, fetch=True):
+        res = True
         self._apply_git_global_config()
         # Clone or update the repository
         if not self.is_cloned:
