@@ -63,3 +63,16 @@ class OdooProject(models.Model):
         ctx["search_default_group_by_state"] = 3
         action["context"] = ctx
         return action
+
+    def _get_branches_to_scan(self):
+        # Override to include migration paths branches used for this project
+        # E.g. the project is running on 15.0, and we used '15.0 -> 16.0 and
+        # '15.0.-> 17.0' migration paths to get migration data for 16.0 and 17.0.
+        # This method will then return the branches 15.0, 16.0 and 17.0
+        branches = super()._get_branches_to_scan()
+        migration_paths = self.module_migration_ids.migration_path_id
+        migration_branches = (
+            migration_paths.source_branch_id | migration_paths.target_branch_id
+        )
+        branches |= migration_branches
+        return branches
