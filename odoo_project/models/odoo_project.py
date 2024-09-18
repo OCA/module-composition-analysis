@@ -123,3 +123,25 @@ class OdooProject(models.Model):
         """Try to locate unknown modules."""
         for module in self.unknown_module_ids:
             module.action_find_pr_url()
+
+    def _get_repositories_to_scan(self):
+        """Returnt the repositories to scan."""
+        return self.project_module_ids.repository_id
+
+    def _get_branches_to_scan(self):
+        """Return the branches to scan."""
+        return self.project_module_ids.repository_branch_id.branch_id
+
+    def action_scan(self, force=False):
+        """Scan all the repositories used by the project."""
+        # Scan all the repositories used within the project with relevant branches
+        repositories = self._get_repositories_to_scan().with_context(
+            strict_branches_scan=True
+        )
+        branches = self._get_branches_to_scan()
+        if branches:
+            for repository in repositories:
+                repository.action_scan(branches=branches.mapped("name"), force=force)
+        # Scan the underlying project repository itself
+        self.repository_id.action_scan(force=force)
+        return True
