@@ -24,7 +24,7 @@
   <record id="odoo_repository_odoo_enterprise" model="odoo.repository">
     <field name="org_id" ref="odoo_repository_org_odoo" />
     <field name="name">enterprise</field>
-    <field name="sequence" eval="1" />
+    <field name="sequence" eval="2" />
     <field name="active" eval="False" />
     <field name="repo_url">https://github.com/odoo/enterprise</field>
     <field name="clone_url">https://github.com/odoo/enterprise</field>
@@ -34,6 +34,23 @@
             eval="
       [
         (4, ref('odoo_repository.odoo_repository_addons_path_odoo_sa_enterprise')),
+      ]
+    "
+        />
+  </record>
+
+  <record id="odoo_repository_odoo_design_themes" model="odoo.repository">
+    <field name="org_id" ref="odoo_repository_org_odoo" />
+    <field name="name">design-themes</field>
+    <field name="sequence" eval="3" />
+    <field name="repo_url">https://github.com/odoo/design-themes</field>
+    <field name="clone_url">https://github.com/odoo/design-themes</field>
+    <field name="repo_type">github</field>
+    <field
+            name="addons_path_ids"
+            eval="
+      [
+        (4, ref('odoo_repository.odoo_repository_addons_path_odoo_sa_root')),
       ]
     "
         />

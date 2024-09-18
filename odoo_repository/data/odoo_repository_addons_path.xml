@@ -20,6 +20,14 @@
   </record>
 
   <record
+        id="odoo_repository_addons_path_odoo_sa_root"
+        model="odoo.repository.addons_path"
+    >
+    <field name="relative_path">.</field>
+    <field name="is_standard" eval="True" />
+  </record>
+
+  <record
         id="odoo_repository_addons_path_odoo_sa_enterprise"
         model="odoo.repository.addons_path"
     >
