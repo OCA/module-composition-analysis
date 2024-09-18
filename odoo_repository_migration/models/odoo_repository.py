@@ -44,8 +44,12 @@ class OdooRepository(models.Model):
         # Override to run the MigrationScanner once branches are scanned
         args = []
         if branches:
+            # A strict scan of branches avoids unwanted migration scans
+            # For instance if we are interested only by 14.0 and 17.0 branches,
+            # this avoids to scan other migration paths like 15.0 -> 17.0
+            strict_scan = self.env.context.get("strict_branches_scan")
             args = [
-                "|",
+                "&" if strict_scan else "|",
                 ("source_branch_id", "in", branches),
                 ("target_branch_id", "in", branches),
             ]
