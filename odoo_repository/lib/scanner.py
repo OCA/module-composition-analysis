@@ -272,7 +272,7 @@ class BaseScanner:
         # Ensure to clean up the repository before a checkout
         repo.git.reset("--hard")
         repo.git.clean("-xdf")
-        repo.remotes.origin.refs[f"{branch}"].checkout()
+        repo.git.checkout(f"remotes/origin/{branch}")
 
     def _get_last_fetched_commit(self, repo, branch):
         """Return the last fetched commit for the given `branch`."""
@@ -288,12 +288,15 @@ class BaseScanner:
             [dir_ for dir_ in relative_path.split("/") if dir_ and dir_ != "."]
         )
         # No from_commit means first scan: return all available modules
-        branch_commit = repo.refs[f"origin/{branch}"].commit
+        branch_commit = repo.remotes.origin.refs[branch].commit
         addons_trees = branch_commit.tree.trees
         if relative_tree_path:
             addons_trees = (branch_commit.tree / relative_tree_path).trees
         module_paths = [
-            (tree.path, self._get_last_commit_of_git_tree(f"origin/{branch}", tree))
+            (
+                tree.path,
+                self._get_last_commit_of_git_tree(f"remotes/origin/{branch}", tree),
+            )
             for tree in addons_trees
             if self._odoo_module(tree)
         ]
@@ -346,7 +349,9 @@ class BaseScanner:
                         # FIXME: should we return pathlib.Path objects?
                         (
                             tree.path,
-                            self._get_last_commit_of_git_tree(f"origin/{branch}", tree),
+                            self._get_last_commit_of_git_tree(
+                                f"remotes/origin/{branch}", tree
+                            ),
                         )
                     )
             else:
