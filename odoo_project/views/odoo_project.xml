@@ -15,6 +15,14 @@
                         string="Import modules"
                         class="btn-primary"
                     />
+          <button
+                        name="action_scan"
+                        type="object"
+                        string="Scan"
+                        help="Scan all the repositories used by this project."
+                        class="btn-primary"
+                        groups="base.group_system"
+                    />
         </header>
         <sheet>
           <field name="project_module_ids" invisible="1" />
