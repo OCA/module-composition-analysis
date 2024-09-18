@@ -272,11 +272,11 @@ class BaseScanner:
         # Ensure to clean up the repository before a checkout
         repo.git.reset("--hard")
         repo.git.clean("-xdf")
-        repo.refs[f"origin/{branch}"].checkout()
+        repo.remotes.origin.refs[f"{branch}"].checkout()
 
     def _get_last_fetched_commit(self, repo, branch):
         """Return the last fetched commit for the given `branch`."""
-        return repo.rev_parse(f"origin/{branch}").hexsha
+        return repo.rev_parse(f"remotes/origin/{branch}").hexsha
 
     def _get_module_paths(self, repo, relative_path, branch):
         """Return modules available in `branch`.
