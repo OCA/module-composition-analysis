@@ -115,8 +115,8 @@
     <field name="arch" type="xml">
       <tree>
         <field name="module_id" />
-        <field name="repository_id" />
-        <field name="branch_id" />
+        <field name="repository_id" optional="show" />
+        <field name="branch_id" optional="show" />
         <field name="is_standard" optional="hide" />
         <field name="is_enterprise" optional="hide" />
         <field name="title" optional="show" />
@@ -136,10 +136,10 @@
         <field name="pr_url" optional="hide" widget="url" />
         <field name="global_dependency_level" optional="hide" />
         <field name="non_std_dependency_level" optional="hide" />
-        <field name="sloc_python" sum="Python" />
-        <field name="sloc_xml" sum="XML" />
-        <field name="sloc_js" sum="JS" />
-        <field name="sloc_css" sum="CSS" />
+        <field name="sloc_python" sum="Python" optional="show" />
+        <field name="sloc_xml" sum="XML" optional="show" />
+        <field name="sloc_js" sum="JS" optional="show" />
+        <field name="sloc_css" sum="CSS" optional="show" />
       </tree>
     </field>
   </record>
