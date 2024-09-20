@@ -270,6 +270,9 @@ class BaseScanner:
 
     def _checkout_branch(self, repo, branch):
         # Ensure to clean up the repository before a checkout
+        index_lock_path = pathlib.Path(repo.common_dir).joinpath("index.lock")
+        if index_lock_path.exists():
+            index_lock_path.unlink()
         repo.git.reset("--hard")
         repo.git.clean("-xdf")
         repo.git.checkout("-f", f"remotes/origin/{branch}")
