@@ -48,7 +48,11 @@
                             name="repository_id"
                             attrs="{'readonly': [('project_module_ids', '!=', [])]}"
                         />
-            <field name="odoo_version_id" readonly="1" options="{'no_open': True}" />
+            <field
+                            name="odoo_version_id"
+                            attrs="{'readonly': [('project_module_ids', '!=', [])]}"
+                            options="{'no_open': True}"
+                        />
           </group>
           <group name="modules_unmerged" string="Modules to merge">
             <field name="unmerged_module_ids" nolabel="1" colspan="2">
@@ -59,7 +63,7 @@
               </tree>
             </field>
           </group>
-          <group>
+          <group attrs="{'invisible': [('repository_id', '=', False)]}">
             <group name="modules_not_installed" string="Modules not installed">
               <field name="module_not_installed_ids" nolabel="1" colspan="2">
                 <tree>
