@@ -272,7 +272,7 @@ class BaseScanner:
         # Ensure to clean up the repository before a checkout
         repo.git.reset("--hard")
         repo.git.clean("-xdf")
-        repo.git.checkout(f"remotes/origin/{branch}")
+        repo.git.checkout("-f", f"remotes/origin/{branch}")
 
     def _get_last_fetched_commit(self, repo, branch):
         """Return the last fetched commit for the given `branch`."""
