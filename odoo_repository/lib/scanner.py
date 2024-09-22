@@ -83,7 +83,7 @@ class BaseScanner:
         self.token = token
         self.workaround_fs_errors = workaround_fs_errors
 
-    def scan(self, fetch=True):
+    def sync(self, fetch=True):
         res = True
         self._apply_git_global_config()
         # Clone or update the repository
@@ -282,28 +282,18 @@ class BaseScanner:
         return repo.rev_parse(f"remotes/origin/{branch}").hexsha
 
     def _get_module_paths(self, repo, relative_path, branch):
-        """Return modules available in `branch`.
-
-        It returns a list of tuples `[(module, last_commit), ...]`.
-        """
+        """Return the list of modules available in `branch`."""
         # Clean up 'relative_path' to make it compatible with 'git.Tree' object
         relative_tree_path = "/".join(
             [dir_ for dir_ in relative_path.split("/") if dir_ and dir_ != "."]
         )
-        # No from_commit means first scan: return all available modules
+        # Return all available modules from 'relative_tree_path'
         branch_commit = repo.remotes.origin.refs[branch].commit
         addons_trees = branch_commit.tree.trees
         if relative_tree_path:
             addons_trees = (branch_commit.tree / relative_tree_path).trees
-        module_paths = [
-            (
-                tree.path,
-                self._get_last_commit_of_git_tree(f"remotes/origin/{branch}", tree),
-            )
-            for tree in addons_trees
-            if self._odoo_module(tree)
-        ]
-        return module_paths
+        module_paths = [tree.path for tree in addons_trees if self._odoo_module(tree)]
+        return sorted(module_paths)
 
     def _get_module_paths_updated(
         self,
@@ -315,8 +305,7 @@ class BaseScanner:
     ):
         """Return modules updated between `from_commit` and `to_commit`.
 
-        It returns a list of tuples `[(module, last_commit), ...]`.
-        If a module has been removed, the tuple returned will be `(module, None)`.
+        It returns a list of modules.
         """
         # Clean up 'relative_path' to make it compatible with 'git.Tree' object
         relative_tree_path = "/".join(
@@ -325,7 +314,7 @@ class BaseScanner:
         module_paths = set()
         # Same commits: nothing has changed
         if from_commit == to_commit:
-            return module_paths
+            return list(module_paths)
         # Get only modules updated between the two commits
         from_commit = repo.commit(from_commit)
         to_commit = repo.commit(to_commit)
@@ -348,21 +337,13 @@ class BaseScanner:
             if tree:
                 # Module still exists
                 if self._odoo_module(tree):
-                    module_paths.add(
-                        # FIXME: should we return pathlib.Path objects?
-                        (
-                            tree.path,
-                            self._get_last_commit_of_git_tree(
-                                f"remotes/origin/{branch}", tree
-                            ),
-                        )
-                    )
+                    module_paths.add(tree.path)
             else:
                 # Module removed
                 tree = self._get_subtree(from_commit.tree, str(module_path))
                 if self._odoo_module(tree):
-                    module_paths.add((tree.path, None))
-        return module_paths
+                    module_paths.add(tree.path)
+        return sorted(module_paths)
 
     def _filter_file_path(self, path):
         for ext in (".po", ".pot", ".rst", ".html"):
@@ -446,7 +427,7 @@ class MigrationScanner(BaseScanner):
     def scan(self):
         # Clone/fetch has been done during the repository scan, the migration
         # scan will be processed on the current history of commits
-        res = super().scan(fetch=False)
+        res = self.sync(fetch=False)
         # 'super()' could return False if the branch to scan doesn't exist,
         # there is nothing to scan then.
         if not res:
@@ -463,7 +444,7 @@ class MigrationScanner(BaseScanner):
         repo_source_commit = self._get_last_fetched_commit(repo, source_branch)
         repo_target_commit = self._get_last_fetched_commit(repo, target_branch)
         modules = self._get_module_paths(repo, ".", source_branch)
-        for module, __ in modules:
+        for module in modules:
             if self._is_module_blacklisted(module):
                 _logger.info(
                     "%s: '%s' is blacklisted (no migration scan)",
@@ -697,7 +678,7 @@ class RepositoryScanner(BaseScanner):
         org: str,
         name: str,
         clone_url: str,
-        branches: list,
+        branch: str,
         addons_paths_data: list,
         repositories_path: str = None,
         repo_type: str = None,
@@ -709,118 +690,131 @@ class RepositoryScanner(BaseScanner):
             org,
             name,
             clone_url,
-            branches,
+            [branch],
             repositories_path,
             repo_type,
             ssh_key,
             token,
             workaround_fs_errors,
         )
+        self.branch = branch
         self.addons_paths_data = addons_paths_data
 
-    def scan(self):
-        res = super().scan()
+    def detect_modules_to_scan(self):
+        res = self.sync()
         # 'super()' could return False if the branch to scan doesn't exist,
         # there is nothing to scan then.
         if not res:
-            return False
+            return {}
         repo_id = self._get_odoo_repository_id()
-        branches_scanned = {}
         with self.repo() as repo:
-            for branch in self.branches:
-                branches_scanned[branch] = self._scan_branch(repo, repo_id, branch)
-        return res
+            return self._detect_modules_to_scan(repo, repo_id)
 
-    def _scan_branch(self, repo, repo_id, branch):
-        if not self._branch_exists(repo, branch):
+    def _detect_modules_to_scan(self, repo, repo_id):
+        if not self._branch_exists(repo, self.branch):
             return
-        branch_id = self._get_odoo_branch_id(repo_id, branch)
+        branch_id = self._get_odoo_branch_id(repo_id, self.branch)
         repo_branch_id = self._create_odoo_repository_branch(repo_id, branch_id)
-        last_fetched_commit = self._get_last_fetched_commit(repo, branch)
+        last_fetched_commit = self._get_last_fetched_commit(repo, self.branch)
         last_scanned_commit = self._get_repo_last_scanned_commit(repo_branch_id)
+        data = {
+            "repo_branch_id": repo_branch_id,
+            "last_fetched_commit": last_fetched_commit,
+            "last_scanned_commit": last_scanned_commit,
+            "addons_paths": {},
+        }
         if last_fetched_commit != last_scanned_commit:
-            # Checkout the source branch to:
-            #   - get the last commit of a module working tree
-            #   - perform module code analysis
-            self._checkout_branch(repo, branch)
+            # Checkout the source branch to get the last commit of a module working tree
+            self._checkout_branch(repo, self.branch)
             # Scan relevant subfolders of the repository
             for addons_path_data in self.addons_paths_data:
-                self._scan_addons_path(
-                    repo,
-                    addons_path_data,
-                    branch,
-                    repo_branch_id,
-                    last_fetched_commit,
-                    last_scanned_commit,
-                )
-            # Flag this repository/branch as scanned
-            self._update_last_scanned_commit(repo_branch_id, last_fetched_commit)
-            return True
-        return False
+                addons_path = addons_path_data["relative_path"]
+                data["addons_paths"][addons_path] = {
+                    "specs": addons_path_data,
+                    "modules_to_scan": self._detect_modules_to_scan_in_addons_path(
+                        repo,
+                        addons_path,
+                        repo_branch_id,
+                        last_fetched_commit,
+                        last_scanned_commit,
+                    ),
+                }
+        return data
 
-    def _scan_addons_path(
+    def _detect_modules_to_scan_in_addons_path(
         self,
         repo,
-        addons_path_data,
-        branch,
+        addons_path,
         repo_branch_id,
         last_fetched_commit,
         last_scanned_commit,
     ):
         if not last_scanned_commit:
-            module_paths = sorted(
-                self._get_module_paths(repo, addons_path_data["relative_path"], branch)
+            # Get all module paths
+            modules_to_scan = sorted(
+                self._get_module_paths(repo, addons_path, self.branch)
             )
         else:
             # Get module paths updated since the last scanned commit
-            module_paths = sorted(
-                self._get_module_paths_updated(
-                    repo,
-                    addons_path_data["relative_path"],
-                    from_commit=last_scanned_commit,
-                    to_commit=last_fetched_commit,
-                    branch=branch,
-                )
+            modules_to_scan = self._get_module_paths_updated(
+                repo,
+                addons_path,
+                from_commit=last_scanned_commit,
+                to_commit=last_fetched_commit,
+                branch=self.branch,
             )
         extra_log = ""
-        if addons_path_data["relative_path"] != ".":
-            extra_log = f" in {addons_path_data['relative_path']}"
+        if addons_path != ".":
+            extra_log = f" in {addons_path}"
         _logger.info(
             "%s: %s module(s) updated on %s" + extra_log,
             self.full_name,
-            len(module_paths),
-            branch,
+            len(modules_to_scan),
+            self.branch,
         )
-        # Scan each module
-        modules_scanned = {}
-        for module_path, last_module_commit in module_paths:
-            self._scan_module(
+        return modules_to_scan
+
+    def scan_module(self, module_path, specs):
+        self._apply_git_global_config()
+        repo_id = self._get_odoo_repository_id()
+        branch_id = self._get_odoo_branch_id(repo_id, self.branch)
+        repo_branch_id = self._create_odoo_repository_branch(repo_id, branch_id)
+        with self.repo() as repo:
+            # Checkout the source branch to perform module code analysis
+            branch_commit = self._get_last_fetched_commit(repo, self.branch)
+            if repo.head.commit.hexsha != branch_commit:
+                self._checkout_branch(repo, self.branch)
+            # Get last commit of 'module_path'
+            module_tree = self._get_subtree(
+                repo.commit(branch_commit).tree, module_path
+            )
+            last_module_commit = (
+                self._get_last_commit_of_git_tree(f"{branch_commit}", module_tree)
+                if module_tree
+                else None
+            )
+            return self._scan_module(
                 repo,
-                branch,
                 repo_branch_id,
                 module_path,
                 last_module_commit,
-                addons_path_data,
+                specs,
             )
-            module = module_path.split("/")[-1]
-            modules_scanned[module] = True
-        return modules_scanned
 
     def _scan_module(
         self,
         repo,
-        branch,
         repo_branch_id,
         module_path,
         last_module_commit,
-        addons_path_data,
+        specs,
     ):
         module = module_path.split("/")[-1]
         if self._is_module_blacklisted(module):
             _logger.info(
                 "%s#%s: '%s' is blacklisted (no scan)",
                 self.full_name,
-                branch,
+                self.branch,
                 module_path,
             )
             return
@@ -839,13 +833,13 @@ class RepositoryScanner(BaseScanner):
             _logger.info(
                 "%s#%s: scan '%s' ",
                 self.full_name,
-                branch,
+                self.branch,
                 module_path,
             )
             data = self._run_module_code_analysis(
                 repo,
                 module_path,
-                branch,
+                self.branch,
                 last_module_scanned_commit,
                 last_module_commit,
             )
@@ -853,11 +847,11 @@ class RepositoryScanner(BaseScanner):
             _logger.info(
                 "%s#%s: '%s' removed",
                 self.full_name,
-                branch,
+                self.branch,
                 module_path,
             )
         # Insert all flags 'is_standard', 'is_enterprise', etc
-        data.update(addons_path_data)
+        data.update(specs)
         # Set the last fetched commit as last scanned commit
         data["last_scanned_commit"] = last_module_commit
         self._push_scanned_data(repo_branch_id, module, data)
