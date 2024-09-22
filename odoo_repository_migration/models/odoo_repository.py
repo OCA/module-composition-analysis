@@ -1,7 +1,6 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-
 from odoo import fields, models, tools
 
 from odoo.addons.queue_job.job import identity_exact
@@ -35,23 +34,29 @@ class OdooRepository(models.Model):
         )
         return res
 
-    def _create_jobs(self, branches):
-        jobs = super()._create_jobs(branches)
+    def _create_subsequent_jobs(self, branch, next_branches, all_branches, data):
+        jobs = super()._create_subsequent_jobs(
+            branch, next_branches, all_branches, data
+        )
+        # Prepare migration scan jobs when its the last repository scan
+        last_scan = not next_branches
+        if not last_scan:
+            return jobs
         # Check if the addons_paths are compatible with 'oca_port'
         disable_collect = self.env.context.get("disable_collect_migration_data")
         if not self.collect_migration_data or disable_collect:
             return jobs
         # Override to run the MigrationScanner once branches are scanned
         args = []
-        if branches:
+        if all_branches:
             # A strict scan of branches avoids unwanted migration scans
             # For instance if we are interested only by 14.0 and 17.0 branches,
             # this avoids to scan other migration paths like 15.0 -> 17.0
             strict_scan = self.env.context.get("strict_branches_scan")
             args = [
                 "&" if strict_scan else "|",
-                ("source_branch_id", "in", branches),
-                ("target_branch_id", "in", branches),
+                ("source_branch_id", "in", all_branches),
+                ("target_branch_id", "in", all_branches),
             ]
         migration_paths = self.env["odoo.migration.path"].search(args)
         for rec in migration_paths:
