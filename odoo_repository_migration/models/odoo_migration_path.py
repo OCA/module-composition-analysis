@@ -40,6 +40,16 @@ class OdooMigrationPath(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
+        # Recompute 'migration_scan' flag on relevant modules
+        modules = self.env["odoo.module.branch"].search(
+            [
+                "|",
+                ("branch_id", "in", records.source_branch_id.ids),
+                ("branch_id", "in", records.target_branch_id.ids),
+            ]
+        )
+        modules.modified(["last_scanned_commit"])
+        modules.flush_recordset(["migration_scan"])
         # Automatically launch a scan on all relevant repositories when a
         # migration path is created
         if not self.env.context.get("disable_force_scan"):
