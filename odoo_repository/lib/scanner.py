@@ -403,14 +403,14 @@ class MigrationScanner(BaseScanner):
         org: str,
         name: str,
         clone_url: str,
-        migration_paths: list[tuple[str]],
+        migration_path: tuple[str],
         repositories_path: str = None,
         repo_type: str = None,
         ssh_key: str = None,
         token: str = None,
         workaround_fs_errors: bool = False,
     ):
-        branches = sorted(set(sum([tuple(mp) for mp in migration_paths], ())))
+        branches = sorted(migration_path)
         super().__init__(
             org,
             name,
@@ -422,9 +422,9 @@ class MigrationScanner(BaseScanner):
             token,
             workaround_fs_errors,
         )
-        self.migration_paths = migration_paths
+        self.migration_path = migration_path
 
-    def scan(self):
+    def scan(self, modules=None):
         # Clone/fetch has been done during the repository scan, the migration
         # scan will be processed on the current history of commits
         res = self.sync(fetch=False)
@@ -432,18 +432,22 @@ class MigrationScanner(BaseScanner):
         # there is nothing to scan then.
         if not res:
             return False
-        for source_branch, target_branch in self.migration_paths:
-            with self.repo() as repo:
-                if self._branch_exists(repo, source_branch) and self._branch_exists(
-                    repo, target_branch
-                ):
-                    self._scan_migration_path(repo, source_branch, target_branch)
+        source_branch, target_branch = self.migration_path
+        with self.repo() as repo:
+            if self._branch_exists(repo, source_branch) and self._branch_exists(
+                repo, target_branch
+            ):
+                return self._scan_migration_path(
+                    repo, source_branch, target_branch, modules=modules
+                )
         return res
 
-    def _scan_migration_path(self, repo, source_branch, target_branch):
+    def _scan_migration_path(self, repo, source_branch, target_branch, modules=None):
         repo_source_commit = self._get_last_fetched_commit(repo, source_branch)
         repo_target_commit = self._get_last_fetched_commit(repo, target_branch)
-        modules = self._get_module_paths(repo, ".", source_branch)
+        if not modules:
+            modules = self._get_module_paths(repo, ".", source_branch)
+        res = []
         for module in modules:
             if self._is_module_blacklisted(module):
                 _logger.info(
@@ -487,7 +491,7 @@ class MigrationScanner(BaseScanner):
                 data.get("last_source_scanned_commit") != module_source_commit
                 or data.get("last_target_scanned_commit") != module_target_commit
             ):
-                self._scan_module(
+                scanned_data = self._scan_module(
                     repo,
                     module,
                     module_branch_id,
@@ -498,6 +502,8 @@ class MigrationScanner(BaseScanner):
                     data.get("last_source_scanned_commit"),
                     data.get("last_target_scanned_commit"),
                 )
+                res.append(scanned_data)
+        return res
 
     def _scan_module(
         self,
@@ -544,7 +550,7 @@ class MigrationScanner(BaseScanner):
         # Mitigate "GH API rate limit exceeds" error
         if scan_relevant:
             time.sleep(4)
-        return True
+        return data
 
     def _is_scan_module_relevant(
         self,
