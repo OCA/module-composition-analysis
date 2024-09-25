@@ -149,10 +149,11 @@ class BaseScanner:
         # Avoid 'fatal: detected dubious ownership in repository' errors
         # when performing operations in git repositories in case they are
         # cloned on an mounted filesystem with specific options.
-        # NOTE: ensure to unset existing entry before adding one, as git doesn't
-        # check if an entry already exists, generating duplicates
-        os.system('git config --global --unset safe.directory "%s"' % (self.path))
-        os.system('git config --global --add safe.directory "%s"' % (self.path))
+        if self.workaround_fs_errors:
+            # NOTE: ensure to unset existing entry before adding one, as git doesn't
+            # check if an entry already exists, generating duplicates
+            os.system(r"git config --global --unset safe.directory '\*'")
+            os.system("git config --global --add safe.directory '*'")
 
     def _apply_git_config(self, repo):
         with repo.config_writer() as writer:
