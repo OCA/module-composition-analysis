@@ -637,11 +637,10 @@ class MigrationScanner(BaseScanner):
         )
         # Initialize the oca-port app
         params = {
-            "from_branch": source_branch,
-            "to_branch": target_branch,
+            "source": f"origin/{source_branch}",
+            "target": f"origin/{target_branch}",
             "addon": module,
-            "from_org": self.org,
-            "from_remote": "origin",
+            "upstream_org": self.org,
             "repo_path": self.path,
             "repo_name": self.name,
             "output": "json",
