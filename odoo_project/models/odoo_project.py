@@ -8,7 +8,6 @@ from odoo import api, fields, models
 
 class OdooProject(models.Model):
     _name = "odoo.project"
-    _inherits = {"odoo.repository": "repository_id"}
     _inherit = "mail.thread"
     _description = "Odoo Project"
     _order = "name"
@@ -23,7 +22,21 @@ class OdooProject(models.Model):
             ("clone_branch_id", "!=", False),
             ("odoo_version_id", "!=", False),
         ],
+        help=(
+            "Repository is optional. "
+            "You can start to build/simulate a project without repository "
+            "to get some figures."
+        ),
+    )
+    odoo_version_id = fields.Many2one(
+        comodel_name="odoo.branch",
+        ondelete="restrict",
+        string="Odoo Version",
+        domain=[("odoo_version", "=", True)],
         required=True,
+        compute="_compute_odoo_version_id",
+        store=True,
+        readonly=False,
     )
     project_module_ids = fields.One2many(
         comodel_name="odoo.project.module",
@@ -58,6 +71,12 @@ class OdooProject(models.Model):
         help="Modules installed but cannot be found among repositories/branches.",
         compute="_compute_unknown_module_ids",
     )
+
+    @api.depends("repository_id")
+    def _compute_odoo_version_id(self):
+        for rec in self:
+            if rec.repository_id:
+                rec.odoo_version_id = rec.repository_id.odoo_version_id
 
     @api.depends("project_module_ids.module_id")
     def _compute_module_ids(self):
