@@ -9,11 +9,21 @@
   </record>
 
   <record
-        id="queue_job_function_odoo_repository_scan_migration"
+        id="queue_job_function_odoo_repository_scan_migration_paths"
         model="queue.job.function"
     >
       <field name="model_id" ref="model_odoo_repository" />
-      <field name="method">_scan_migration_data</field>
+      <field name="method">_scan_migration_paths</field>
+      <field name="channel_id" ref="queue_job_channel_scan_migration" />
+      <field name="retry_pattern" eval="{1: 1, 5: 5, 10: 10, 15: 30}" />
+  </record>
+
+  <record
+        id="queue_job_function_odoo_repository_scan_migration_module"
+        model="queue.job.function"
+    >
+      <field name="model_id" ref="model_odoo_repository" />
+      <field name="method">_scan_migration_module</field>
       <field name="channel_id" ref="queue_job_channel_scan_migration" />
       <field name="retry_pattern" eval="{1: 1, 5: 5, 10: 10, 15: 30}" />
   </record>

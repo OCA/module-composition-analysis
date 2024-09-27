@@ -1,9 +1,10 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-
 from odoo import fields, models, tools
 
+from odoo.addons.queue_job.delay import chain
+from odoo.addons.queue_job.exception import RetryableJobError
 from odoo.addons.queue_job.job import identity_exact
 
 from ..utils.scanner import MigrationScannerOdooEnv
@@ -35,52 +36,124 @@ class OdooRepository(models.Model):
         )
         return res
 
-    def _create_jobs(self, branches):
-        jobs = super()._create_jobs(branches)
+    def _create_subsequent_jobs(self, branch, next_branches, all_branches, data):
+        jobs = super()._create_subsequent_jobs(
+            branch, next_branches, all_branches, data
+        )
+        # Prepare migration scan jobs when its the last repository scan
+        last_scan = not next_branches
+        if not last_scan:
+            return jobs
         # Check if the addons_paths are compatible with 'oca_port'
         disable_collect = self.env.context.get("disable_collect_migration_data")
         if not self.collect_migration_data or disable_collect:
             return jobs
         # Override to run the MigrationScanner once branches are scanned
         args = []
-        if branches:
+        if all_branches:
             # A strict scan of branches avoids unwanted migration scans
             # For instance if we are interested only by 14.0 and 17.0 branches,
             # this avoids to scan other migration paths like 15.0 -> 17.0
             strict_scan = self.env.context.get("strict_branches_scan")
             args = [
                 "&" if strict_scan else "|",
-                ("source_branch_id", "in", branches),
-                ("target_branch_id", "in", branches),
+                ("source_branch_id", "in", all_branches),
+                ("target_branch_id", "in", all_branches),
             ]
         migration_paths = self.env["odoo.migration.path"].search(args)
-        for rec in migration_paths:
-            migration_path = (rec.source_branch_id.name, rec.target_branch_id.name)
+        # Launch one job for all migration_paths
+        if migration_paths:
             delayable = self.delayable(
-                description=(
-                    f"Collect {self.display_name} "
-                    f"{' > '.join(migration_path)} migration data"
-                ),
+                description=f"Collect {self.display_name} migration data",
                 identity_key=identity_exact,
             )
-            job = delayable._scan_migration_data(migration_path)
+            job = delayable._scan_migration_paths(migration_paths.ids)
             jobs.append(job)
         return jobs
 
-    def _scan_migration_data(self, migration_path):
-        """Scan repository branches to collect modules migration data."""
+    def _scan_migration_paths(self, migration_path_ids):
+        """Scan repository branches to collect modules migration data.
+
+        Spawn one job per module to scan.
+        """
+        self.ensure_one()
+        jobs = []
+        migration_paths = (
+            self.env["odoo.migration.path"].browse(migration_path_ids).exists()
+        )
+        for migration_path in migration_paths:
+            modules_to_scan = self._migration_get_modules_to_scan(migration_path)
+            if modules_to_scan:
+                jobs.extend(
+                    self._migration_create_jobs_scan_module(
+                        migration_path, modules_to_scan
+                    )
+                )
+        if jobs:
+            chain(*jobs).delay()
+        return True
+
+    def _migration_create_jobs_scan_module(self, migration_path, modules_to_scan):
+        jobs = []
+        mig_path = (
+            migration_path.source_branch_id.name,
+            migration_path.target_branch_id.name,
+        )
+        for module in modules_to_scan:
+            delayable = self.delayable(
+                description=(
+                    f"Collect {module.name} migration data " f"({' > '.join(mig_path)})"
+                ),
+                identity_key=identity_exact,
+            )
+            job = delayable._scan_migration_module(
+                migration_path.id, module.module_id.name
+            )
+            jobs.append(job)
+        return jobs
+
+    def _scan_migration_module(self, migration_path_id, module_name):
+        """Scan migration path for `module_name`."""
+        migration_path = (
+            self.env["odoo.migration.path"].browse(migration_path_id).exists()
+        )
         params = self._prepare_migration_scanner_parameters(migration_path)
-        scanner = MigrationScannerOdooEnv(**params)
-        return scanner.scan()
+        try:
+            scanner = MigrationScannerOdooEnv(**params)
+            return scanner.scan(modules=[module_name])
+        except Exception as exc:
+            raise RetryableJobError("Scanner error") from exc
+
+    def _migration_get_modules_to_scan(self, migration_path):
+        """Return `odoo.module.branch` records that need a migration scan."""
+        self.ensure_one()
+        return self.env["odoo.module.branch"].search(
+            [
+                (
+                    "repository_id",
+                    "=",
+                    self.id,
+                ),
+                ("branch_id", "=", migration_path.source_branch_id.id),
+                ("migration_scan", "=", True),
+                # Do not scan removed or pending (in PR) modules
+                ("removed", "=", False),
+                ("last_scanned_commit", "!=", False),
+            ]
+        )
 
     def _prepare_migration_scanner_parameters(self, migration_path):
         ir_config = self.env["ir.config_parameter"]
         repositories_path = ir_config.get_param(self._repositories_path_key)
+        mig_path = (
+            migration_path.source_branch_id.name,
+            migration_path.target_branch_id.name,
+        )
         return {
             "org": self.org_id.name,
             "name": self.name,
             "clone_url": self.clone_url,
-            "migration_paths": [migration_path],
+            "migration_path": mig_path,
             "repositories_path": repositories_path,
             "repo_type": self.repo_type,
             "ssh_key": self.ssh_key_id.private_key,

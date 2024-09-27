@@ -138,10 +138,12 @@ class OdooProject(models.Model):
         repositories = self._get_repositories_to_scan().with_context(
             strict_branches_scan=True
         )
+        repositories -= self.repository_id
         branches = self._get_branches_to_scan()
         if branches:
-            for repository in repositories:
-                repository.action_scan(branches=branches.mapped("name"), force=force)
+            repositories.action_scan(
+                branches=branches.mapped("name"), force=force, raise_exc=False
+            )
         # Scan the underlying project repository itself
-        self.repository_id.action_scan(force=force)
+        self.repository_id.action_scan(force=force, raise_exc=True)
         return True

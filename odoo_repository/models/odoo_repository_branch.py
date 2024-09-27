@@ -52,19 +52,19 @@ class OdooRepositoryBranch(models.Model):
         for rec in self:
             rec.active = all((rec.repository_id.active, rec.branch_id.active))
 
-    def action_scan(self, force=False):
+    def action_scan(self, force=False, raise_exc=True):
         """Scan the repository/branch."""
         return self.repository_id.action_scan(
-            branches=self.branch_id.mapped("name"), force=force
+            branches=self.branch_id.mapped("name"), force=force, raise_exc=raise_exc
         )
 
-    def action_force_scan(self):
+    def action_force_scan(self, raise_exc=True):
         """Force the scan of the repository/branch.
 
         It will restart the scan without considering the last scanned commit,
         overriding already collected module data if any.
         """
-        return self.action_scan(force=True)
+        return self.action_scan(force=True, raise_exc=raise_exc)
 
     def _to_dict(self):
         """Convert branch repository data to a dictionary."""
@@ -78,3 +78,8 @@ class OdooRepositoryBranch(models.Model):
             "branch": self.branch_id.name,
             "last_scanned_commit": self.last_scanned_commit,
         }
+
+    def _update_last_scanned_commit(self, last_scanned_commit):
+        """Update the last scanned commit. Called by job."""
+        self.ensure_one()
+        self.last_scanned_commit = last_scanned_commit
