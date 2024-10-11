@@ -272,7 +272,8 @@ class OdooRepository(models.Model):
                 branch, next_branches, all_branches, data
             )
             # Chain them  altogether
-            chain(*jobs).delay()
+            if jobs:
+                chain(*jobs).delay()
         except Exception as exc:
             raise RetryableJobError("Scanner error") from exc
 
