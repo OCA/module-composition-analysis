@@ -124,7 +124,7 @@ class OdooModuleBranchMigration(models.Model):
             "last_target_scanned_commit": data["target_commit"],
         }
         for key in ("process", "results"):
-            if data.get(key):
+            if key in data:
                 values[key] = data[key]
         return self._create_or_update(module_branch_id, migration_path, values)
 
