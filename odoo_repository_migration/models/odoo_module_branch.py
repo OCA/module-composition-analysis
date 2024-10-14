@@ -37,7 +37,9 @@ class OdooModuleBranch(models.Model):
             available_migration_paths = self.env["odoo.migration.path"].search(
                 [("source_branch_id", "=", rec.branch_id.id)]
             )
-            scanned_migration_paths = rec.migration_ids.migration_path_id
+            scanned_migration_paths = rec.migration_ids.migration_path_id.filtered(
+                "active"
+            )
             if available_migration_paths != scanned_migration_paths:
                 rec.migration_scan = True
                 continue
