@@ -69,7 +69,7 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch = self._settings["branch1"]
+            branch = self._settings["branch2"]
             branch_sha = repo.refs[f"origin/{branch}"].object.hexsha
             self.assertNotEqual(repo.head.object.hexsha, branch_sha)
             scanner._checkout_branch(repo, branch)
