@@ -5,7 +5,7 @@
 
   <menuitem
         id="main_odoo_repository_menu"
-        groups="base.group_system"
+        groups="odoo_repository.group_odoo_repository_user"
         name="Odoo Repositories"
     />
   <menuitem
@@ -17,6 +17,7 @@
   <menuitem
         id="config_odoo_repository_menu"
         parent="main_odoo_repository_menu"
+        groups="odoo_repository.group_odoo_repository_manager"
         name="Configuration"
         sequence="30"
     />

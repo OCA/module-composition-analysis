@@ -14,7 +14,7 @@
                         type="object"
                         string="Scan"
                         class="btn-primary"
-                        groups="base.group_system"
+                        groups="odoo_repository.group_odoo_repository_manager"
                     />
           <button
                         name="action_force_scan"
@@ -22,7 +22,7 @@
                         string="Force Scan"
                         class="btn-secondary"
                         confirm="This operation will restart the scan from the beginning. Are you sure?"
-                        groups="base.group_system"
+                        groups="odoo_repository.group_odoo_repository_manager"
                     />
         </header>
         <sheet>

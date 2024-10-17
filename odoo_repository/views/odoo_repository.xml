@@ -14,7 +14,7 @@
                         type="object"
                         string="Scan"
                         class="btn-primary"
-                        groups="base.group_system"
+                        groups="odoo_repository.group_odoo_repository_manager"
                         attrs="{'invisible': [('to_scan', '=', False)]}"
                     />
           <button
@@ -23,7 +23,7 @@
                         string="Force Scan"
                         class="btn-secondary"
                         confirm="This operation will restart the scan from the beginning. Are you sure?"
-                        groups="base.group_system"
+                        groups="odoo_repository.group_odoo_repository_manager"
                         attrs="{'invisible': [('to_scan', '=', False)]}"
                     />
         </header>
@@ -46,13 +46,13 @@
                 <field
                                     name="token_id"
                                     options="{'no_open': True}"
-                                    groups="base.group_system"
+                                    groups="odoo_repository.group_odoo_repository_manager"
                                     attrs="{'invisible': [('ssh_key_id', '!=', False)]}"
                                 />
                 <field
                                     name="ssh_key_id"
                                     options="{'no_open': True}"
-                                    groups="base.group_system"
+                                    groups="odoo_repository.group_odoo_repository_manager"
                                     attrs="{'invisible': [('token_id', '!=', False)]}"
                                 />
               </group>
