@@ -20,11 +20,18 @@ class OdooModuleBranch(models.Model):
     )
 
     @api.depends(
+        "removed",
+        "pr_url",
         "last_scanned_commit",
         "migration_ids.last_source_scanned_commit",
+        "repository_id.collect_migration_data",
     )
     def _compute_migration_scan(self):
         for rec in self:
+            # Do not scan removed or pending (in PR) modules
+            if rec.removed or rec.pr_url:
+                rec.migration_scan = False
+                continue
             # Default repository migration scan policy
             rec.migration_scan = rec.repository_id.collect_migration_data
             if not rec.migration_scan:
@@ -33,13 +40,18 @@ class OdooModuleBranch(models.Model):
             if not rec.last_scanned_commit:
                 continue
             # Migration scan to do as soon as a migration path is missing
-            # among existing scans
+            # among existing scans. However, we remove migration path that doesn't
+            # match branches scanned in the repository (e.g. 18.0 branch could
+            # be missing in a repo while a migration path 16.0 -> 18.0 is
+            # configured, so no need to do a migration scan in this case).
+            available_repo_branches = rec.repository_id.branch_ids.branch_id
             available_migration_paths = self.env["odoo.migration.path"].search(
-                [("source_branch_id", "=", rec.branch_id.id)]
+                [
+                    ("source_branch_id", "=", rec.branch_id.id),
+                    ("target_branch_id", "in", available_repo_branches.ids),
+                ]
             )
-            scanned_migration_paths = rec.migration_ids.migration_path_id.filtered(
-                "active"
-            )
+            scanned_migration_paths = rec.migration_ids.migration_path_id
             if available_migration_paths != scanned_migration_paths:
                 rec.migration_scan = True
                 continue
