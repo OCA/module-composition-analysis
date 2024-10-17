@@ -21,7 +21,7 @@
                         string="Scan"
                         help="Scan all the repositories used by this project."
                         class="btn-primary"
-                        groups="base.group_system"
+                        groups="odoo_repository.group_odoo_repository_manager"
                     />
         </header>
         <sheet>
