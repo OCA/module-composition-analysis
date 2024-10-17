@@ -8,6 +8,7 @@
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/camptocamp/odoo-repository",
     "data": [
+        "security/res_groups.xml",
         "security/ir.model.access.csv",
         "data/ir_cron.xml",
         "data/odoo_module.xml",

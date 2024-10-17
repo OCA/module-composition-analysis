@@ -14,7 +14,7 @@
                     string="Odoo Repositories"
                     data-string="Odoo Repositories"
                     data-key="odoo_repository"
-                    groups="base.group_system"
+                    groups="odoo_repository.group_odoo_repository_manager"
                 >
           <div id="odoo_repository">
             <h2>Odoo Repositories</h2>
@@ -117,7 +117,7 @@
         sequence="1"
         action="action_odoo_repository_config_settings"
         parent="config_odoo_repository_menu"
-        groups="base.group_system"
+        groups="odoo_repository.group_odoo_repository_manager"
     />
 
 </odoo>
