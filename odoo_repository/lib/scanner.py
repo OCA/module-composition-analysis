@@ -205,15 +205,13 @@ class BaseScanner:
         params = {
             "url": self.clone_url,
             "to_path": self.path,
-            # NOTE: adding 'no_checkout' and 'filter=blob:none' allows fast
-            # cloning and reduce memory usage. Blobs will be fetched later on
-            # demand, once the git config to reduce memory usage is applied.
             "no_checkout": True,
-            "filter": "blob:none",
             # Avoid issues with file permissions
             # "allow_unsafe_options": True,
             # "multi_options": ["--config core.filemode=false"],
         }
+        if self.branches:
+            params["branch"] = self.branches[0]
         params.update(extra)
         return params
 
