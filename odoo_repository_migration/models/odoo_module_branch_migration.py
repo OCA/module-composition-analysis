@@ -70,6 +70,7 @@ class OdooModuleBranchMigration(models.Model):
     results_text = fields.Text(compute="_compute_results_text")
     last_source_scanned_commit = fields.Char()
     last_target_scanned_commit = fields.Char()
+    active = fields.Boolean(related="migration_path_id.active", store=True)
 
     _sql_constraints = [
         (
