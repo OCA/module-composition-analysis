@@ -138,9 +138,6 @@ class OdooRepository(models.Model):
                 ),
                 ("branch_id", "=", migration_path.source_branch_id.id),
                 ("migration_scan", "=", True),
-                # Do not scan removed or pending (in PR) modules
-                ("removed", "=", False),
-                ("last_scanned_commit", "!=", False),
             ]
         )
 
