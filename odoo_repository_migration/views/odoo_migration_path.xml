@@ -10,11 +10,11 @@
       <form>
         <header>
           <button
-                        name="action_force_scan"
+                        name="action_scan"
                         type="object"
-                        string="Force Scan"
+                        string="Scan"
                         class="btn-secondary"
-                        confirm="This operation will restart the scan on all relevant repositories. Are you sure?"
+                        confirm="This operation will scan all relevant repositories. Are you sure?"
                         groups="odoo_repository.group_odoo_repository_manager"
                     />
         </header>

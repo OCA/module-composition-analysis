@@ -50,18 +50,14 @@ class OdooMigrationPath(models.Model):
         )
         modules.modified(["last_scanned_commit"])
         modules.flush_recordset(["migration_scan"])
-        # Automatically launch a scan on all relevant repositories when a
-        # migration path is created
-        if not self.env.context.get("disable_force_scan"):
-            records.action_force_scan()
         return records
 
-    def action_force_scan(self):
-        """Force the scan of the source branch.
+    def action_scan(self):
+        """Scan the source+target branches.
 
         Scan is done on all related repositories configured to collect migration data.
         """
         branches = self.source_branch_id | self.target_branch_id
         return branches.repository_branch_ids.filtered(
             lambda o: o.repository_id.collect_migration_data
-        ).action_force_scan()
+        ).action_scan()
