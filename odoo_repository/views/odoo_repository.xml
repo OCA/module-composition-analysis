@@ -28,6 +28,7 @@
                     />
         </header>
         <sheet>
+          <div class="oe_button_box" name="button_box" />
           <group>
             <group name="repository" string="Repository">
               <group colspan="2">
