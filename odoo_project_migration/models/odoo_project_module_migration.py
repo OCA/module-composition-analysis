@@ -120,13 +120,13 @@ class OdooProjectModuleMigration(models.Model):
 
     @api.depends("source_module_branch_id", "migration_path_id")
     def _compute_target_module_branch_id(self):
+        module_branch_model = self.env["odoo.module.branch"]
         for rec in self:
-            rec.target_module_branch_id = rec.source_module_branch_id.search(
-                [
-                    ("module_id", "=", rec.source_module_branch_id.module_id.id),
-                    ("branch_id", "=", rec.migration_path_id.target_branch_id.id),
-                    ("installable", "=", True),
-                ]
+            rec.target_module_branch_id = module_branch_model._find(
+                rec.migration_path_id.target_branch_id,
+                rec.source_module_branch_id.module_id,
+                rec.odoo_project_id.repository_id,
+                domain=[("installable", "=", True)],
             )
 
     @api.depends("migration_path_id", "source_module_branch_id")
