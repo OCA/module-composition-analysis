@@ -13,6 +13,7 @@
         "views/odoo_module_branch.xml",
         "views/odoo_project.xml",
         "views/odoo_project_module.xml",
+        "views/odoo_repository.xml",
         "wizards/odoo_project_import_modules.xml",
     ],
     "installable": True,
