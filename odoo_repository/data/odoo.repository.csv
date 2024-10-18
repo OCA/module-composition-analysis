@@ -175,6 +175,7 @@ repo_oca_stock_logistics_tracking,odoo_repository_org_oca,stock-logistics-tracki
 repo_oca_stock_logistics_transport,odoo_repository_org_oca,stock-logistics-transport,https://github.com/OCA/stock-logistics-transport,https://github.com/OCA/stock-logistics-transport,github
 repo_oca_stock_logistics_warehouse,odoo_repository_org_oca,stock-logistics-warehouse,https://github.com/OCA/stock-logistics-warehouse,https://github.com/OCA/stock-logistics-warehouse,github
 repo_oca_stock_logistics_workflow,odoo_repository_org_oca,stock-logistics-workflow,https://github.com/OCA/stock-logistics-workflow,https://github.com/OCA/stock-logistics-workflow,github
+repo_oca_stock_weighing,odoo_repository_org_oca,stock-weighing,https://github.com/OCA/stock-weighing,https://github.com/OCA/stock-weighing,github
 repo_oca_storage,odoo_repository_org_oca,storage,https://github.com/OCA/storage,https://github.com/OCA/storage,github
 repo_oca_survey,odoo_repository_org_oca,survey,https://github.com/OCA/survey,https://github.com/OCA/survey,github
 repo_oca_timesheet,odoo_repository_org_oca,timesheet,https://github.com/OCA/timesheet,https://github.com/OCA/timesheet,github
