@@ -20,6 +20,7 @@ class OdooProject(models.Model):
         string="Repository",
         domain=[
             ("clone_branch_id", "!=", False),
+            ("specific", "=", True),
             ("odoo_version_id", "!=", False),
         ],
         help=(

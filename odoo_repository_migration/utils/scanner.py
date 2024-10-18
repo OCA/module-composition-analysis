@@ -49,8 +49,9 @@ class MigrationScannerOdooEnv(MigrationScanner):
             )
         )
 
-    def _get_odoo_module_branch_id(self, module: str, branch: str) -> int:
+    def _get_odoo_module_branch_id(self, repo_id: int, module: str, branch: str) -> int:
         args = [
+            ("repository_id", "=", repo_id),
             ("module_id", "=", module),
             ("branch_id", "=", branch),
         ]

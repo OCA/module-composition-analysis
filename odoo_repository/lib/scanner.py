@@ -467,7 +467,10 @@ class MigrationScanner(BaseScanner):
                     module,
                 )
                 continue
-            module_branch_id = self._get_odoo_module_branch_id(module, source_branch)
+            repo_id = self._get_odoo_repository_id()
+            module_branch_id = self._get_odoo_module_branch_id(
+                repo_id, module, source_branch
+            )
             if not module_branch_id:
                 _logger.warning(
                     "Module '%s' for branch %s does not exist on Odoo, "
@@ -664,7 +667,7 @@ class MigrationScanner(BaseScanner):
         """Return the available migration paths corresponding to `branches`."""
         raise NotImplementedError
 
-    def _get_odoo_module_branch_id(self, module, branch) -> int:
+    def _get_odoo_module_branch_id(self, repo_id, module, branch) -> int:
         """Return the ID of the 'odoo.module.branch' record."""
         raise NotImplementedError
 

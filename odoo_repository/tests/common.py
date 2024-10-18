@@ -45,6 +45,7 @@ class Common(TransactionCase, CommonCase):
                 }
             )
         self.module_name = self._settings["addon"]
+        self.module_branch_model = self.env["odoo.module.branch"]
 
     @classmethod
     def _apply_git_config(cls):
@@ -87,6 +88,12 @@ class Common(TransactionCase, CommonCase):
         )
         return commit.hexsha
 
+    def _run_odoo_repository_action_scan(self, branch, force=False):
+        """Run `action_scan` for given `branch` on the Odoo repository."""
+        self.odoo_repository.with_context(queue_job__no_delay=True).action_scan(
+            [branch], force=force
+        )
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -96,3 +103,22 @@ class Common(TransactionCase, CommonCase):
             "odoo_repository_storage_path", cls.repositories_path
         )
         cls._apply_git_config()
+
+    def _create_odoo_module(self, name):
+        return self.env["odoo.module"].create({"name": name})
+
+    def _create_odoo_repository_branch(self, repo, branch, **values):
+        vals = {
+            "repository_id": repo.id,
+            "branch_id": branch.id,
+        }
+        vals.update(values)
+        return self.env["odoo.repository.branch"].create(vals)
+
+    def _create_odoo_module_branch(self, module, branch, **values):
+        vals = {
+            "module_id": module.id,
+            "branch_id": branch.id,
+        }
+        vals.update(values)
+        return self.env["odoo.module.branch"].create(vals)

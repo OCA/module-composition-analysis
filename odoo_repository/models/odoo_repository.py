@@ -104,6 +104,16 @@ class OdooRepository(models.Model):
             "certain days only. If not defined, the scan will happen every day."
         ),
     )
+    specific = fields.Boolean(
+        compute="_compute_specific",
+        store=True,
+        readonly=False,
+        help=(
+            "Host specific modules. "
+            "By default if the repository clones a specific branch, "
+            "that means it hosts specific modules."
+        ),
+    )
 
     @api.model
     def default_get(self, fields_list):
@@ -137,6 +147,11 @@ class OdooRepository(models.Model):
     def _compute_display_name(self):
         for rec in self:
             rec.display_name = f"{rec.org_id.name}/{rec.name}"
+
+    @api.depends("clone_branch_id")
+    def _compute_specific(self):
+        for rec in self:
+            rec.specific = bool(rec.clone_branch_id)
 
     @api.onchange("repo_url", "to_scan", "clone_url")
     def _onchange_repo_url(self):
