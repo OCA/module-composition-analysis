@@ -89,11 +89,12 @@ class BaseScanner:
         # Clone or update the repository
         if not self.is_cloned:
             res = self._clone()
-        with self.repo() as repo:
-            self._apply_git_config(repo)
-            self._set_git_remote_url(repo)
-            if fetch:
-                res = self._fetch(repo)
+        if self.is_cloned:
+            with self.repo() as repo:
+                self._apply_git_config(repo)
+                self._set_git_remote_url(repo)
+                if fetch:
+                    res = self._fetch(repo)
         return res
 
     @contextlib.contextmanager
@@ -227,14 +228,25 @@ class BaseScanner:
                 if self.workaround_fs_errors:
                     extra["separate_git_dir"] = str(tmp_git_dir_path)
                 params = self._clone_params(**extra)
-                git.Repo.clone_from(**params)
-                if tmp_git_dir_path:
-                    # {repo_path}/.git folder is a hardlink, replace
-                    # it by the .git folder created in /tmp
-                    # NOTE: use shutil instead of 'pathlib.Path.replace()' as
-                    # file systems could be different
-                    repo_git_dir_path.unlink()
-                    shutil.move(tmp_git_dir_path, repo_git_dir_path)
+                try:
+                    git.Repo.clone_from(**params)
+                except git.exc.GitCommandError as exc:
+                    _logger.error(exc)
+                    if "not found in upstream origin" in str(exc):
+                        _logger.info(
+                            "Couldn't clone remote branch from %s, skipping.",
+                            self.full_name,
+                        )
+                        return False
+                else:
+                    if tmp_git_dir_path:
+                        # {repo_path}/.git folder is a hardlink, replace
+                        # it by the .git folder created in /tmp
+                        # NOTE: use shutil instead of 'pathlib.Path.replace()' as
+                        # file systems could be different
+                        if repo_git_dir_path.exists():
+                            repo_git_dir_path.unlink()
+                        shutil.move(tmp_git_dir_path, repo_git_dir_path)
         return True
 
     def _fetch(self, repo):
