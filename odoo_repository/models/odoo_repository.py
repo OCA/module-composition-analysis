@@ -11,6 +11,7 @@ import requests
 
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError
+from odoo.osv.expression import AND, OR
 
 from odoo.addons.queue_job.delay import chain
 from odoo.addons.queue_job.exception import RetryableJobError
@@ -95,6 +96,14 @@ class OdooRepository(models.Model):
         string="Branches",
         readonly=True,
     )
+    scan_weekday_ids = fields.Many2many(
+        comodel_name="time.weekday",
+        string="Scanning days",
+        help=(
+            "Limit scanning of this repository by the scheduled action to "
+            "certain days only. If not defined, the scan will happen every day."
+        ),
+    )
 
     @api.model
     def default_get(self, fields_list):
@@ -145,6 +154,21 @@ class OdooRepository(models.Model):
     def _get_odoo_branches_to_clone(self):
         return self.env["odoo.branch"].search([("odoo_version", "=", True)])
 
+    def _cron_scanner_domain(self):
+        today = fields.Date.today()
+        weekday = today.weekday()
+        return AND(
+            [
+                [("to_scan", "=", True)],
+                OR(
+                    [
+                        [("scan_weekday_ids.name", "=", weekday)],
+                        [("scan_weekday_ids", "=", False)],
+                    ]
+                ),
+            ]
+        )
+
     @api.model
     def cron_scanner(self, branches=None, force=False):
         """Scan and collect Odoo repositories data.
@@ -153,7 +177,7 @@ class OdooRepository(models.Model):
         `RepositoryScannerOdooEnv` is used so the scanner can request Odoo
         through an environment (api.Environment).
         """
-        repositories = self.search([("to_scan", "=", True)])
+        repositories = self.search(self._cron_scanner_domain())
         if not branches:
             branches = self._get_odoo_branches_to_clone().mapped("name")
         for repo in repositories:

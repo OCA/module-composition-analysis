@@ -41,6 +41,8 @@
     "depends": [
         # core
         "base_sparse_field",
+        # OCA/server-tools
+        "base_time_window",
         # OCA/queue
         "queue_job",
     ],

@@ -62,6 +62,7 @@
                             string="Options"
                             attrs="{'invisible': [('to_scan', '=', False)]}"
                         >
+              <field name="scan_weekday_ids" widget="many2many_tags" />
               <field
                                 name="clone_branch_id"
                                 context="{'default_odoo_version': False}"
