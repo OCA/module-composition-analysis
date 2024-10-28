@@ -19,6 +19,10 @@
       ]
     "
         />
+    <field
+            name="scan_weekday_ids"
+            eval="[(4, ref('base_time_window.time_weekday_sunday'))]"
+        />
   </record>
 
   <record id="odoo_repository_odoo_enterprise" model="odoo.repository">
@@ -37,6 +41,10 @@
       ]
     "
         />
+    <field
+            name="scan_weekday_ids"
+            eval="[(4, ref('base_time_window.time_weekday_sunday'))]"
+        />
   </record>
 
   <record id="odoo_repository_odoo_design_themes" model="odoo.repository">
@@ -53,6 +61,10 @@
         (4, ref('odoo_repository.odoo_repository_addons_path_odoo_sa_root')),
       ]
     "
+        />
+    <field
+            name="scan_weekday_ids"
+            eval="[(4, ref('base_time_window.time_weekday_sunday'))]"
         />
   </record>
 
