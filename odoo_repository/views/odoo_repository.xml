@@ -78,6 +78,7 @@
                 'readonly': [('branch_ids', '!=', [])]
                 }"
                             />
+              <field name="clone_name" groups="base.group_no_one" />
             </group>
           </group>
           <group>
