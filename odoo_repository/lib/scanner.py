@@ -71,13 +71,17 @@ class BaseScanner:
         ssh_key: str = None,
         token: str = None,
         workaround_fs_errors: bool = False,
+        clone_name: str = None,
     ):
         self.org = org
         self.name = name
         self.clone_url = self._prepare_clone_url(repo_type, clone_url, token)
         self.branches = branches
         self.repositories_path = self._prepare_repositories_path(repositories_path)
-        self.path = self.repositories_path.joinpath(self.org, self.name)
+        self.clone_name = clone_name
+        self.path = self.repositories_path.joinpath(
+            self.org, self.clone_name or self.name
+        )
         self.repo_type = repo_type
         self.ssh_key = ssh_key
         self.token = token
@@ -420,6 +424,7 @@ class MigrationScanner(BaseScanner):
         ssh_key: str = None,
         token: str = None,
         workaround_fs_errors: bool = False,
+        clone_name: str = None,
     ):
         branches = sorted(migration_path)
         super().__init__(
@@ -432,6 +437,7 @@ class MigrationScanner(BaseScanner):
             ssh_key,
             token,
             workaround_fs_errors,
+            clone_name,
         )
         self.migration_path = migration_path
 
@@ -702,6 +708,7 @@ class RepositoryScanner(BaseScanner):
         ssh_key: str = None,
         token: str = None,
         workaround_fs_errors: bool = False,
+        clone_name: str = None,
     ):
         super().__init__(
             org,
@@ -713,6 +720,7 @@ class RepositoryScanner(BaseScanner):
             ssh_key,
             token,
             workaround_fs_errors,
+            clone_name,
         )
         self.branch = branch
         self.addons_paths_data = addons_paths_data

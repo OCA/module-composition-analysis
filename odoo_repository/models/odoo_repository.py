@@ -53,6 +53,12 @@ class OdooRepository(models.Model):
         string="Clone URL",
         help="Used to clone the repository.",
     )
+    clone_name = fields.Char(
+        help=(
+            "Force the name of the cloned repository (folder on disk). "
+            "If not set, the name of the repository will be used."
+        ),
+    )
     repo_type = fields.Selection(
         selection=[
             ("github", "GitHub"),
@@ -412,6 +418,7 @@ class OdooRepository(models.Model):
             "workaround_fs_errors": (
                 self.env.company.config_odoo_repository_workaround_fs_errors
             ),
+            "clone_name": self.clone_name,
             "env": self.env,
         }
 
