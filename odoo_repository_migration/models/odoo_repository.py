@@ -158,6 +158,10 @@ class OdooRepository(models.Model):
             "repo_type": self.repo_type,
             "ssh_key": self.ssh_key_id.private_key,
             "token": self._get_token(),
+            "workaround_fs_errors": (
+                self.env.company.config_odoo_repository_workaround_fs_errors
+            ),
+            "clone_name": self.clone_name,
             "env": self.env,
         }
 
