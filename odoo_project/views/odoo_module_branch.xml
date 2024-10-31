@@ -21,14 +21,14 @@
     <field name="model">odoo.module.branch</field>
     <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
     <field name="arch" type="xml">
-      <filter name="no_repository" position="after">
+      <filter name="without_repository" position="after">
         <filter
-                    name="no_project"
+                    name="used_in_project"
                     string="Installed in projects"
                     domain="[('odoo_project_ids', '!=', False)]"
                 />
         <filter
-                    name="no_project"
+                    name="not_used_in_project"
                     string="No project"
                     domain="[('odoo_project_ids', '=', False)]"
                 />
