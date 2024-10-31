@@ -27,7 +27,7 @@
     <field name="model">odoo.module.branch</field>
     <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
     <field name="arch" type="xml">
-      <filter name="no_repository" position="after">
+      <filter name="without_repository" position="after">
         <filter
                     name="migrate"
                     string="To Migrate"
