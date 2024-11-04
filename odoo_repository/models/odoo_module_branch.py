@@ -5,7 +5,9 @@ import random
 import time
 from urllib.parse import urlparse
 
-from odoo import api, fields, models, tools
+from odoo import _, api, fields, models, tools
+from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 from odoo.addons.queue_job.exception import RetryableJobError
 
@@ -16,7 +18,7 @@ from ..utils.module import adapt_version
 class OdooModuleBranch(models.Model):
     _name = "odoo.module.branch"
     _description = "Odoo Module Branch"
-    _order = "module_name, branch_name"
+    _order = "repository_sequence, module_name, branch_name"
 
     module_id = fields.Many2one(
         comodel_name="odoo.module",
@@ -26,7 +28,7 @@ class OdooModuleBranch(models.Model):
         index=True,
     )
     module_name = fields.Char(
-        string="Module Technical Name", related="module_id.name", store=True
+        string="Module Technical Name", related="module_id.name", store=True, index=True
     )
     repository_branch_id = fields.Many2one(
         comodel_name="odoo.repository.branch",
@@ -37,7 +39,13 @@ class OdooModuleBranch(models.Model):
     repository_id = fields.Many2one(
         related="repository_branch_id.repository_id",
         store=True,
+        precompute=True,
         string="Repository",
+    )
+    repository_sequence = fields.Integer(
+        related="repository_id.sequence",
+        store=True,
+        index=True,
     )
     org_id = fields.Many2one(
         related="repository_branch_id.repository_id.org_id",
@@ -46,7 +54,7 @@ class OdooModuleBranch(models.Model):
     )
     branch_id = fields.Many2one(
         # NOTE: not a related on 'repository_branch_id' as we need to create
-        # module dependencies without knowing in advance what is their repo.
+        # modules without knowing in advance what is their repo (orphaned modules).
         comodel_name="odoo.branch",
         ondelete="cascade",
         string="Branch",
@@ -55,7 +63,7 @@ class OdooModuleBranch(models.Model):
         index=True,
     )
     branch_name = fields.Char(
-        string="Branch Name", related="branch_id.name", store=True
+        string="Branch Name", related="branch_id.name", store=True, index=True
     )
     pr_url = fields.Char(string="PR URL")
     is_standard = fields.Boolean(
@@ -165,14 +173,66 @@ class OdooModuleBranch(models.Model):
         help="Technical field. Where the module is located in the repository."
     )
     url = fields.Char("URL", compute="_compute_url")
+    specific = fields.Boolean(
+        help=(
+            "Module specific to a project repository."
+            "It cannot be used across different projects."
+        )
+    )
 
     _sql_constraints = [
         (
-            "module_id_branch_id_uniq",
-            "UNIQUE (module_id, branch_id)",
-            "This module already exists for this branch.",
+            "module_id_branch_id_repository_id_uniq",
+            "UNIQUE (module_id, branch_id, repository_id)",
+            "This module already exists for this repository/branch.",
         ),
     ]
+
+    def init(self):
+        # Index to complete unique constraint 'module_id_branch_id_repository_id_uniq'.
+        # This is mandatory to support repository_id=NULL in the constraint,
+        # so we cannot create the same orphaned module twice.
+        indexes = [
+            # PostgreSQL < 15 (partial indexes)
+            """
+                CREATE UNIQUE INDEX IF NOT EXISTS odoo_module_branch_uniq_not_null
+                ON odoo_module_branch (module_id, branch_id, repository_id)
+                WHERE repository_id IS NOT NULL;
+            """,
+            """
+                CREATE UNIQUE INDEX IF NOT EXISTS odoo_module_branch_uniq_null
+                ON odoo_module_branch (module_id, branch_id)
+                WHERE repository_id IS NULL;
+            """
+            # PostgreSQL >= 15 (with NULLS NOT DISTINCT)
+            # """
+            #     CREATE UNIQUE INDEX odoo_module_branch_uniq
+            #     ON odoo_module_branch (module_id, branch_id, repository_id)
+            #     NULLS NOT DISTINCT;
+            # """
+        ]
+        for index in indexes:
+            self._cr.execute(index)
+
+    @api.constrains("specific", "dependency_ids")
+    def _check_generic_depends_on_specific(self):
+        for rec in self:
+            if not rec.specific:
+                specific_deps = rec.dependency_ids.filtered("specific")
+                if specific_deps:
+                    msg = _(
+                        "Generic module %(generic_mod)s cannot depend "
+                        "on specific module(s): %(specific_mods)s"
+                    )
+                    raise ValidationError(
+                        msg
+                        % {
+                            "generic_mod": rec.module_name,
+                            "specific_mods": ", ".join(
+                                specific_deps.mapped("module_name")
+                            ),
+                        }
+                    )
 
     @api.depends("repository_id.repo_url", "branch_name", "addons_path", "module_name")
     def _compute_url(self):
@@ -188,9 +248,7 @@ class OdooModuleBranch(models.Model):
     @api.depends("repository_branch_id.name", "module_id.name")
     def _compute_name(self):
         for rec in self:
-            rec.name = (
-                f"{rec.repository_branch_id.name or '?'}" f" - {rec.module_id.name}"
-            )
+            rec.name = f"{rec.repository_branch_id.name or '?'} - {rec.module_id.name}"
 
     @api.depends(
         "dependency_ids.global_dependency_level",
@@ -248,7 +306,7 @@ class OdooModuleBranch(models.Model):
     def action_find_pr_url(self):
         """Find the PR on GitHub that adds this module."""
         self.ensure_one()
-        if self.pr_url or self.repository_branch_id:
+        if self.pr_url or self.repository_branch_id or self.specific:
             return False
         values = {"pr_url": False}
         pr_urls = self._find_pr_urls_from_github(self.branch_id, self.module_id)
@@ -312,8 +370,10 @@ class OdooModuleBranch(models.Model):
         return self._create_or_update(repo_branch, module, values)
 
     def _prepare_module_branch_values(self, repo_branch, module, data):
-        # Get existing module.branch if any
-        module_branch = self._get_module_branch(repo_branch, module)
+        # Get existing module.branch (hosted in scanned repo) if any
+        module_branch = self._get_module_branch(
+            repo_branch.branch_id, module, repo=repo_branch.repository_id
+        )
         # Prepare the 'odoo.module.branch' values
         manifest = data.get("manifest", {})
         values = {
@@ -325,6 +385,7 @@ class OdooModuleBranch(models.Model):
             "is_community": data["is_community"],
             "last_scanned_commit": data.get("last_scanned_commit", False),
             "addons_path": data["relative_path"],
+            "specific": repo_branch.repository_id.specific,
             # Unset PR URL once the module is available in the repository.
             "pr_url": False,
         }
@@ -405,28 +466,48 @@ class OdooModuleBranch(models.Model):
         return values
 
     def _create_or_update(self, repo_branch, module, values):
-        # Check if the module was already scanned.
-        # We take care of checking the priority of repositories so any module
-        # tied to a wrong repository by mistake (due to a PR title mentionning
-        # it for instance while the original repo was still not scanned) will
-        # be attached to the repository with the highest priority.
-        # E.g:
-        #   1. we import a project using module A from odoo/odoo
-        #   2. odoo/odoo is still not scanned, but module A is anyway created
-        #   3. we find a PR in repo OCA/x mentionning it, module A is then
-        #      attached to repo OCA/x
-        #   5. we scan odoo/odoo and find module A there, as odoo/odoo has a
-        #      higher priority, it is replacing OCA/x as original repo of module A
-        module_branch = self._get_module_branch(repo_branch, module)
+        """Create or update a `odoo.module.branch` record from scanned module.
+
+        This method will try to link/update an existing module in DB, that could be:
+            - already scanned in the current repository (simple update)
+            - orphaned (update the repository of such module)
+            - unmerged/pending (only if the scanned repository hosts generic modules)
+        """
+        branch = repo_branch.branch_id
+        module_branch = False
+        module_branch_in_repo = self._get_module_branch(
+            branch, module, repo=repo_branch.repository_id
+        )
+        # Module was already scanned in the current repository: update it
+        if module_branch_in_repo:
+            module_branch = module_branch_in_repo
+        # Module was never scanned in the current repository:
+        else:
+            # Check if an orphaned module exists
+            orphaned_module_branch = self._get_orphaned_module_branch(branch, module)
+            if orphaned_module_branch:
+                module_branch = orphaned_module_branch
+            # Check if an unmerged module exists if the scanned repo is generic
+            elif not repo_branch.repository_id.specific:
+                unmerged_module_branch = self._get_unmerged_module_branch(
+                    branch, module
+                )
+                if unmerged_module_branch:
+                    module_branch = unmerged_module_branch
+        module_branch = self._filter_module_to_update(repo_branch, module_branch)
         if module_branch:
-            if (
-                module_branch.repository_id.sequence
-                > repo_branch.repository_id.sequence
-            ):
-                values["repository_branch_id"] = repo_branch.id
+            values["repository_branch_id"] = repo_branch.id
             module_branch.sudo().write(values)
         else:
             module_branch = self.sudo().create(values)
+        return module_branch
+
+    def _filter_module_to_update(self, repo_branch, module_branch):
+        """Hook called by '_create_or_update'.
+
+        Can be overriden to return `False` to force the creation of a new
+        `odoo.module.branch` record linked to the scanned repository.
+        """
         return module_branch
 
     @api.model
@@ -550,23 +631,59 @@ class OdooModuleBranch(models.Model):
             return rec.id
         return False
 
+    @api.model
+    def _find(self, branch, module, repo, domain=None):
+        """Find an `odoo.module.branch` record matching parameters.
+
+        The lookup of the module is in this order:
+            - search in `repo`
+            - search among generic modules in other repositories
+            - search among orphaned modules
+
+        Additional search criteria can be added with `domain`,
+        e.g. `domain=[('installable', '=', True)]`.
+        """
+        # Look for the module first in the current repository
+        module_branch = self._get_module_branch(
+            branch, module, repo=repo, domain=domain
+        )
+        # Then look among generic modules
+        if not module_branch:
+            modules_branch = self._get_module_branch(
+                branch,
+                module,
+                domain=expression.AND(
+                    [
+                        domain or [],
+                        [("specific", "=", False), ("repository_id", "!=", False)],
+                    ],
+                ),
+            )
+            module_branch = fields.first(modules_branch)
+        # Otherwise look for the module among orphaned modules
+        if not module_branch:
+            module_branch = self._get_orphaned_module_branch(
+                branch, module, domain=domain
+            )
+        return module_branch
+
+    @api.model
+    def _find_or_create(self, branch, module, repo, domain=None):
+        """Find an `odoo.module.branch` record (see `_find`), or create an orphaned one."""
+        module_branch = self._find(branch, module, repo, domain=domain)
+        # If still not found, create the module as an orphaned module
+        # (it will hopefully be bound to a repository later)
+        if not module_branch:
+            module_branch = self.sudo()._create_orphaned_module_branch(branch, module)
+        return module_branch
+
     def _get_dependency_ids(self, repo_branch, depends: list):
         dependency_ids = []
         for depend in depends:
             module = self._get_module(depend)
-            dependency = self.search(
-                [
-                    ("module_id", "=", module.id),
-                    ("branch_id", "=", repo_branch.branch_id.id),
-                ]
+            dependency = self._find_or_create(
+                repo_branch.branch_id, module, repo_branch.repository_id
             )
-            if not dependency:
-                dependency = self.sudo().create(
-                    {
-                        "module_id": module.id,
-                        "branch_id": repo_branch.branch_id.id,
-                    }
-                )
             dependency_ids.append(dependency.id)
         return dependency_ids
 
@@ -602,13 +719,65 @@ class OdooModuleBranch(models.Model):
         return module
 
     @api.model
-    def _get_module_branch(self, repo_branch, module):
-        """Return the `odoo.module.branch` if it already exists. Do not create it."""
-        args = [
-            ("branch_id", "=", repo_branch.branch_id.id),
+    def _get_module_branch_domain(self, branch, module, repo=None, domain=None):
+        """Return the domain to identify an `odoo.module.branch` record."""
+        _domain = [
+            ("branch_id", "=", branch.id),
             ("module_id", "=", module.id),
         ]
-        return self.search(args)
+        if repo:
+            _domain.append(("repository_id", "=", repo.id))
+        elif repo is False:
+            _domain.append(("repository_id", "=", False))
+        if domain:
+            _domain.extend(domain)
+        return _domain
+
+    @api.model
+    def _get_module_branch(self, branch, module, repo=None, domain=None):
+        """Return the `odoo.module.branch` if it already exists. Do not create it."""
+        domain = self._get_module_branch_domain(
+            branch, module, repo=repo, domain=domain
+        )
+        return self.search(domain)
+
+    @api.model
+    def _get_orphaned_module_branch_domain(self, branch, module, domain=None):
+        """Return the domain to identify an orphaned module (without repo)."""
+        return self._get_module_branch_domain(branch, module, repo=False, domain=domain)
+
+    @api.model
+    def _get_orphaned_module_branch(self, branch, module, domain=None):
+        """Return an orphaned module matching `branch` and `module`."""
+        domain = self._get_orphaned_module_branch_domain(branch, module, domain=domain)
+        return self.search(domain)
+
+    @api.model
+    def _get_unmerged_module_branch_domain(self, branch, module):
+        """Return the domain to identify an unmerged module (coming from a PR)."""
+        domain = self._get_module_branch_domain(branch, module)
+        domain.extend(
+            [
+                ("specific", "=", False),
+                ("repository_id", "!=", False),
+                ("pr_url", "!=", False),
+            ]
+        )
+        return domain
+
+    @api.model
+    def _get_unmerged_module_branch(self, branch, module):
+        """Return an unmerged module matching `branch` and `module`."""
+        domain = self._get_unmerged_module_branch_domain(branch, module)
+        return self.search(domain)
+
+    def _create_orphaned_module_branch(self, branch, module):
+        """Create an orphaned module."""
+        values = {
+            "module_id": module.id,
+            "branch_id": branch.id,
+        }
+        return self.create(values)
 
     # TODO adds ormcache
     def _get_modules_data(self, orgs=None, repositories=None, branches=None):

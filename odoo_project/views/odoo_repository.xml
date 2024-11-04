@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_repository_view_form" model="ir.ui.view">
+    <field name="name">odoo.repository.form.inherit</field>
+    <field name="model">odoo.repository</field>
+    <field name="inherit_id" ref="odoo_repository.odoo_repository_view_form" />
+    <field name="arch" type="xml">
+      <div name="button_box" position="inside">
+        <button
+                    name="action_view_projects"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-puzzle-piece"
+                    attrs="{'invisible': [('project_count', '=', 0)]}"
+                >
+            <field name="project_count" widget="statinfo" string="Projects" />
+        </button>
+      </div>
+    </field>
+  </record>
+
+</odoo>

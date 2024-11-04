@@ -129,3 +129,21 @@ class OdooProjectModule(models.Model):
         )
         action["domain"] = [("id", "in", project_dependencies.ids)]
         return action
+
+    def _remap_to_specific_module(self):
+        """Re-map orphaned project modules.
+
+        As soon as an orphaned module has been scanned as a specific module
+        of a project repository, all project modules that were targeting this
+        orphaned module will inherit from this newly specific module instead.
+        """
+        for rec in self:
+            if not rec.odoo_project_id.repository_id:
+                continue
+            specific_module_branch = self.env["odoo.module.branch"]._get_module_branch(
+                rec.branch_id,
+                rec.module_id,
+                repo=rec.odoo_project_id.repository_id,
+            )
+            if specific_module_branch:
+                rec.write({"module_branch_id": specific_module_branch.id})
