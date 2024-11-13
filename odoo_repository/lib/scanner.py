@@ -441,7 +441,7 @@ class MigrationScanner(BaseScanner):
         )
         self.migration_path = migration_path
 
-    def scan(self, modules=None):
+    def scan(self, addons_path=".", module_names=None):
         # Clone/fetch has been done during the repository scan, the migration
         # scan will be processed on the current history of commits
         res = self.sync(fetch=False)
@@ -455,17 +455,23 @@ class MigrationScanner(BaseScanner):
                 repo, target_branch
             ):
                 return self._scan_migration_path(
-                    repo, source_branch, target_branch, modules=modules
+                    repo,
+                    source_branch,
+                    target_branch,
+                    addons_path=addons_path,
+                    module_names=module_names,
                 )
         return res
 
-    def _scan_migration_path(self, repo, source_branch, target_branch, modules=None):
+    def _scan_migration_path(
+        self, repo, source_branch, target_branch, addons_path=".", module_names=None
+    ):
         repo_source_commit = self._get_last_fetched_commit(repo, source_branch)
         repo_target_commit = self._get_last_fetched_commit(repo, target_branch)
-        if not modules:
-            modules = self._get_module_paths(repo, ".", source_branch)
+        if not module_names:
+            module_names = self._get_module_paths(repo, addons_path, source_branch)
         res = []
-        for module in modules:
+        for module in module_names:
             if self._is_module_blacklisted(module):
                 _logger.info(
                     "%s: '%s' is blacklisted (no migration scan)",
@@ -513,6 +519,7 @@ class MigrationScanner(BaseScanner):
             ):
                 scanned_data = self._scan_module(
                     repo,
+                    addons_path,
                     module,
                     module_branch_id,
                     source_branch,
@@ -528,6 +535,7 @@ class MigrationScanner(BaseScanner):
     def _scan_module(
         self,
         repo: git.Repo,
+        addons_path: str,
         module: str,
         module_branch_id: int,
         source_branch: str,
@@ -539,18 +547,20 @@ class MigrationScanner(BaseScanner):
     ):
         """Collect the migration data of a module."""
         data = {
+            "addons_path": addons_path,
             "module": module,
             "source_branch": source_branch,
             "target_branch": target_branch,
             "source_commit": source_commit,
             "target_commit": target_commit,
         }
+        module_path = pathlib.Path(addons_path).joinpath(module)
         # If files updated in the module since the last scan are not relevant
         # (e.g. all new commits are updating PO files), we skip the scan but
         # we still push the new source/target commits to Odoo.
         scan_relevant = self._is_scan_module_relevant(
             repo,
-            module,
+            module_path,
             source_commit,
             target_commit,
             source_last_scanned_commit,
@@ -564,7 +574,9 @@ class MigrationScanner(BaseScanner):
                 source_branch,
                 target_branch,
             )
-            oca_port_data = self._run_oca_port(module, source_branch, target_branch)
+            oca_port_data = self._run_oca_port(
+                module_path, source_branch, target_branch
+            )
             data.update(oca_port_data)
         self._push_scanned_data(module_branch_id, data)
         # Mitigate "GH API rate limit exceeds" error
@@ -575,7 +587,7 @@ class MigrationScanner(BaseScanner):
     def _is_scan_module_relevant(
         self,
         repo: git.Repo,
-        module: str,
+        module_path: str,
         source_commit: str,
         target_commit: str,
         source_last_scanned_commit: str,
@@ -599,24 +611,28 @@ class MigrationScanner(BaseScanner):
             return True
         # Other cases: check files impacted by new commits both on source & target
         # branches to tell if a scan should be processed
-        source_tree = self._get_subtree(repo.commit(source_commit).tree, module)
-        target_tree = self._get_subtree(repo.commit(target_commit).tree, module)
+        source_tree = self._get_subtree(repo.commit(source_commit).tree, module_path)
+        target_tree = self._get_subtree(repo.commit(target_commit).tree, module_path)
         source_new_commits = self._get_commits_of_git_tree(
             source_last_scanned_commit, source_commit, source_tree
         )
-        source_to_scan = self._check_relevant_commits(repo, module, source_new_commits)
+        source_to_scan = self._check_relevant_commits(
+            repo, module_path, source_new_commits
+        )
         target_new_commits = self._get_commits_of_git_tree(
             target_last_scanned_commit, target_commit, target_tree
         )
-        target_to_scan = self._check_relevant_commits(repo, module, target_new_commits)
+        target_to_scan = self._check_relevant_commits(
+            repo, module_path, target_new_commits
+        )
         return source_to_scan or target_to_scan
 
-    def _check_relevant_commits(self, repo, module, commits):
+    def _check_relevant_commits(self, repo, module_path, commits):
         paths = set()
         for commit_sha in commits:
             commit = repo.commit(commit_sha)
             if commit.parents:
-                diffs = commit.diff(commit.parents[0], paths=[module], R=True)
+                diffs = commit.diff(commit.parents[0], paths=[module_path], R=True)
             else:
                 diffs = commit.diff(git.NULL_TREE)
             for diff in diffs:
@@ -627,11 +643,11 @@ class MigrationScanner(BaseScanner):
                 return True
         return False
 
-    def _run_oca_port(self, module, source_branch, target_branch):
+    def _run_oca_port(self, module_path, source_branch, target_branch):
         _logger.info(
             "%s: collect migration data for '%s' (%s -> %s)",
             self.full_name,
-            module,
+            module_path,
             source_branch,
             target_branch,
         )
@@ -639,7 +655,7 @@ class MigrationScanner(BaseScanner):
         params = {
             "source": f"origin/{source_branch}",
             "target": f"origin/{target_branch}",
-            "addon": module,
+            "addon_path": module_path,
             "upstream_org": self.org,
             "repo_path": self.path,
             "repo_name": self.name,

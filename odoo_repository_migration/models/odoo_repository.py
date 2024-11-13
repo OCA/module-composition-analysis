@@ -106,21 +106,23 @@ class OdooRepository(models.Model):
                 ),
                 identity_key=identity_exact,
             )
-            job = delayable._scan_migration_module(
-                migration_path.id, module.module_id.name
-            )
+            job = delayable._scan_migration_module(migration_path.id, module.id)
             jobs.append(job)
         return jobs
 
-    def _scan_migration_module(self, migration_path_id, module_name):
-        """Scan migration path for `module_name`."""
+    def _scan_migration_module(self, migration_path_id, module_branch_id):
+        """Scan migration path for `module_branch_id`."""
+        module = self.env["odoo.module.branch"].browse(module_branch_id).exists()
+        module.ensure_one()
         migration_path = (
             self.env["odoo.migration.path"].browse(migration_path_id).exists()
         )
         params = self._prepare_migration_scanner_parameters(migration_path)
         try:
             scanner = MigrationScannerOdooEnv(**params)
-            return scanner.scan(modules=[module_name])
+            return scanner.scan(
+                addons_path=module.addons_path, module_names=[module.module_id.name]
+            )
         except Exception as exc:
             raise RetryableJobError("Scanner error") from exc
 
