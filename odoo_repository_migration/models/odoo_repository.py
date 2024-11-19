@@ -146,7 +146,7 @@ class OdooRepository(models.Model):
 
     def _prepare_migration_scanner_parameters(self, migration_path):
         ir_config = self.env["ir.config_parameter"]
-        repositories_path = ir_config.get_param(self._repositories_path_key)
+        repositories_path = ir_config.sudo().get_param(self._repositories_path_key)
         mig_path = (
             migration_path.source_branch_id.name,
             migration_path.target_branch_id.name,
