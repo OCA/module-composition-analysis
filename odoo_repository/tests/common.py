@@ -14,15 +14,24 @@ from odoo.tests.common import TransactionCase
 
 
 class Common(TransactionCase, CommonCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        CommonCase.setUpClass()
+        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
+        cls.repositories_path = tempfile.mkdtemp()
+        cls.env["ir.config_parameter"].set_param(
+            "odoo_repository_storage_path", cls.repositories_path
+        )
+        cls._apply_git_config()
+
     def setUp(self):
         super().setUp()
         # Leverage the existing test class from 'oca_port' to bootstrap
         # temporary git repositories to run tests
         CommonCase.setUp(self)
         self.repo_name = pathlib.Path(self.repo_upstream_path).parts[-1]
-        self.org = self.env["odoo.repository.org"].create(
-            {"name": self._settings["user_org"]}
-        )
+        self.org = self.env["odoo.repository.org"].create({"name": self.fork_org})
         self.odoo_repository = self.env["odoo.repository"].create(
             {
                 "org_id": self.org.id,
@@ -33,32 +42,37 @@ class Common(TransactionCase, CommonCase):
             }
         )
         # branch1
+        self.branch1_name = self.source1.split("/")[1]
         self.branch = (
             self.env["odoo.branch"]
             .with_context(active_test=False)
-            .search([("name", "=", self._settings["branch1"])])
+            .search([("name", "=", self.branch1_name)])
         )
         if not self.branch:
             self.branch = self.env["odoo.branch"].create(
                 {
-                    "name": self._settings["branch1"],
+                    "name": self.branch1_name,
                     "odoo_version": True,
                 }
             )
         # branch2
+        self.branch2_name = self.source2.split("/")[1]
         self.branch2 = (
             self.env["odoo.branch"]
             .with_context(active_test=False)
-            .search([("name", "=", self._settings["branch2"])])
+            .search([("name", "=", self.branch2_name)])
         )
         if not self.branch2:
             self.branch2 = self.env["odoo.branch"].create(
                 {
-                    "name": self._settings["branch2"],
+                    "name": self.branch2_name,
                     "odoo_version": True,
                 }
             )
-        self.module_name = self._settings["addon"]
+        # branch3
+        self.branch3_name = self.target2.split("/")[1]
+        # technical module
+        self.module_name = self.addon
         self.module_branch_model = self.env["odoo.module.branch"]
 
     @classmethod
@@ -97,9 +111,7 @@ class Common(TransactionCase, CommonCase):
             manifest.writelines(lines)
         # Commit
         repo.index.add(self.manifest_path)
-        commit = repo.index.commit(
-            f"[IMP] {self._settings['addon']}: bump version to {version}"
-        )
+        commit = repo.index.commit(f"[IMP] {self.addon}: bump version to {version}")
         return commit.hexsha
 
     def _run_odoo_repository_action_scan(self, branch, force=False):
@@ -107,16 +119,6 @@ class Common(TransactionCase, CommonCase):
         self.odoo_repository.with_context(queue_job__no_delay=True).action_scan(
             [branch], force=force
         )
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
-        cls.repositories_path = tempfile.mkdtemp()
-        cls.env["ir.config_parameter"].set_param(
-            "odoo_repository_storage_path", cls.repositories_path
-        )
-        cls._apply_git_config()
 
     def _create_odoo_module(self, name):
         return self.env["odoo.module"].create({"name": name})

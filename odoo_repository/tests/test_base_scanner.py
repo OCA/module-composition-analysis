@@ -11,13 +11,13 @@ from .common import Common
 class TestBaseScanner(Common):
     def _init_scanner(self, **params):
         kwargs = {
-            "org": self._settings["user_org"],
+            "org": self.fork_org,
             "name": self.repo_name,
             "clone_url": self.repo_upstream_path,
             "branches": [
-                self._settings["branch1"],
-                self._settings["branch2"],
-                self._settings["branch3"],
+                self.branch1_name,
+                self.branch2_name,
+                self.branch3_name,
             ],
             "repositories_path": self.repositories_path,
         }
@@ -29,10 +29,8 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         self.assertTrue(scanner.repositories_path.exists())
         self.assertEqual(scanner.path.parts[-1], self.repo_name)
-        self.assertEqual(scanner.path.parts[-2], self._settings["user_org"])
-        self.assertEqual(
-            scanner.full_name, f"{self._settings['user_org']}/{self.repo_name}"
-        )
+        self.assertEqual(scanner.path.parts[-2], self.fork_org)
+        self.assertEqual(scanner.full_name, f"{self.fork_org}/{self.repo_name}")
 
     def test_clone_url_github_token(self):
         # Without token
@@ -61,15 +59,15 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            self.assertTrue(scanner._branch_exists(repo, self._settings["branch1"]))
-            self.assertTrue(scanner._branch_exists(repo, self._settings["branch2"]))
-            self.assertTrue(scanner._branch_exists(repo, self._settings["branch3"]))
+            self.assertTrue(scanner._branch_exists(repo, self.branch1_name))
+            self.assertTrue(scanner._branch_exists(repo, self.branch2_name))
+            self.assertTrue(scanner._branch_exists(repo, self.branch3_name))
 
     def test_checkout_branch(self):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch = self._settings["branch2"]
+            branch = self.branch2_name
             branch_sha = repo.refs[f"origin/{branch}"].object.hexsha
             self.assertNotEqual(repo.head.object.hexsha, branch_sha)
             scanner._checkout_branch(repo, branch)
@@ -79,9 +77,9 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch1 = self._settings["branch1"]
-            branch2 = self._settings["branch2"]
-            branch3 = self._settings["branch3"]
+            branch1 = self.branch1_name
+            branch2 = self.branch2_name
+            branch3 = self.branch3_name
             branch1_sha = repo.refs[f"origin/{branch1}"].object.hexsha
             branch2_sha = repo.refs[f"origin/{branch2}"].object.hexsha
             branch3_sha = repo.refs[f"origin/{branch3}"].object.hexsha
@@ -99,15 +97,15 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch = self._settings["branch1"]
+            branch = self.branch1_name
             module_paths = scanner._get_module_paths(repo, ".", branch)
             self.assertEqual(len(module_paths), 1)
-            self.assertEqual(module_paths[0], self._settings["addon"])
+            self.assertEqual(module_paths[0], self.addon)
 
     def test_get_module_paths_updated(self):
         scanner = self._init_scanner()
         scanner.sync()
-        branch = self._settings["branch1"]
+        branch = self.branch1_name
         with scanner.repo() as repo:
             initial_commit = scanner._get_last_fetched_commit(repo, branch)
             # Case where from_commit and to_commit are the same: no change detected
@@ -133,7 +131,7 @@ class TestBaseScanner(Common):
                 branch=branch,
             )
             self.assertEqual(len(module_paths), 1)
-            self.assertEqual(module_paths.pop(), self._settings["addon"])
+            self.assertEqual(module_paths.pop(), self.addon)
 
     def test_filter_file_path(self):
         scanner = self._init_scanner()
@@ -144,9 +142,9 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch = self._settings["branch1"]
+            branch = self.branch1_name
             remote_branch = f"origin/{branch}"
-            module = self._settings["addon"]
+            module = self.addon
             module_tree = repo.tree(remote_branch) / module
             all_commits = [c.hexsha for c in repo.iter_commits(remote_branch)]
             commit = scanner._get_last_commit_of_git_tree(remote_branch, module_tree)
@@ -156,9 +154,9 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch = self._settings["branch1"]
+            branch = self.branch1_name
             remote_branch = f"origin/{branch}"
-            module = self._settings["addon"]
+            module = self.addon
             module_tree = repo.tree(remote_branch) / module
             all_commits = [c.hexsha for c in repo.iter_commits(remote_branch)]
             commits = scanner._get_commits_of_git_tree(
@@ -171,9 +169,9 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch = self._settings["branch1"]
+            branch = self.branch1_name
             remote_branch = f"origin/{branch}"
-            module = self._settings["addon"]
+            module = self.addon
             module_tree = repo.tree(remote_branch) / module
             self.assertTrue(scanner._odoo_module(module_tree))
 
@@ -181,10 +179,10 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch = self._settings["branch1"]
+            branch = self.branch1_name
             remote_branch = f"origin/{branch}"
             # Check module tree: OK
-            module = self._settings["addon"]
+            module = self.addon
             module_tree = repo.tree(remote_branch) / module
             self.assertTrue(scanner._manifest_exists(module_tree))
             # Check repository root tree: KO
@@ -194,9 +192,9 @@ class TestBaseScanner(Common):
         scanner = self._init_scanner()
         scanner.sync()
         with scanner.repo() as repo:
-            branch = self._settings["branch1"]
+            branch = self.branch1_name
             remote_branch = f"origin/{branch}"
-            module = self._settings["addon"]
+            module = self.addon
             # Module/folder exists: OK
             self.assertTrue(scanner._get_subtree(repo.tree(remote_branch), module))
             # Module/folder doesn't exist: KO
