@@ -32,6 +32,7 @@ class Common(TransactionCase, CommonCase):
                 "repo_type": "github",
             }
         )
+        # branch1
         self.branch = (
             self.env["odoo.branch"]
             .with_context(active_test=False)
@@ -41,6 +42,19 @@ class Common(TransactionCase, CommonCase):
             self.branch = self.env["odoo.branch"].create(
                 {
                     "name": self._settings["branch1"],
+                    "odoo_version": True,
+                }
+            )
+        # branch2
+        self.branch2 = (
+            self.env["odoo.branch"]
+            .with_context(active_test=False)
+            .search([("name", "=", self._settings["branch2"])])
+        )
+        if not self.branch2:
+            self.branch2 = self.env["odoo.branch"].create(
+                {
+                    "name": self._settings["branch2"],
                     "odoo_version": True,
                 }
             )
