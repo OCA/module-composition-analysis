@@ -207,7 +207,7 @@ class OdooRepository(models.Model):
     def _check_config(self):
         # Check the configuration of repositories folder
         key = self._repositories_path_key
-        repositories_path = self.env["ir.config_parameter"].get_param(key, "")
+        repositories_path = self.env["ir.config_parameter"].sudo().get_param(key, "")
         if not repositories_path:
             raise UserError(
                 _(
@@ -412,7 +412,7 @@ class OdooRepository(models.Model):
 
     def _prepare_scanner_parameters(self, branch):
         ir_config = self.env["ir.config_parameter"]
-        repositories_path = ir_config.get_param(self._repositories_path_key)
+        repositories_path = ir_config.sudo().get_param(self._repositories_path_key)
         return {
             "org": self.org_id.name,
             "name": self.name,
