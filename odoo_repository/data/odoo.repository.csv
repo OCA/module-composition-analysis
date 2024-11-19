@@ -50,6 +50,7 @@ repo_oca_department,odoo_repository_org_oca,department,https://github.com/OCA/de
 repo_oca_dms,odoo_repository_org_oca,dms,https://github.com/OCA/dms,https://github.com/OCA/dms,github
 repo_oca_donation,odoo_repository_org_oca,donation,https://github.com/OCA/donation,https://github.com/OCA/donation,github
 repo_oca_e_commerce,odoo_repository_org_oca,e-commerce,https://github.com/OCA/e-commerce,https://github.com/OCA/e-commerce,github
+repo_oca_e_learning,odoo_repository_org_oca,e-learning,https://github.com/OCA/e-learning,https://github.com/OCA/e-learning,github
 repo_oca_edi,odoo_repository_org_oca,edi,https://github.com/OCA/edi,https://github.com/OCA/edi,github
 repo_oca_edi_framework,odoo_repository_org_oca,edi-framework,https://github.com/OCA/edi-framework,https://github.com/OCA/edi-framework,github
 repo_oca_event,odoo_repository_org_oca,event,https://github.com/OCA/event,https://github.com/OCA/event,github
@@ -114,6 +115,7 @@ repo_oca_l10n_uruguay,odoo_repository_org_oca,l10n-uruguay,https://github.com/OC
 repo_oca_l10n_usa,odoo_repository_org_oca,l10n-usa,https://github.com/OCA/l10n-usa,https://github.com/OCA/l10n-usa,github
 repo_oca_l10n_venezuela,odoo_repository_org_oca,l10n-venezuela,https://github.com/OCA/l10n-venezuela,https://github.com/OCA/l10n-venezuela,github
 repo_oca_l10n_vietnam,odoo_repository_org_oca,l10n-vietnam,https://github.com/OCA/l10n-vietnam,https://github.com/OCA/l10n-vietnam,github
+repo_oca_mail,odoo_repository_org_oca,mail,https://github.com/OCA/mail,https://github.com/OCA/mail,github
 repo_oca_maintenance,odoo_repository_org_oca,maintenance,https://github.com/OCA/maintenance,https://github.com/OCA/maintenance,github
 repo_oca_management_system,odoo_repository_org_oca,management-system,https://github.com/OCA/management-system,https://github.com/OCA/management-system,github
 repo_oca_manufacture,odoo_repository_org_oca,manufacture,https://github.com/OCA/manufacture,https://github.com/OCA/manufacture,github
@@ -145,6 +147,7 @@ repo_oca_queue,odoo_repository_org_oca,queue,https://github.com/OCA/queue,https:
 repo_oca_repair,odoo_repository_org_oca,repair,https://github.com/OCA/repair,https://github.com/OCA/repair,github
 repo_oca_report_print_send,odoo_repository_org_oca,report-print-send,https://github.com/OCA/report-print-send,https://github.com/OCA/report-print-send,github
 repo_oca_reporting_engine,odoo_repository_org_oca,reporting-engine,https://github.com/OCA/reporting-engine,https://github.com/OCA/reporting-engine,github
+repo_oca_resource,odoo_repository_org_oca,resource,https://github.com/OCA/resource,https://github.com/OCA/resource,github
 repo_oca_rest_api,odoo_repository_org_oca,rest-api,https://github.com/OCA/rest-api,https://github.com/OCA/rest-api,github
 repo_oca_rest_framework,odoo_repository_org_oca,rest-framework,https://github.com/OCA/rest-framework,https://github.com/OCA/rest-framework,github
 repo_oca_rma,odoo_repository_org_oca,rma,https://github.com/OCA/rma,https://github.com/OCA/rma,github
@@ -197,6 +200,7 @@ repo_oca_vertical_travel,odoo_repository_org_oca,vertical-travel,https://github.
 repo_oca_wallet,odoo_repository_org_oca,wallet,https://github.com/OCA/wallet,https://github.com/OCA/wallet,github
 repo_oca_web,odoo_repository_org_oca,web,https://github.com/OCA/web,https://github.com/OCA/web,github
 repo_oca_web_api,odoo_repository_org_oca,web-api,https://github.com/OCA/web-api,https://github.com/OCA/web-api,github
+repo_oca_web_api_contrib,odoo_repository_org_oca,web-api-contrib,https://github.com/OCA/web-api-contrib,https://github.com/OCA/web-api-contrib,github
 repo_oca_webhook,odoo_repository_org_oca,webhook,https://github.com/OCA/webhook,https://github.com/OCA/webhook,github
 repo_oca_webkit_tools,odoo_repository_org_oca,webkit-tools,https://github.com/OCA/webkit-tools,https://github.com/OCA/webkit-tools,github
 repo_oca_website,odoo_repository_org_oca,website,https://github.com/OCA/website,https://github.com/OCA/website,github
