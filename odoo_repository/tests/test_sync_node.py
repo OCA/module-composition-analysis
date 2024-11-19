@@ -33,7 +33,7 @@ class TestSyncNode(Common):
         data[0].update(
             module="synced",
             version="2.0.0",
-            branch=self._settings["branch2"],
+            branch=self.branch2_name,
         )
         new_module = self.env["odoo.module"].search([("name", "=", "synced")])
         self.assertFalse(new_module)
@@ -45,7 +45,7 @@ class TestSyncNode(Common):
         )
         self.assertTrue(new_module)
         self.assertEqual(new_module.version, "2.0.0")
-        self.assertEqual(new_module.branch_id.name, self._settings["branch2"])
+        self.assertEqual(new_module.branch_id.name, self.branch2_name)
         # Existing module didn't changed
         existing_module = self.env["odoo.module.branch"].search(
             [("module_name", "=", self.module_name)]
