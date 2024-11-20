@@ -32,10 +32,8 @@ class TestRepositoryScanner(Common):
         scanner = self._init_scanner()
         self.assertTrue(scanner.repositories_path.exists())
         self.assertEqual(scanner.path.parts[-1], self.repo_name)
-        self.assertEqual(scanner.path.parts[-2], self._settings["user_org"])
-        self.assertEqual(
-            scanner.full_name, f"{self._settings['user_org']}/{self.repo_name}"
-        )
+        self.assertEqual(scanner.path.parts[-2], self.fork_org)
+        self.assertEqual(scanner.full_name, f"{self.fork_org}/{self.repo_name}")
 
     def test_sync(self):
         scanner = self._init_scanner()
@@ -117,7 +115,7 @@ class TestRepositoryScanner(Common):
                 last_fetched_commit,
                 last_scanned_commit,
             )
-        module = self._settings["addon"]
+        module = self.addon
         self.assertIn(module, modules_to_scan)
 
     def test_scan_module(self):
@@ -128,7 +126,7 @@ class TestRepositoryScanner(Common):
             repo_id = scanner._get_odoo_repository_id()
             branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
             repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
-            module_path = self._settings["addon"]
+            module_path = self.addon
             remote_branch = f"origin/{self.branch.name}"
             module_tree = repo.tree(remote_branch) / module_path
             last_module_commit = scanner._get_last_commit_of_git_tree(
@@ -162,7 +160,7 @@ class TestRepositoryScanner(Common):
             repo_id = scanner._get_odoo_repository_id()
             branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
             repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
-            module = self._settings["addon"]
+            module = self.addon
             remote_branch = f"origin/{self.branch.name}"
             module_tree = repo.tree(remote_branch) / module
             last_module_commit = scanner._get_last_commit_of_git_tree(
