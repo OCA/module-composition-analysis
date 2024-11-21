@@ -554,7 +554,7 @@ class MigrationScanner(BaseScanner):
             "source_commit": source_commit,
             "target_commit": target_commit,
         }
-        module_path = pathlib.Path(addons_path).joinpath(module)
+        module_path = str(pathlib.Path(addons_path).joinpath(module))
         # If files updated in the module since the last scan are not relevant
         # (e.g. all new commits are updating PO files), we skip the scan but
         # we still push the new source/target commits to Odoo.
