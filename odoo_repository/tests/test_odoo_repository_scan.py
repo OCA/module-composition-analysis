@@ -194,3 +194,39 @@ class TestOdooRepositoryScan(Common):
         self._run_odoo_repository_action_scan(self.branch.name, force=True)
         # Unmerged module hasn't been attached to the scanned repository
         self.assertNotEqual(module_branch.repository_id, self.odoo_repository)
+
+    def test_action_scan_uninstallable_module(self):
+        """Test scan of an 'installable: False' module.
+
+        Such module should not be created with its dependencies (Odoo, Python...)
+        or versions history to not pollute the DB. Such data could be
+        outdated as the module is flagged as not installable. They will be updated
+        once the module is migrated/installable.
+        """
+        self._update_module_installable_on_branch(self.branch.name, installable=False)
+        module = self.env["odoo.module"].search([("name", "=", self.module_name)])
+        self.assertFalse(module)
+        self._run_odoo_repository_action_scan(self.branch.name)
+        module = self.env["odoo.module"].search([("name", "=", self.module_name)])
+        self.assertTrue(module)
+        # Check module branch
+        module_branch = self.env["odoo.module.branch"].search(
+            [("module_id", "=", module.id), ("branch_id", "=", self.branch.id)]
+        )
+        self.assertEqual(module_branch.module_name, self.module_name)
+        self.assertTrue(module_branch.last_scanned_commit)
+        self.assertEqual(module_branch.repository_id, self.odoo_repository)
+        self.assertEqual(module_branch.org_id, self.org)
+        self.assertEqual(module_branch.title, "Test")
+        self.assertEqual(module_branch.category_id.name, "Test Module")
+        self.assertItemsEqual(
+            module_branch.author_ids.mapped("name"),
+            ["Odoo Community Association (OCA)", "Camptocamp"],
+        )
+        self.assertFalse(module_branch.specific)
+        # No dependencies
+        self.assertFalse(module_branch.dependency_ids)
+        self.assertFalse(module_branch.external_dependencies)
+        self.assertFalse(module_branch.python_dependency_ids)
+        # No version scanned
+        self.assertFalse(module_branch.version_ids)

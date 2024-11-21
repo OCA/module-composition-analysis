@@ -114,6 +114,28 @@ class Common(TransactionCase, CommonCase):
         commit = repo.index.commit(f"[IMP] {self.addon}: bump version to {version}")
         return commit.hexsha
 
+    def _update_module_installable_on_branch(self, branch, installable=True):
+        repo = git.Repo(self.repo_upstream_path)
+        repo.git.checkout(branch)
+        # Update installable key in manifest file
+        lines = []
+        with open(self.manifest_path, "r+") as manifest:
+            for line in manifest:
+                pattern = r".*installable[`\"]:\s(\b[A-Z,a-z]+),.*"
+                match = re.search(pattern, line)
+                if match:
+                    current_value = match.group(1)
+                    line = line.replace(current_value, str(installable))
+                lines.append(line)
+        with open(self.manifest_path, "r+") as manifest:
+            manifest.writelines(lines)
+        # Commit
+        repo.index.add(self.manifest_path)
+        commit = repo.index.commit(
+            f"[IMP] {self.addon}: make installable={installable}"
+        )
+        return commit.hexsha
+
     def _run_odoo_repository_action_scan(self, branch, force=False):
         """Run `action_scan` for given `branch` on the Odoo repository."""
         self.odoo_repository.with_context(queue_job__no_delay=True).action_scan(
