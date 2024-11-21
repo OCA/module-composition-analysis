@@ -398,13 +398,17 @@ class OdooModuleBranch(models.Model):
             dev_status_id = self._get_dev_status_id(
                 manifest.get("development_status", "")
             )
-            dependency_ids = self._get_dependency_ids(
-                repo_branch, manifest.get("depends", [])
-            )
-            external_dependencies = manifest.get("external_dependencies", {})
-            python_dependency_ids = self._get_python_dependency_ids(
-                tuple(external_dependencies.get("python", []))
-            )
+            dependency_ids = []
+            external_dependencies = {}
+            python_dependency_ids = []
+            if manifest.get("installable", True):
+                dependency_ids = self._get_dependency_ids(
+                    repo_branch, manifest.get("depends", [])
+                )
+                external_dependencies = manifest.get("external_dependencies", {})
+                python_dependency_ids = self._get_python_dependency_ids(
+                    tuple(external_dependencies.get("python", []))
+                )
             license_id = self._get_license_id(manifest.get("license", ""))
             values.update(
                 {
@@ -445,24 +449,25 @@ class OdooModuleBranch(models.Model):
                 }
             )
         # Handle versions history
-        versions = self._prepare_module_branch_version_ids_values(
-            repo_branch,
-            module_branch,
-            module,
-            # If no history versions was scanned (could happen if versions are
-            # part of an unfetched branch), create one corresponding to the
-            # current manifest version if any but without commit.
-            versions=(
-                data.get("versions")
-                or (
-                    {values["version"]: {"commit": None}}
-                    if values.get("version")
-                    else {}
-                )
-            ),
-        )
-        if versions:
-            values["version_ids"] = versions
+        if values.get("installable"):
+            versions = self._prepare_module_branch_version_ids_values(
+                repo_branch,
+                module_branch,
+                module,
+                # If no history versions was scanned (could happen if versions are
+                # part of an unfetched branch), create one corresponding to the
+                # current manifest version if any but without commit.
+                versions=(
+                    data.get("versions")
+                    or (
+                        {values["version"]: {"commit": None}}
+                        if values.get("version")
+                        else {}
+                    )
+                ),
+            )
+            if versions:
+                values["version_ids"] = versions
         return values
 
     def _create_or_update(self, repo_branch, module, values):
