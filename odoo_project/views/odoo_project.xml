@@ -54,40 +54,44 @@
                             options="{'no_open': True}"
                         />
           </group>
-          <group name="modules_unmerged" string="Modules to merge">
-            <field name="unmerged_module_ids" nolabel="1" colspan="2">
-              <tree>
-                <field name="module_id" />
-                <field name="repository_id" />
-                <field name="pr_url" widget="url" />
-              </tree>
-            </field>
-          </group>
-          <group attrs="{'invisible': [('repository_id', '=', False)]}">
-            <group name="modules_not_installed" string="Modules not installed">
-              <field name="module_not_installed_ids" nolabel="1" colspan="2">
-                <tree>
-                  <field name="module_id" />
-                  <field name="repository_id" />
-                  <field name="title" />
-                </tree>
-              </field>
-            </group>
-            <group name="modules_unknown" string="Unknown modules">
-              <field name="unknown_module_ids" nolabel="1" colspan="2">
-                <tree>
-                  <field name="module_id" />
-                  <field name="pr_url" widget="url" />
-                </tree>
-              </field>
-              <button
-                                name="action_find_unknown_modules"
-                                type="object"
-                                string="Find modules"
-                                colspan="2"
-                            />
-            </group>
-          </group>
+          <notebook>
+            <page name="status" string="Status">
+              <group name="modules_unmerged" string="Modules to merge">
+                <field name="unmerged_module_ids" nolabel="1" colspan="2">
+                  <tree>
+                    <field name="module_id" />
+                    <field name="repository_id" />
+                    <field name="pr_url" widget="url" />
+                  </tree>
+                </field>
+              </group>
+              <group attrs="{'invisible': [('repository_id', '=', False)]}">
+                <group name="modules_not_installed" string="Modules not installed">
+                  <field name="module_not_installed_ids" nolabel="1" colspan="2">
+                    <tree>
+                      <field name="module_id" />
+                      <field name="repository_id" />
+                      <field name="title" />
+                    </tree>
+                  </field>
+                </group>
+                <group name="modules_unknown" string="Unknown modules">
+                  <field name="unknown_module_ids" nolabel="1" colspan="2">
+                    <tree>
+                      <field name="module_id" />
+                      <field name="pr_url" widget="url" />
+                    </tree>
+                  </field>
+                  <button
+                                        name="action_find_unknown_modules"
+                                        type="object"
+                                        string="Find modules"
+                                        colspan="2"
+                                    />
+                </group>
+              </group>
+            </page>
+          </notebook>
         </sheet>
         <div class="oe_chatter">
           <field name="message_follower_ids" />
