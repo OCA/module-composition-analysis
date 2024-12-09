@@ -15,6 +15,7 @@
               <field name="migration_path_id" />
               <field name="state" />
               <field name="pr_url" widget="url" />
+              <field name="migration_scan" optional="hide" />
             </tree>
           </field>
         </page>

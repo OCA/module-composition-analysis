@@ -14,6 +14,7 @@
           </div>
           <group>
             <field name="module_branch_id" />
+            <field name="target_module_branch_id" />
             <field name="module_id" />
             <field name="migration_path_id" options="{'no_open': True}" />
             <field name="last_source_scanned_commit" />
@@ -36,8 +37,10 @@
       <tree>
         <field name="module_branch_id" />
         <field name="migration_path_id" />
+        <field name="target_module_branch_id" />
         <field name="state" />
         <field name="pr_url" widget="url" />
+        <field name="migration_scan" optional="hide" />
         <field name="results_text" optional="hide" />
       </tree>
     </field>
