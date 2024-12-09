@@ -511,11 +511,11 @@ class MigrationScanner(BaseScanner):
             )
             # Retrieve existing migration data if any and check if it is outdated
             data = self._get_odoo_module_branch_migration_data(
-                module, source_branch, target_branch
+                repo_id, module, source_branch, target_branch
             )
             if (
-                data.get("last_source_scanned_commit") != module_source_commit
-                or data.get("last_target_scanned_commit") != module_target_commit
+                data.get("last_source_mig_scanned_commit") != module_source_commit
+                or data.get("last_target_mig_scanned_commit") != module_target_commit
             ):
                 scanned_data = self._scan_module(
                     repo,
@@ -528,6 +528,8 @@ class MigrationScanner(BaseScanner):
                     module_target_commit,
                     data.get("last_source_scanned_commit"),
                     data.get("last_target_scanned_commit"),
+                    data.get("last_source_mig_scanned_commit"),
+                    data.get("last_target_mig_scanned_commit"),
                 )
                 res.append(scanned_data)
         return res
@@ -544,6 +546,8 @@ class MigrationScanner(BaseScanner):
         target_commit: str,
         source_last_scanned_commit: str,
         target_last_scanned_commit: str,
+        source_last_mig_scanned_commit: str,
+        target_last_mig_scanned_commit: str,
     ):
         """Collect the migration data of a module."""
         data = {
@@ -551,21 +555,33 @@ class MigrationScanner(BaseScanner):
             "module": module,
             "source_branch": source_branch,
             "target_branch": target_branch,
-            "source_commit": source_commit,
-            "target_commit": target_commit,
+            "source_commit": source_last_scanned_commit,
+            "target_commit": target_last_scanned_commit,
         }
         module_path = str(pathlib.Path(addons_path).joinpath(module))
         # If files updated in the module since the last scan are not relevant
-        # (e.g. all new commits are updating PO files), we skip the scan but
-        # we still push the new source/target commits to Odoo.
-        scan_relevant = self._is_scan_module_relevant(
+        # (e.g. all new commits are updating PO files), we skip the scan.
+        source_scan_relevant = self._is_scan_module_relevant(
             repo,
             module_path,
+            source_last_mig_scanned_commit,
             source_commit,
-            target_commit,
-            source_last_scanned_commit,
-            target_last_scanned_commit,
         )
+        target_scan_relevant = self._is_scan_module_relevant(
+            repo,
+            module_path,
+            target_last_mig_scanned_commit,
+            target_commit,
+        )
+        # We push the last source/target scanned commits (the ones scanned by
+        # RepositoryScanner) to Odoo only if a scan is relevant.
+        # Having the same scanned commit both for code analysis and migration
+        # stored in Odoo means the migration scan is not needed.
+        if source_scan_relevant:
+            data["source_commit"] = source_last_scanned_commit
+        if target_scan_relevant:
+            data["target_commit"] = target_last_scanned_commit
+        scan_relevant = source_scan_relevant or target_scan_relevant
         if scan_relevant:
             _logger.info(
                 "%s: relevant changes detected in '%s' (%s -> %s)",
@@ -577,7 +593,7 @@ class MigrationScanner(BaseScanner):
             oca_port_data = self._run_oca_port(
                 module_path, source_branch, target_branch
             )
-            data.update(oca_port_data)
+            data["report"] = oca_port_data
         self._push_scanned_data(module_branch_id, data)
         # Mitigate "GH API rate limit exceeds" error
         if scan_relevant:
@@ -588,44 +604,29 @@ class MigrationScanner(BaseScanner):
         self,
         repo: git.Repo,
         module_path: str,
-        source_commit: str,
-        target_commit: str,
-        source_last_scanned_commit: str,
-        target_last_scanned_commit: str,
+        last_scanned_commit: str,
+        last_fetched_commit: str,
     ):
         """Determine if scanning the module is relevant.
 
         As the scan of a module can be quite time consuming, we first check
         the files impacted among all new commits since the last scan.
-        If the all files are irrelevants, then we can bypass the scan.
+        If all the files are irrelevants, then we can bypass the scan.
         """
         # The first time we want to scan the module obviously
-        if not source_last_scanned_commit:
+        if not last_scanned_commit:
             return True
         # Module still not available on target branch, no need to re-run a scan
         # as it is still "To migrate" in this case
-        if not target_commit:
+        if not last_fetched_commit:
             return False
-        # Module is available on target branch but it wasn't during the last scan
-        if not target_last_scanned_commit:
-            return True
         # Other cases: check files impacted by new commits both on source & target
         # branches to tell if a scan should be processed
-        source_tree = self._get_subtree(repo.commit(source_commit).tree, module_path)
-        target_tree = self._get_subtree(repo.commit(target_commit).tree, module_path)
-        source_new_commits = self._get_commits_of_git_tree(
-            source_last_scanned_commit, source_commit, source_tree
+        tree = self._get_subtree(repo.commit(last_fetched_commit).tree, module_path)
+        new_commits = self._get_commits_of_git_tree(
+            last_scanned_commit, last_fetched_commit, tree
         )
-        source_to_scan = self._check_relevant_commits(
-            repo, module_path, source_new_commits
-        )
-        target_new_commits = self._get_commits_of_git_tree(
-            target_last_scanned_commit, target_commit, target_tree
-        )
-        target_to_scan = self._check_relevant_commits(
-            repo, module_path, target_new_commits
-        )
-        return source_to_scan or target_to_scan
+        return self._check_relevant_commits(repo, module_path, new_commits)
 
     def _check_relevant_commits(self, repo, module_path, commits):
         paths = set()
@@ -699,9 +700,9 @@ class MigrationScanner(BaseScanner):
         raise NotImplementedError
 
     def _get_odoo_module_branch_migration_data(
-        self, module, source_branch, target_branch
+        self, repo_id, module, source_branch, target_branch
     ) -> dict:
-        """Return the 'odoo.module.branch.migration' data."""
+        """Return last scanned commits regarding `module`."""
         raise NotImplementedError
 
     def _push_scanned_data(self, module_branch_id, data):
