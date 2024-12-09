@@ -23,7 +23,7 @@ class OdooModuleBranch(models.Model):
         "removed",
         "pr_url",
         "last_scanned_commit",
-        "migration_ids.last_source_scanned_commit",
+        "migration_ids.migration_scan",
         "repository_id.collect_migration_data",
     )
     def _compute_migration_scan(self):
@@ -55,14 +55,8 @@ class OdooModuleBranch(models.Model):
             if available_migration_paths != scanned_migration_paths:
                 rec.migration_scan = True
                 continue
-            # Migration scan to do if last scanned commit doesn't match the last
-            # migration scan
-            for migration in rec.migration_ids:
-                if migration.last_source_scanned_commit != rec.last_scanned_commit:
-                    rec.migration_scan = True
-                    break
-            # Reaching this point means no scan is required
-            rec.migration_scan = False
+            # Migration scan to do if any of the migration path requires one
+            rec.migration_scan = any(rec.migration_ids.mapped("migration_scan"))
 
     def _to_dict(self):
         # Add the migrations data
@@ -71,3 +65,30 @@ class OdooModuleBranch(models.Model):
         for migration in self.migration_ids:
             data["migrations"].append(migration._to_dict())
         return data
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        recs = super().create(vals_list)
+        recs._update_migration_target_module_id()
+        return recs
+
+    def write(self, vals):
+        res = super().write(vals)
+        # When 'pr_url' is set or unset, this means the module has been found
+        # in a PR or has been merged upstream. We want to recompute the target
+        # module in migration data in such case.
+        if "pr_url" in vals:
+            self._update_migration_target_module_id()
+        return res
+
+    def _update_migration_target_module_id(self):
+        """Update `target_module_id` field on relevant module migration records."""
+        for rec in self:
+            migrations = self.env["odoo.module.branch.migration"].search(
+                [
+                    ("module_id", "=", rec.module_id.id),
+                    ("target_branch_id", "=", rec.branch_id.id),
+                ]
+            )
+            # Recompute 'target_module_id' field
+            migrations._compute_target_module_branch_id()

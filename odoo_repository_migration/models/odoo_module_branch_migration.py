@@ -15,7 +15,7 @@ class OdooModuleBranchMigration(models.Model):
     module_branch_id = fields.Many2one(
         comodel_name="odoo.module.branch",
         ondelete="cascade",
-        string="Module",
+        string="Source",
         required=True,
         index=True,
     )
@@ -46,6 +46,14 @@ class OdooModuleBranchMigration(models.Model):
         store=True,
         index=True,
     )
+    target_module_branch_id = fields.Many2one(
+        comodel_name="odoo.module.branch",
+        ondelete="cascade",
+        string="Target",
+        compute="_compute_target_module_branch_id",
+        store=True,
+        index=True,
+    )
     author_ids = fields.Many2many(related="module_branch_id.author_ids")
     maintainer_ids = fields.Many2many(related="module_branch_id.maintainer_ids")
     process = fields.Char(index=True)
@@ -71,6 +79,11 @@ class OdooModuleBranchMigration(models.Model):
     last_source_scanned_commit = fields.Char()
     last_target_scanned_commit = fields.Char()
     active = fields.Boolean(related="migration_path_id.active", store=True)
+    migration_scan = fields.Boolean(
+        compute="_compute_migration_scan",
+        store=True,
+        help="Technical field telling if this migration path needs a migration scan.",
+    )
 
     _sql_constraints = [
         (
@@ -92,6 +105,17 @@ class OdooModuleBranchMigration(models.Model):
                 f"{rec.source_branch_id.name} -> {rec.target_branch_id.name}"
             )
 
+    @api.depends("module_branch_id", "migration_path_id")
+    def _compute_target_module_branch_id(self):
+        module_branch_model = self.env["odoo.module.branch"]
+        for rec in self:
+            rec.target_module_branch_id = module_branch_model._find(
+                rec.migration_path_id.target_branch_id,
+                rec.module_branch_id.module_id,
+                rec.module_branch_id.repository_id,
+                domain=[("installable", "=", True)],
+            )
+
     @api.depends("process", "pr_url")
     def _compute_state(self):
         for rec in self:
@@ -109,6 +133,32 @@ class OdooModuleBranchMigration(models.Model):
         for rec in self:
             rec.results_text = pprint.pformat(rec.results)
 
+    @api.depends(
+        "last_source_scanned_commit",
+        "last_target_scanned_commit",
+        "pr_url",
+        "target_module_branch_id.pr_url",
+        "target_module_branch_id.last_scanned_commit",
+    )
+    def _compute_migration_scan(self):
+        # Migration scan to do if last scanned commit doesn't match the last
+        # migration scan, both for source and target modules.
+        for rec in self:
+            rec.migration_scan = False
+            if (
+                rec.last_source_scanned_commit
+                != rec.module_branch_id.last_scanned_commit
+            ):
+                rec.migration_scan = True
+            elif (
+                rec.target_module_branch_id.last_scanned_commit
+                and rec.last_target_scanned_commit
+                != rec.target_module_branch_id.last_scanned_commit
+            ):
+                rec.migration_scan = True
+            elif rec.target_module_branch_id.pr_url != rec.pr_url:
+                rec.migration_scan = True
+
     @api.model
     @api.returns("odoo.module.branch.migration")
     def push_scanned_data(self, module_branch_id, data):
@@ -124,9 +174,10 @@ class OdooModuleBranchMigration(models.Model):
             "last_source_scanned_commit": data["source_commit"],
             "last_target_scanned_commit": data["target_commit"],
         }
-        for key in ("process", "results"):
-            if key in data:
-                values[key] = data[key]
+        # Update migration data only if a migration scan occured
+        if "report" in data:
+            values["process"] = data["report"].get("process", False)
+            values["results"] = data["report"].get("results", {})
         return self._create_or_update(module_branch_id, migration_path, values)
 
     def _create_or_update(self, module_branch_id, migration_path, values):
