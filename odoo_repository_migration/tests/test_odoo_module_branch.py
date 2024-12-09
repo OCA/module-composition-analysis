@@ -22,6 +22,22 @@ class TestOdooModuleBranch(common.Common):
             last_scanned_commit="sha",
         )
 
+    def _simulate_migration_scan(self, target_commit, report=None):
+        """Helper method that pushes scanned migration data."""
+        data = {
+            "module": self.module_branch.module_name,
+            "source_branch": self.branch.name,
+            "target_branch": self.branch2.name,
+            "source_commit": self.module_branch.last_scanned_commit,
+            "target_commit": target_commit,
+        }
+        if report is not None:
+            data["report"] = report
+        return self.env["odoo.module.branch.migration"].push_scanned_data(
+            self.module_branch.id,
+            data,
+        )
+
     def test_migration_scan_removed(self):
         self.module_branch.removed = True
         self.assertFalse(self.module_branch.migration_scan)
@@ -39,30 +55,114 @@ class TestOdooModuleBranch(common.Common):
 
     def test_migration_scan_never_scanned(self):
         self.module_branch.last_scanned_commit = False
+        self.assertFalse(self.module_branch.migration_ids)
         self.assertFalse(self.module_branch.migration_scan)
         self.odoo_repository.collect_migration_data = True
+        self.assertFalse(self.module_branch.migration_ids)
         self.assertTrue(self.module_branch.migration_scan)
 
     def test_migration_scan_missing_migration_path(self):
         self.odoo_repository.collect_migration_data = True
+        self.assertFalse(self.module_branch.migration_ids)
         self.assertFalse(self.module_branch.migration_scan)
-        mig_path = self.env["odoo.migration.path"].create(
+        self.env["odoo.migration.path"].create(
             {
                 "source_branch_id": self.branch.id,
                 "target_branch_id": self.branch2.id,
             }
         )
+        self.assertFalse(self.module_branch.migration_ids)
         self.assertTrue(self.module_branch.migration_scan)
         # Once we collected migration data for the expected branch+commit
         # the module doesn't require a migration scan anymore
-        self.module_branch.migration_ids |= (
-            # Simulate migration data addition
-            self.env["odoo.module.branch.migration"].create(
-                {
-                    "module_branch_id": self.module_branch.id,
-                    "migration_path_id": mig_path.id,
-                    "last_source_scanned_commit": self.module_branch.last_scanned_commit,
-                }
-            )
+        self._simulate_migration_scan(
+            "target_commit1", report={"process": "migrate", "results": {}}
         )
+        self.assertTrue(self.module_branch.migration_ids)
+        self.assertFalse(self.module_branch.migration_scan)
+
+    def test_migration_scan_target_module_in_review_then_merged(self):
+        """Test full flow of the migration of a module.
+
+        1) At first, the module of the source branch needs a migration scan
+           because the migration data are missing for the target branch.
+        2) Once the migration is done (and migration data available), the migration
+           scan is not needed anymore.
+        3) Then the target module could be found in a PR to review, but this
+           doesn't
+        """
+        self.odoo_repository.collect_migration_data = True
+        # Simulate a scan of a given migration path while the target module is
+        # not yet migrated/available in a repository
+        self.assertFalse(self.module_branch.migration_ids)
+        self.assertFalse(self.module_branch.migration_scan)
+        self.env["odoo.migration.path"].create(
+            {
+                "source_branch_id": self.branch.id,
+                "target_branch_id": self.branch2.id,
+            }
+        )
+        self.assertFalse(self.module_branch.migration_ids)
+        self.assertTrue(self.module_branch.migration_scan)
+        self._simulate_migration_scan(
+            "target_commit1", report={"process": "migrate", "results": {}}
+        )
+        self.assertTrue(self.module_branch.migration_ids)
+        self.assertFalse(self.module_branch.migration_ids.migration_scan)
+        self.assertFalse(self.module_branch.migration_scan)
+        self.assertEqual(self.module_branch.migration_ids.state, "migrate")
+        # Make the module available for targeted branch in review (available in a PR).
+        # The source module now needs a migration scan as the target module is
+        # available in a PR, the migration status has to be updated.
+        target_module_branch = self._create_odoo_module_branch(
+            self.module,
+            self.branch2,
+            specific=False,
+            repository_branch_id=self.repo_branch.id,
+            # Module available in a PR
+            pr_url="https://my/pr",
+        )
+        self.assertEqual(
+            self.module_branch.migration_ids.target_module_branch_id,
+            target_module_branch,
+        )
+        self.assertEqual(self.module_branch.migration_ids.state, "migrate")
+        self.assertTrue(self.module_branch.migration_ids.migration_scan)
+        self.assertTrue(self.module_branch.migration_scan)
+        # Simulate the migration scan.
+        # The source module doesn't need a migration scan anymore.
+        self._simulate_migration_scan(
+            "target_commit1",
+            report={
+                "process": "migrate",
+                "results": {"existing_pr": {"url": target_module_branch.pr_url}},
+            },
+        )
+        self.assertEqual(self.module_branch.migration_ids.state, "review_migration")
+        self.assertFalse(self.module_branch.migration_ids.migration_scan)
+        self.assertFalse(self.module_branch.migration_scan)
+        # Merge the module in the upstream repository.
+        # The source module now needs a migration scan (to check if there is
+        # something to port, or to set the module as fully ported...).
+        target_module_branch.write(
+            {
+                "last_scanned_commit": "target_commit2",
+                # When 'pr_url' is unset, this means the module has been merged
+                "pr_url": False,
+            }
+        )
+        self.module_branch.migration_ids.last_target_scanned_commit = (
+            target_module_branch.last_scanned_commit
+        )
+        self.assertEqual(
+            self.module_branch.migration_ids.target_module_branch_id,
+            target_module_branch,
+        )
+        self.assertTrue(self.module_branch.migration_ids.migration_scan)
+        self.assertTrue(self.module_branch.migration_scan)
+        # Simulate the migration scan.
+        # The source module is fully ported and doesn't need a migration scan afterwards.
+        self._simulate_migration_scan("target_commit2", report={"results": {}})
+        self.assertEqual(self.module_branch.migration_ids.state, "fully_ported")
+        self.assertFalse(self.module_branch.migration_ids.migration_scan)
         self.assertFalse(self.module_branch.migration_scan)
