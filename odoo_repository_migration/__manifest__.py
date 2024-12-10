@@ -3,7 +3,7 @@
 {
     "name": "Odoo Repository Migration Data",
     "summary": "Collect modules migration data for Odoo Repositories.",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/camptocamp/odoo-repository",
