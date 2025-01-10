@@ -9,6 +9,7 @@
     "website": "https://github.com/camptocamp/odoo-repository",
     "data": [
         "security/ir.model.access.csv",
+        "views/odoo_module_branch_migration.xml",
         "views/odoo_project.xml",
         "views/odoo_project_module_migration.xml",
         "wizards/generate_migration_data.xml",
