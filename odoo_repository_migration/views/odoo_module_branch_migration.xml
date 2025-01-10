@@ -19,6 +19,7 @@
             <field name="migration_path_id" options="{'no_open': True}" />
             <field name="last_source_scanned_commit" />
             <field name="last_target_scanned_commit" />
+            <field name="migration_scan" />
           </group>
           <group name="data" string="Data">
             <field name="state" />
