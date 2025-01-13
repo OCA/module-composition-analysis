@@ -146,7 +146,8 @@ class OdooProject(models.Model):
 
     def _get_repositories_to_scan(self):
         """Returnt the repositories to scan."""
-        return self.project_module_ids.repository_id
+        domain = self.env["odoo.repository"]._cron_scanner_domain()
+        return self.project_module_ids.repository_id.filtered_domain(domain)
 
     def _get_branches_to_scan(self):
         """Return the branches to scan."""
