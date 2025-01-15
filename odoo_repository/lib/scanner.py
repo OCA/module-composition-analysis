@@ -9,6 +9,7 @@ import os
 import pathlib
 import re
 import shutil
+import subprocess
 import tempfile
 import time
 from urllib.parse import urlparse, urlunparse
@@ -151,14 +152,18 @@ class BaseScanner:
         return repositories_path
 
     def _apply_git_global_config(self):
-        # Avoid 'fatal: detected dubious ownership in repository' errors
-        # when performing operations in git repositories in case they are
-        # cloned on an mounted filesystem with specific options.
         if self.workaround_fs_errors:
-            # NOTE: ensure to unset existing entry before adding one, as git doesn't
+            # Check existing entry before adding one, as git doesn't
             # check if an entry already exists, generating duplicates
-            os.system(r"git config --global --unset safe.directory '\*'")
-            os.system("git config --global --add safe.directory '*'")
+            res = subprocess.run(
+                ["git", "config", "--global", "--get", "safe.directory"],
+                stdout=subprocess.PIPE,
+            )
+            output = res.stdout.decode()
+            if output != "*\n":
+                subprocess.run(
+                    ["git", "config", "--global", "--add", "safe.directory", "*"]
+                )
 
     def _apply_git_config(self, repo):
         with repo.config_writer() as writer:
