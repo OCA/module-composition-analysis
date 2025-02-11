@@ -186,8 +186,11 @@ class OdooProjectModuleMigration(models.Model):
             if not rec.module_migration_id:
                 # Default state (used by project specific modules)
                 rec.state = "migrate"
-                # Odoo S.A. modules
                 if rec.source_module_branch_id.is_standard:
+                    # Odoo S.A. modules
                     rec.state = (
                         "available" if rec.target_module_branch_id else "removed"
                     )
+                elif rec.target_module_branch_id:
+                    # repo with collect_migration_data = False
+                    rec.state = "available"
