@@ -41,21 +41,22 @@
     <field name="arch" type="xml">
       <tree>
         <field name="migration_path_id" optional="hide" />
-        <field name="org_id" />
-        <field name="repository_id" />
-        <field name="module_id" />
-        <field name="is_standard" />
-        <field name="is_enterprise" />
-        <field name="is_community" />
-        <field name="auto_install" />
-        <field name="global_dependency_level" />
-        <field name="non_std_dependency_level" />
-        <field name="sloc_python" sum="Python" />
-        <field name="sloc_xml" sum="XML" />
-        <field name="sloc_js" sum="JS" />
-        <field name="sloc_css" sum="CSS" />
-        <field name="state" />
-        <field name="migration_script_ids" />
+        <field name="org_id" optional="show" />
+        <field name="repository_id" optional="show" />
+        <field name="module_id" optional="show" />
+        <field name="is_standard" optional="hide" />
+        <field name="is_enterprise" optional="hide" />
+        <field name="is_community" optional="hide" />
+        <field name="auto_install" optional="hide" />
+        <field name="global_dependency_level" optional="show" />
+        <field name="non_std_dependency_level" optional="show" />
+        <field name="sloc_python" sum="Python" optional="show" />
+        <field name="sloc_xml" sum="XML" optional="show" />
+        <field name="sloc_js" sum="JS" optional="show" />
+        <field name="sloc_css" sum="CSS" optional="show" />
+        <field name="state" optional="hide" />
+        <field name="migration_script_ids" optional="hide" />
+        <field name="odoo_project_ids" widget="many2many_tags" optional="show" />
       </tree>
     </field>
   </record>
@@ -66,6 +67,9 @@
     <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
+        <field name="license_id" position="after">
+          <field name="odoo_project_ids" />
+        </field>
         <group name="group_by" position="inside">
           <filter
                     name="group_by_migration_path_id"
