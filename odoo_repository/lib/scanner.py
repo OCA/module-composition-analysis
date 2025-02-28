@@ -153,17 +153,15 @@ class BaseScanner:
 
     def _apply_git_global_config(self):
         if self.workaround_fs_errors:
-            # Check existing entry before adding one, as git doesn't
-            # check if an entry already exists, generating duplicates
+            # Check existing entry before adding one, to avoid concurrent write
+            # on git global config file.
             res = subprocess.run(
                 ["git", "config", "--global", "--get", "safe.directory"],
                 stdout=subprocess.PIPE,
             )
             output = res.stdout.decode()
             if output != "*\n":
-                subprocess.run(
-                    ["git", "config", "--global", "--add", "safe.directory", "*"]
-                )
+                subprocess.run(["git", "config", "--global", "safe.directory", "*"])
 
     def _apply_git_config(self, repo):
         with repo.config_writer() as writer:
