@@ -37,9 +37,9 @@
     <field name="arch" type="xml">
       <tree>
         <field name="module_branch_id" />
-        <field name="migration_path_id" />
-        <field name="target_module_branch_id" />
-        <field name="state" />
+        <field name="migration_path_id" optional="hide" />
+        <field name="target_module_branch_id" optional="hide" />
+        <field name="state" optional="hide" />
         <field name="pr_url" widget="url" />
         <field name="migration_scan" optional="hide" />
         <field name="results_text" optional="hide" />
