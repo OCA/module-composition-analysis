@@ -172,8 +172,11 @@ repo_oca_stock_logistics_availability,odoo_repository_org_oca,stock-logistics-av
 repo_oca_stock_logistics_barcode,odoo_repository_org_oca,stock-logistics-barcode,https://github.com/OCA/stock-logistics-barcode,https://github.com/OCA/stock-logistics-barcode,github
 repo_oca_stock_logistics_interfaces,odoo_repository_org_oca,stock-logistics-interfaces,https://github.com/OCA/stock-logistics-interfaces,https://github.com/OCA/stock-logistics-interfaces,github
 repo_oca_stock_logistics_orderpoint,odoo_repository_org_oca,stock-logistics-orderpoint,https://github.com/OCA/stock-logistics-orderpoint,https://github.com/OCA/stock-logistics-orderpoint,github
+repo_oca_stock_logistics_release_channel,odoo_repository_org_oca,stock-logistics-release-channel,https://github.com/OCA/stock-logistics-release-channel,https://github.com/OCA/stock-logistics-release-channel,github
 repo_oca_stock_logistics_reporting,odoo_repository_org_oca,stock-logistics-reporting,https://github.com/OCA/stock-logistics-reporting,https://github.com/OCA/stock-logistics-reporting,github
 repo_oca_stock_logistics_request,odoo_repository_org_oca,stock-logistics-request,https://github.com/OCA/stock-logistics-request,https://github.com/OCA/stock-logistics-request,github
+repo_oca_stock_logistics_reservation,odoo_repository_org_oca,stock-logistics-reservation,https://github.com/OCA/stock-logistics-reservation,https://github.com/OCA/stock-logistics-reservation,github
+repo_oca_stock_logistics_shopfloor,odoo_repository_org_oca,stock-logistics-shopfloor,https://github.com/OCA/stock-logistics-shopfloor,https://github.com/OCA/stock-logistics-shopfloor,github
 repo_oca_stock_logistics_tracking,odoo_repository_org_oca,stock-logistics-tracking,https://github.com/OCA/stock-logistics-tracking,https://github.com/OCA/stock-logistics-tracking,github
 repo_oca_stock_logistics_transport,odoo_repository_org_oca,stock-logistics-transport,https://github.com/OCA/stock-logistics-transport,https://github.com/OCA/stock-logistics-transport,github
 repo_oca_stock_logistics_warehouse,odoo_repository_org_oca,stock-logistics-warehouse,https://github.com/OCA/stock-logistics-warehouse,https://github.com/OCA/stock-logistics-warehouse,github
