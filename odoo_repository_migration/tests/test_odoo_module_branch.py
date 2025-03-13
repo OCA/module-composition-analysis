@@ -21,6 +21,18 @@ class TestOdooModuleBranch(common.Common):
             repository_branch_id=self.repo_branch.id,
             last_scanned_commit="sha",
         )
+        self.std_repository = self.env.ref("odoo_repository.odoo_repository_odoo_odoo")
+        self.oca_repository = self.env.ref("odoo_repository.repo_oca_server_tools")
+        self.gen_repository = self.env["odoo.repository"].create(
+            {
+                "name": "new_repo",
+                "org_id": self.odoo_repository.org_id.id,
+                "repo_url": "http://example.net/new_repo",
+                "specific": False,
+                "to_scan": False,
+            }
+        )
+        self.gen_repository.addons_path_ids = self.odoo_repository.addons_path_ids
 
     def _simulate_migration_scan(self, target_commit, report=None):
         """Helper method that pushes scanned migration data."""
@@ -166,3 +178,113 @@ class TestOdooModuleBranch(common.Common):
         self.assertEqual(self.module_branch.migration_ids.state, "fully_ported")
         self.assertFalse(self.module_branch.migration_ids.migration_scan)
         self.assertFalse(self.module_branch.migration_scan)
+
+    def test_migration_scan_target_module_moved_to_standard(self):
+        """Module moved into a standard repository."""
+        # Simulate a scan of a given migration path while the target module is
+        # not yet migrated/available in a repository
+        self.env["odoo.migration.path"].create(
+            {
+                "source_branch_id": self.branch.id,
+                "target_branch_id": self.branch2.id,
+            }
+        )
+        self._simulate_migration_scan(
+            "target_commit1", report={"process": "migrate", "results": {}}
+        )
+        self.assertTrue(self.module_branch.migration_ids)
+        mig = self.module_branch.migration_ids
+        self.assertFalse(mig.target_module_branch_id)
+        self.assertFalse(mig.migration_scan)
+        self.assertFalse(self.module_branch.migration_scan)
+        self.assertEqual(mig.state, "migrate")
+        # Then the module is discovered in a std repository
+        std_repo_branch = self._create_odoo_repository_branch(
+            self.std_repository, self.branch2
+        )
+        target_module_branch = self._create_odoo_module_branch(
+            self.module,
+            self.branch2,
+            specific=False,
+            is_standard=True,
+            repository_branch_id=std_repo_branch.id,
+        )
+        self.assertEqual(mig.target_module_branch_id, target_module_branch)
+        self.assertTrue(mig.moved_to_standard)
+        self.assertFalse(mig.moved_to_oca)
+        self.assertFalse(mig.moved_to_generic)
+        self.assertEqual(mig.state, "moved_to_standard")
+        self.assertFalse(mig.migration_scan)
+
+    def test_migration_scan_target_module_moved_to_oca(self):
+        """Module moved into an OCA repository."""
+        # Simulate a scan of a given migration path while the target module is
+        # not yet migrated/available in a repository
+        self.env["odoo.migration.path"].create(
+            {
+                "source_branch_id": self.branch.id,
+                "target_branch_id": self.branch2.id,
+            }
+        )
+        self._simulate_migration_scan(
+            "target_commit1", report={"process": "migrate", "results": {}}
+        )
+        self.assertTrue(self.module_branch.migration_ids)
+        mig = self.module_branch.migration_ids
+        self.assertFalse(mig.target_module_branch_id)
+        self.assertFalse(mig.migration_scan)
+        self.assertFalse(self.module_branch.migration_scan)
+        self.assertEqual(mig.state, "migrate")
+        # Then the module is discovered in an OCA repository
+        oca_repo_branch = self._create_odoo_repository_branch(
+            self.oca_repository, self.branch2
+        )
+        target_module_branch = self._create_odoo_module_branch(
+            self.module,
+            self.branch2,
+            specific=False,
+            repository_branch_id=oca_repo_branch.id,
+        )
+        self.assertEqual(mig.target_module_branch_id, target_module_branch)
+        self.assertFalse(mig.moved_to_standard)
+        self.assertTrue(mig.moved_to_oca)
+        self.assertFalse(mig.moved_to_generic)
+        self.assertEqual(mig.state, "moved_to_oca")
+        self.assertFalse(mig.migration_scan)
+
+    def test_migration_scan_target_module_moved_to_generic(self):
+        """Specific module moved into a generic repository (that is not std or OCA)."""
+        self.odoo_repository.specific = True
+        # Simulate a scan of a given migration path while the target module is
+        # not yet migrated/available in a repository
+        self.env["odoo.migration.path"].create(
+            {
+                "source_branch_id": self.branch.id,
+                "target_branch_id": self.branch2.id,
+            }
+        )
+        self._simulate_migration_scan(
+            "target_commit1", report={"process": "migrate", "results": {}}
+        )
+        self.assertTrue(self.module_branch.migration_ids)
+        mig = self.module_branch.migration_ids
+        self.assertFalse(mig.target_module_branch_id)
+        self.assertFalse(mig.migration_scan)
+        self.assertFalse(self.module_branch.migration_scan)
+        self.assertEqual(mig.state, "migrate")
+        # Then the module is discovered in an OCA repository
+        gen_repo_branch = self._create_odoo_repository_branch(
+            self.gen_repository, self.branch2
+        )
+        target_module_branch = self._create_odoo_module_branch(
+            self.module,
+            self.branch2,
+            specific=False,
+            repository_branch_id=gen_repo_branch.id,
+        )
+        self.assertEqual(mig.target_module_branch_id, target_module_branch)
+        self.assertFalse(mig.moved_to_standard)
+        self.assertFalse(mig.moved_to_oca)
+        self.assertTrue(mig.moved_to_generic)
+        self.assertEqual(mig.state, "moved_to_generic")
+        self.assertFalse(mig.migration_scan)
