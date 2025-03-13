@@ -96,7 +96,7 @@ class BaseScanner:
         if self.is_cloned:
             with self.repo() as repo:
                 self._apply_git_config(repo)
-                self._set_git_remote_url(repo)
+                self._set_git_remote_url(repo, "origin", self.clone_url)
                 if fetch:
                     res = self._fetch(repo)
         return res
@@ -182,13 +182,16 @@ class BaseScanner:
             writer.set_value("gc", "reflogExpire", "never")
             writer.set_value("gc", "reflogExpireUnreachable", "never")
 
-    def _set_git_remote_url(self, repo):
-        """Ensure that 'origin' remote is set with the right URL."""
+    def _set_git_remote_url(self, repo, remote, url):
+        """Ensure that `remote` has `url` set."""
         # Check first the URL before setting it, as this triggers a 'chmod'
         # command on '.git/config' file (to protect sensitive data) that could
         # be not allowed on some mounted file systems.
-        if repo.remotes["origin"].url != self.clone_url:
-            repo.remotes["origin"].set_url(self.clone_url)
+        if remote in repo.remotes:
+            if repo.remotes[remote].url != url:
+                repo.remotes[remote].set_url(url)
+        else:
+            repo.create_remote(remote, url)
 
     @property
     def is_cloned(self):
@@ -278,32 +281,32 @@ class BaseScanner:
         # Return True as soon as we fetched at least one branch
         return bool(branches_fetched)
 
-    def _branch_exists(self, repo, branch):
-        refs = [r.name for r in repo.remotes.origin.refs]
-        branch = f"origin/{branch}"
+    def _branch_exists(self, repo, branch, remote="origin"):
+        refs = [r.name for r in repo.remotes[remote].refs]
+        branch = f"{remote}/{branch}"
         return branch in refs
 
-    def _checkout_branch(self, repo, branch):
+    def _checkout_branch(self, repo, branch, remote="origin"):
         # Ensure to clean up the repository before a checkout
         index_lock_path = pathlib.Path(repo.common_dir).joinpath("index.lock")
         if index_lock_path.exists():
             index_lock_path.unlink()
         repo.git.reset("--hard")
         repo.git.clean("-xdf")
-        repo.git.checkout("-f", f"remotes/origin/{branch}")
+        repo.git.checkout("-f", f"remotes/{remote}/{branch}")
 
-    def _get_last_fetched_commit(self, repo, branch):
+    def _get_last_fetched_commit(self, repo, branch, remote="origin"):
         """Return the last fetched commit for the given `branch`."""
-        return repo.rev_parse(f"remotes/origin/{branch}").hexsha
+        return repo.rev_parse(f"remotes/{remote}/{branch}").hexsha
 
-    def _get_module_paths(self, repo, relative_path, branch):
+    def _get_module_paths(self, repo, relative_path, branch, remote="origin"):
         """Return the list of modules available in `branch`."""
         # Clean up 'relative_path' to make it compatible with 'git.Tree' object
         relative_tree_path = "/".join(
             [dir_ for dir_ in relative_path.split("/") if dir_ and dir_ != "."]
         )
         # Return all available modules from 'relative_tree_path'
-        branch_commit = repo.remotes.origin.refs[branch].commit
+        branch_commit = repo.remotes[remote].refs[branch].commit
         addons_trees = branch_commit.tree.trees
         if relative_tree_path:
             addons_trees = (branch_commit.tree / relative_tree_path).trees
