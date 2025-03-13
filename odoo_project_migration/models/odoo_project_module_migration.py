@@ -94,6 +94,9 @@ class OdooProjectModuleMigration(models.Model):
             ("migrate", "To migrate"),
             ("port_commits", "Commits to port"),
             ("review_migration", "Migration to review"),
+            ("moved_to_standard", "Moved to standard"),
+            ("moved_to_oca", "Moved to OCA"),
+            ("moved_to_generic", "Moved to generic repo"),
             # New states to qualify modules without migration data
             ("available", "Available"),
             ("removed", "Removed"),
