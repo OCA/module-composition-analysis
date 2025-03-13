@@ -422,6 +422,8 @@ class MigrationScanner(BaseScanner):
         name: str,
         clone_url: str,
         migration_path: tuple[str],
+        new_repo_name: str = None,
+        new_repo_url: str = None,
         repositories_path: str = None,
         repo_type: str = None,
         ssh_key: str = None,
@@ -443,6 +445,20 @@ class MigrationScanner(BaseScanner):
             clone_name,
         )
         self.migration_path = migration_path
+        self.new_repo_name = new_repo_name
+        self.new_repo_url = (
+            self._prepare_clone_url(repo_type, new_repo_url, token)
+            if new_repo_url
+            else None
+        )
+
+    def sync(self, fetch=True):
+        res = super().sync(fetch=fetch)
+        # Set the new repository as remote
+        if self.is_cloned and self.new_repo_name and self.new_repo_url:
+            with self.repo() as repo:
+                self._set_git_remote_url(repo, self.new_repo_name, self.new_repo_url)
+        return res
 
     def scan(self, addons_path=".", module_names=None):
         # Clone/fetch has been done during the repository scan, the migration
@@ -453,13 +469,21 @@ class MigrationScanner(BaseScanner):
         if not res:
             return False
         source_branch, target_branch = self.migration_path
+        target_remote = "origin"
         with self.repo() as repo:
+            if self.new_repo_name and self.new_repo_url:
+                target_remote = self.new_repo_name
+                # Fetch target branch from new repo
+                with self._get_git_env() as git_env:
+                    with repo.git.custom_environment(**git_env):
+                        repo.remotes[target_remote].fetch(target_branch)
             if self._branch_exists(repo, source_branch) and self._branch_exists(
-                repo, target_branch
+                repo, target_branch, remote=target_remote
             ):
                 return self._scan_migration_path(
                     repo,
                     source_branch,
+                    target_remote,
                     target_branch,
                     addons_path=addons_path,
                     module_names=module_names,
@@ -467,10 +491,18 @@ class MigrationScanner(BaseScanner):
         return res
 
     def _scan_migration_path(
-        self, repo, source_branch, target_branch, addons_path=".", module_names=None
+        self,
+        repo,
+        source_branch,
+        target_remote,
+        target_branch,
+        addons_path=".",
+        module_names=None,
     ):
         repo_source_commit = self._get_last_fetched_commit(repo, source_branch)
-        repo_target_commit = self._get_last_fetched_commit(repo, target_branch)
+        repo_target_commit = self._get_last_fetched_commit(
+            repo, target_branch, remote=target_remote
+        )
         if not module_names:
             module_names = self._get_module_paths(repo, addons_path, source_branch)
         res = []
@@ -526,6 +558,7 @@ class MigrationScanner(BaseScanner):
                     module,
                     module_branch_id,
                     source_branch,
+                    target_remote,
                     target_branch,
                     module_source_commit,
                     module_target_commit,
@@ -544,6 +577,7 @@ class MigrationScanner(BaseScanner):
         module: str,
         module_branch_id: int,
         source_branch: str,
+        target_remote: str,
         target_branch: str,
         source_commit: str,
         target_commit: str,
@@ -594,7 +628,7 @@ class MigrationScanner(BaseScanner):
                 target_branch,
             )
             oca_port_data = self._run_oca_port(
-                module_path, source_branch, target_branch
+                module_path, source_branch, target_remote, target_branch
             )
             data["report"] = oca_port_data
         self._push_scanned_data(module_branch_id, data)
@@ -647,7 +681,7 @@ class MigrationScanner(BaseScanner):
                 return True
         return False
 
-    def _run_oca_port(self, module_path, source_branch, target_branch):
+    def _run_oca_port(self, module_path, source_branch, target_remote, target_branch):
         _logger.info(
             "%s: collect migration data for '%s' (%s -> %s)",
             self.full_name,
@@ -658,7 +692,7 @@ class MigrationScanner(BaseScanner):
         # Initialize the oca-port app
         params = {
             "source": f"origin/{source_branch}",
-            "target": f"origin/{target_branch}",
+            "target": f"{target_remote}/{target_branch}",
             "addon_path": module_path,
             "upstream_org": self.org,
             "repo_path": self.path,
