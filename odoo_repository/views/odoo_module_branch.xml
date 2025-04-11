@@ -21,23 +21,27 @@
           </div>
           <group>
             <group name="manifest" string="Manifest">
-              <field name="title" />
-              <field name="summary" />
-              <field name="author_ids" widget="many2many_tags" />
-              <field name="maintainer_ids" widget="many2many_tags" />
-              <field name="category_id" options="{'no_open': True}" />
-              <field name="license_id" options="{'no_open': True}" />
-              <field name="version" />
-              <field name="development_status_id" options="{'no_open': True}" />
-              <field name="application" />
-              <field name="installable" />
-              <field name="auto_install" />
+              <field name="title" readonly="1" />
+              <field name="summary" readonly="1" />
+              <field name="author_ids" widget="many2many_tags" readonly="1" />
+              <field name="maintainer_ids" widget="many2many_tags" readonly="1" />
+              <field name="category_id" options="{'no_open': True}" readonly="1" />
+              <field name="license_id" options="{'no_open': True}" readonly="1" />
+              <field name="version" readonly="1" />
+              <field
+                                name="development_status_id"
+                                options="{'no_open': True}"
+                                readonly="1"
+                            />
+              <field name="application" readonly="1" />
+              <field name="installable" readonly="1" />
+              <field name="auto_install" readonly="1" />
             </group>
             <group col="1">
               <group name="others" string="Others">
-                <field name="module_id" />
-                <field name="branch_id" options="{'no_open': True}" />
-                <field name="repository_branch_id" />
+                <field name="module_id" readonly="1" />
+                <field name="branch_id" options="{'no_open': True}" readonly="1" />
+                <field name="repository_branch_id" readonly="1" />
                 <field
                                     name="pr_url"
                                     widget="url"
@@ -48,25 +52,25 @@
                                     widget="url"
                                     attrs="{'invisible': [('pr_url', '=', True)]}"
                                 />
-                <field name="last_scanned_commit" />
-                <field name="removed" />
-                <field name="is_standard" />
-                <field name="is_enterprise" />
-                <field name="is_community" />
+                <field name="last_scanned_commit" readonly="1" />
+                <field name="removed" readonly="1" />
+                <field name="is_standard" readonly="1" />
+                <field name="is_enterprise" readonly="1" />
+                <field name="is_community" readonly="1" />
                 <field name="global_dependency_level" />
                 <field name="non_std_dependency_level" />
               </group>
               <group name="code" string="Code analysis">
-                <field name="sloc_python" />
-                <field name="sloc_xml" />
-                <field name="sloc_js" />
-                <field name="sloc_css" />
+                <field name="sloc_python" readonly="1" />
+                <field name="sloc_xml" readonly="1" />
+                <field name="sloc_js" readonly="1" />
+                <field name="sloc_css" readonly="1" />
               </group>
             </group>
           </group>
           <notebook>
             <page name="versions" string="Versions">
-              <field name="version_ids" nolabel="1">
+              <field name="version_ids" nolabel="1" readonly="1">
                 <tree>
                   <field name="name" />
                   <field name="commit" />
@@ -75,7 +79,7 @@
               </field>
             </page>
             <page name="dependencies" string="Dependencies">
-              <field name="dependency_ids" nolabel="1">
+              <field name="dependency_ids" nolabel="1" readonly="1">
                 <tree>
                   <field name="module_id" />
                   <field name="repository_branch_id" />
@@ -88,7 +92,7 @@
               </field>
             </page>
             <page name="reverse_dependencies" string="Reverse Dependencies">
-              <field name="reverse_dependency_ids" nolabel="1">
+              <field name="reverse_dependency_ids" nolabel="1" readonly="1">
                 <tree>
                   <field name="module_id" />
                   <field name="repository_branch_id" />
@@ -101,7 +105,7 @@
               </field>
             </page>
             <page name="python_dependency_ids" string="Python Dependencies">
-              <field name="python_dependency_ids" nolabel="1" />
+              <field name="python_dependency_ids" nolabel="1" readonly="1" />
             </page>
           </notebook>
         </sheet>
