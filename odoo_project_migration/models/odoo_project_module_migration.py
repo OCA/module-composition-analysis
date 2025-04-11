@@ -92,9 +92,10 @@ class OdooProjectModuleMigration(models.Model):
         selection=[
             ("fully_ported", "Fully Ported"),
             ("migrate", "To migrate"),
-            ("port_commits", "Commits to port"),
-            ("review_migration", "Migration to review"),
-            ("moved_to_standard", "Moved to standard"),
+            ("port_commits", "Ported (missing commits?)"),
+            ("review_migration", "To review"),
+            ("replaced", "Replaced"),
+            ("moved_to_standard", "Moved to standard?"),
             ("moved_to_oca", "Moved to OCA"),
             ("moved_to_generic", "Moved to generic repo"),
             # New states to qualify modules without migration data
@@ -121,13 +122,24 @@ class OdooProjectModuleMigration(models.Model):
             )
             rec.project_module_id = project_module
 
-    @api.depends("source_module_branch_id", "migration_path_id")
+    @api.depends(
+        "source_module_branch_id",
+        "migration_path_id",
+        "module_migration_id.replaced_by_module_id",
+        "module_migration_id.renamed_to_module_id",
+    )
     def _compute_target_module_branch_id(self):
         module_branch_model = self.env["odoo.module.branch"]
         for rec in self:
+            # Look for the right module technical name
+            module = (
+                rec.module_migration_id.replaced_by_module_id
+                or rec.module_migration_id.renamed_to_module_id
+                or rec.source_module_branch_id.module_id
+            )
             rec.target_module_branch_id = module_branch_model._find(
                 rec.migration_path_id.target_branch_id,
-                rec.source_module_branch_id.module_id,
+                module,
                 rec.odoo_project_id.repository_id,
                 domain=[("installable", "=", True)],
             )
@@ -159,27 +171,15 @@ class OdooProjectModuleMigration(models.Model):
                 ],
                 order="sequence",
             )
-            new_release_versions = version_model.search(
-                [
-                    (
-                        "module_id",
-                        "=",
-                        rec.module_id.id,
-                    ),
-                    (
-                        "branch_sequence",
-                        ">",
-                        rec.source_module_branch_id.branch_id.sequence,
-                    ),
-                    (
-                        "branch_sequence",
-                        "<=",
-                        rec.target_module_branch_id.branch_id.sequence,
-                    ),
-                    ("has_migration_script", "=", True),
-                ],
-                order="branch_sequence, sequence",
+            # Collect versions with migration scripts accross next modules
+            # taking into account module renaming/replacement
+            target_branch = rec.migration_path_id.target_branch_id
+            next_modules = rec.source_module_branch_id._get_next_module_branches(
+                target_branch
             )
+            new_release_versions = next_modules.version_ids.filtered(
+                "has_migration_script"
+            ).sorted(key=lambda v: (v.branch_sequence, v.sequence))
             rec.migration_script_ids = current_release_versions | new_release_versions
 
     @api.depends("module_migration_id.state")
