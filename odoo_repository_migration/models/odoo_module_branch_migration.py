@@ -57,12 +57,43 @@ class OdooModuleBranchMigration(models.Model):
     author_ids = fields.Many2many(related="module_branch_id.author_ids")
     maintainer_ids = fields.Many2many(related="module_branch_id.maintainer_ids")
     process = fields.Char(index=True)
+    moved_to_standard = fields.Boolean(
+        compute="_compute_moved_to_standard",
+        store=True,
+        help=(
+            "Module now available in Odoo standard code. "
+            "This module is maybe not exactly the same, and doesn't have the "
+            "same scope so it deserves a check during a migration."
+        ),
+    )
+    moved_to_oca = fields.Boolean(
+        compute="_compute_moved_to_oca",
+        store=True,
+        help=(
+            "Module now available in OCA. "
+            "This module is maybe not exactly the same, and doesn't have the "
+            "same scope so it deserves a check during a migration."
+        ),
+    )
+    moved_to_generic = fields.Boolean(
+        compute="_compute_moved_to_generic",
+        store=True,
+        string="Now generic",
+        help=(
+            "Specific module now available in a generic repository. "
+            "This module is maybe not exactly the same, and doesn't have the "
+            "same scope so it deserves a check during a migration."
+        ),
+    )
     state = fields.Selection(
         selection=[
             ("fully_ported", "Fully Ported"),
             ("migrate", "To migrate"),
             ("port_commits", "Commits to port"),
             ("review_migration", "Migration to review"),
+            ("moved_to_standard", "Moved to standard"),
+            ("moved_to_oca", "Moved to OCA"),
+            ("moved_to_generic", "Moved to generic repo"),
         ],
         string="Migration Status",
         compute="_compute_state",
@@ -116,9 +147,58 @@ class OdooModuleBranchMigration(models.Model):
                 domain=[("installable", "=", True)],
             )
 
-    @api.depends("process", "pr_url")
+    @api.depends("module_branch_id.is_standard", "target_module_branch_id.is_standard")
+    def _compute_moved_to_standard(self):
+        for rec in self:
+            rec.moved_to_standard = (
+                not rec.module_branch_id.is_standard
+                and rec.target_module_branch_id.is_standard
+            )
+
+    @api.depends("org_id", "target_module_branch_id.org_id")
+    def _compute_moved_to_oca(self):
+        org_oca = self.env.ref(
+            "odoo_repository.odoo_repository_org_oca", raise_if_not_found=False
+        )
+        for rec in self:
+            rec.moved_to_oca = False
+            if not org_oca:
+                continue
+            rec.moved_to_oca = (
+                rec.org_id != org_oca and rec.target_module_branch_id.org_id == org_oca
+            )
+
+    @api.depends(
+        "repository_id.specific", "target_module_branch_id.repository_id.specific"
+    )
+    def _compute_moved_to_generic(self):
+        for rec in self:
+            rec.moved_to_generic = (
+                rec.repository_id.specific
+                and rec.target_module_branch_id.repository_id
+                and not rec.target_module_branch_id.repository_id.specific
+            )
+
+    @api.depends(
+        "process", "pr_url", "moved_to_standard", "moved_to_oca", "moved_to_generic"
+    )
     def _compute_state(self):
         for rec in self:
+            if rec.moved_to_standard:
+                # Module moved to a standard repository (likely from OCA to
+                # odoo/odoo, like 'l10n_eu_oss', 'knowledge', ...).
+                # E.g. this could tell integrators that a module like
+                # 'l10n_eu_oss_oca' should now be used instead.
+                rec.state = "moved_to_standard"
+                continue
+            if rec.moved_to_oca:
+                # Module moved to an OCA repository
+                rec.state = "moved_to_oca"
+                continue
+            if rec.moved_to_generic:
+                # Specific module moved to a generic repository (public or private)
+                rec.state = "moved_to_generic"
+                continue
             rec.state = rec.process or "fully_ported"
             if rec.process == "migrate" and rec.pr_url:
                 rec.state = "review_migration"
@@ -134,17 +214,25 @@ class OdooModuleBranchMigration(models.Model):
             rec.results_text = pprint.pformat(rec.results)
 
     @api.depends(
+        "repository_id.collect_migration_data",
         "last_source_scanned_commit",
         "last_target_scanned_commit",
         "pr_url",
         "target_module_branch_id.pr_url",
         "target_module_branch_id.last_scanned_commit",
+        "state",
     )
     def _compute_migration_scan(self):
         # Migration scan to do if last scanned commit doesn't match the last
         # migration scan, both for source and target modules.
         for rec in self:
             rec.migration_scan = False
+            # No migration scan if repository is not configured to do it
+            if not rec.repository_id.collect_migration_data:
+                continue
+            # No migration scan for modules moved to Odoo/OCA/generic repo
+            if rec.state and rec.state.startswith("moved_to"):
+                continue
             if (
                 rec.last_source_scanned_commit
                 != rec.module_branch_id.last_scanned_commit

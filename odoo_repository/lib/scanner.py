@@ -96,7 +96,7 @@ class BaseScanner:
         if self.is_cloned:
             with self.repo() as repo:
                 self._apply_git_config(repo)
-                self._set_git_remote_url(repo)
+                self._set_git_remote_url(repo, "origin", self.clone_url)
                 if fetch:
                     res = self._fetch(repo)
         return res
@@ -182,13 +182,16 @@ class BaseScanner:
             writer.set_value("gc", "reflogExpire", "never")
             writer.set_value("gc", "reflogExpireUnreachable", "never")
 
-    def _set_git_remote_url(self, repo):
-        """Ensure that 'origin' remote is set with the right URL."""
+    def _set_git_remote_url(self, repo, remote, url):
+        """Ensure that `remote` has `url` set."""
         # Check first the URL before setting it, as this triggers a 'chmod'
         # command on '.git/config' file (to protect sensitive data) that could
         # be not allowed on some mounted file systems.
-        if repo.remotes["origin"].url != self.clone_url:
-            repo.remotes["origin"].set_url(self.clone_url)
+        if remote in repo.remotes:
+            if repo.remotes[remote].url != url:
+                repo.remotes[remote].set_url(url)
+        else:
+            repo.create_remote(remote, url)
 
     @property
     def is_cloned(self):
@@ -278,32 +281,32 @@ class BaseScanner:
         # Return True as soon as we fetched at least one branch
         return bool(branches_fetched)
 
-    def _branch_exists(self, repo, branch):
-        refs = [r.name for r in repo.remotes.origin.refs]
-        branch = f"origin/{branch}"
+    def _branch_exists(self, repo, branch, remote="origin"):
+        refs = [r.name for r in repo.remotes[remote].refs]
+        branch = f"{remote}/{branch}"
         return branch in refs
 
-    def _checkout_branch(self, repo, branch):
+    def _checkout_branch(self, repo, branch, remote="origin"):
         # Ensure to clean up the repository before a checkout
         index_lock_path = pathlib.Path(repo.common_dir).joinpath("index.lock")
         if index_lock_path.exists():
             index_lock_path.unlink()
         repo.git.reset("--hard")
         repo.git.clean("-xdf")
-        repo.git.checkout("-f", f"remotes/origin/{branch}")
+        repo.git.checkout("-f", f"remotes/{remote}/{branch}")
 
-    def _get_last_fetched_commit(self, repo, branch):
+    def _get_last_fetched_commit(self, repo, branch, remote="origin"):
         """Return the last fetched commit for the given `branch`."""
-        return repo.rev_parse(f"remotes/origin/{branch}").hexsha
+        return repo.rev_parse(f"remotes/{remote}/{branch}").hexsha
 
-    def _get_module_paths(self, repo, relative_path, branch):
+    def _get_module_paths(self, repo, relative_path, branch, remote="origin"):
         """Return the list of modules available in `branch`."""
         # Clean up 'relative_path' to make it compatible with 'git.Tree' object
         relative_tree_path = "/".join(
             [dir_ for dir_ in relative_path.split("/") if dir_ and dir_ != "."]
         )
         # Return all available modules from 'relative_tree_path'
-        branch_commit = repo.remotes.origin.refs[branch].commit
+        branch_commit = repo.remotes[remote].refs[branch].commit
         addons_trees = branch_commit.tree.trees
         if relative_tree_path:
             addons_trees = (branch_commit.tree / relative_tree_path).trees
@@ -419,6 +422,8 @@ class MigrationScanner(BaseScanner):
         name: str,
         clone_url: str,
         migration_path: tuple[str],
+        new_repo_name: str = None,
+        new_repo_url: str = None,
         repositories_path: str = None,
         repo_type: str = None,
         ssh_key: str = None,
@@ -440,6 +445,20 @@ class MigrationScanner(BaseScanner):
             clone_name,
         )
         self.migration_path = migration_path
+        self.new_repo_name = new_repo_name
+        self.new_repo_url = (
+            self._prepare_clone_url(repo_type, new_repo_url, token)
+            if new_repo_url
+            else None
+        )
+
+    def sync(self, fetch=True):
+        res = super().sync(fetch=fetch)
+        # Set the new repository as remote
+        if self.is_cloned and self.new_repo_name and self.new_repo_url:
+            with self.repo() as repo:
+                self._set_git_remote_url(repo, self.new_repo_name, self.new_repo_url)
+        return res
 
     def scan(self, addons_path=".", module_names=None):
         # Clone/fetch has been done during the repository scan, the migration
@@ -450,13 +469,21 @@ class MigrationScanner(BaseScanner):
         if not res:
             return False
         source_branch, target_branch = self.migration_path
+        target_remote = "origin"
         with self.repo() as repo:
+            if self.new_repo_name and self.new_repo_url:
+                target_remote = self.new_repo_name
+                # Fetch target branch from new repo
+                with self._get_git_env() as git_env:
+                    with repo.git.custom_environment(**git_env):
+                        repo.remotes[target_remote].fetch(target_branch)
             if self._branch_exists(repo, source_branch) and self._branch_exists(
-                repo, target_branch
+                repo, target_branch, remote=target_remote
             ):
                 return self._scan_migration_path(
                     repo,
                     source_branch,
+                    target_remote,
                     target_branch,
                     addons_path=addons_path,
                     module_names=module_names,
@@ -464,10 +491,18 @@ class MigrationScanner(BaseScanner):
         return res
 
     def _scan_migration_path(
-        self, repo, source_branch, target_branch, addons_path=".", module_names=None
+        self,
+        repo,
+        source_branch,
+        target_remote,
+        target_branch,
+        addons_path=".",
+        module_names=None,
     ):
         repo_source_commit = self._get_last_fetched_commit(repo, source_branch)
-        repo_target_commit = self._get_last_fetched_commit(repo, target_branch)
+        repo_target_commit = self._get_last_fetched_commit(
+            repo, target_branch, remote=target_remote
+        )
         if not module_names:
             module_names = self._get_module_paths(repo, addons_path, source_branch)
         res = []
@@ -523,6 +558,7 @@ class MigrationScanner(BaseScanner):
                     module,
                     module_branch_id,
                     source_branch,
+                    target_remote,
                     target_branch,
                     module_source_commit,
                     module_target_commit,
@@ -541,6 +577,7 @@ class MigrationScanner(BaseScanner):
         module: str,
         module_branch_id: int,
         source_branch: str,
+        target_remote: str,
         target_branch: str,
         source_commit: str,
         target_commit: str,
@@ -591,7 +628,7 @@ class MigrationScanner(BaseScanner):
                 target_branch,
             )
             oca_port_data = self._run_oca_port(
-                module_path, source_branch, target_branch
+                module_path, source_branch, target_remote, target_branch
             )
             data["report"] = oca_port_data
         self._push_scanned_data(module_branch_id, data)
@@ -644,7 +681,7 @@ class MigrationScanner(BaseScanner):
                 return True
         return False
 
-    def _run_oca_port(self, module_path, source_branch, target_branch):
+    def _run_oca_port(self, module_path, source_branch, target_remote, target_branch):
         _logger.info(
             "%s: collect migration data for '%s' (%s -> %s)",
             self.full_name,
@@ -655,7 +692,7 @@ class MigrationScanner(BaseScanner):
         # Initialize the oca-port app
         params = {
             "source": f"origin/{source_branch}",
-            "target": f"origin/{target_branch}",
+            "target": f"{target_remote}/{target_branch}",
             "addon_path": module_path,
             "upstream_org": self.org,
             "repo_path": self.path,

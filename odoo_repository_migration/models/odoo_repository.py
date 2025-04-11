@@ -117,7 +117,25 @@ class OdooRepository(models.Model):
         migration_path = (
             self.env["odoo.migration.path"].browse(migration_path_id).exists()
         )
-        params = self._prepare_migration_scanner_parameters(migration_path)
+        # Check if module has already been migrated on target version but in a
+        # different repository. If so, tune the scanner parameters to perform
+        # the scan from current repo to new one.
+        target_repository = None
+        mig = module.migration_ids.filtered(
+            lambda mig: mig.migration_path_id.id == migration_path_id
+        )
+        target_module = mig.target_module_branch_id
+        if target_module.repository_branch_id:
+            target_repository = target_module.repository_id
+            if not target_repository.collect_migration_data:
+                return (
+                    "Cannot collect migration data on repository "
+                    f"{target_repository.display_name}."
+                )
+        params = self._prepare_migration_scanner_parameters(
+            migration_path, target_repository
+        )
+        # Run the migration scan
         try:
             scanner = MigrationScannerOdooEnv(**params)
             return scanner.scan(
@@ -141,14 +159,16 @@ class OdooRepository(models.Model):
             ]
         )
 
-    def _prepare_migration_scanner_parameters(self, migration_path):
+    def _prepare_migration_scanner_parameters(
+        self, migration_path, target_repository=None
+    ):
         ir_config = self.env["ir.config_parameter"]
         repositories_path = ir_config.sudo().get_param(self._repositories_path_key)
         mig_path = (
             migration_path.source_branch_id.name,
             migration_path.target_branch_id.name,
         )
-        return {
+        params = {
             "org": self.org_id.name,
             "name": self.name,
             "clone_url": self.clone_url,
@@ -163,6 +183,10 @@ class OdooRepository(models.Model):
             "clone_name": self.clone_name,
             "env": self.env,
         }
+        if target_repository and target_repository != self:
+            params["new_repo_name"] = target_repository.name
+            params["new_repo_url"] = target_repository.clone_url
+        return params
 
     def _pre_create_or_update_module_branch(self, rec, values, raw_data):
         # Handle migration data
