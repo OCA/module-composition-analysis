@@ -507,6 +507,10 @@ class MigrationScanner(BaseScanner):
             module_names = self._get_module_paths(repo, addons_path, source_branch)
         res = []
         for module in module_names:
+            if isinstance(module, tuple):
+                module, target_module = module
+            else:
+                target_module = module
             if self._is_module_blacklisted(module):
                 _logger.info(
                     "%s: '%s' is blacklisted (no migration scan)",
@@ -532,7 +536,7 @@ class MigrationScanner(BaseScanner):
                 repo.commit(repo_source_commit).tree, module
             )
             module_target_tree = self._get_subtree(
-                repo.commit(repo_target_commit).tree, module
+                repo.commit(repo_target_commit).tree, target_module
             )
             module_source_commit = self._get_last_commit_of_git_tree(
                 repo_source_commit, module_source_tree
@@ -556,6 +560,7 @@ class MigrationScanner(BaseScanner):
                     repo,
                     addons_path,
                     module,
+                    target_module,
                     module_branch_id,
                     source_branch,
                     target_remote,
@@ -575,6 +580,7 @@ class MigrationScanner(BaseScanner):
         repo: git.Repo,
         addons_path: str,
         module: str,
+        target_module: str,
         module_branch_id: int,
         source_branch: str,
         target_remote: str,
@@ -596,6 +602,7 @@ class MigrationScanner(BaseScanner):
             "target_commit": target_last_scanned_commit,
         }
         module_path = str(pathlib.Path(addons_path).joinpath(module))
+        target_module_path = str(pathlib.Path(addons_path).joinpath(target_module))
         # If files updated in the module since the last scan are not relevant
         # (e.g. all new commits are updating PO files), we skip the scan.
         source_scan_relevant = self._is_scan_module_relevant(
@@ -606,7 +613,7 @@ class MigrationScanner(BaseScanner):
         )
         target_scan_relevant = self._is_scan_module_relevant(
             repo,
-            module_path,
+            target_module_path,
             target_last_mig_scanned_commit,
             target_commit,
         )
@@ -623,12 +630,16 @@ class MigrationScanner(BaseScanner):
             _logger.info(
                 "%s: relevant changes detected in '%s' (%s -> %s)",
                 self.full_name,
-                module,
+                module if source_scan_relevant else target_module,
                 source_branch,
                 target_branch,
             )
             oca_port_data = self._run_oca_port(
-                module_path, source_branch, target_remote, target_branch
+                module_path,
+                target_module_path,
+                source_branch,
+                target_remote,
+                target_branch,
             )
             data["report"] = oca_port_data
         self._push_scanned_data(module_branch_id, data)
@@ -681,7 +692,14 @@ class MigrationScanner(BaseScanner):
                 return True
         return False
 
-    def _run_oca_port(self, module_path, source_branch, target_remote, target_branch):
+    def _run_oca_port(
+        self,
+        module_path,
+        target_module_path,
+        source_branch,
+        target_remote,
+        target_branch,
+    ):
         _logger.info(
             "%s: collect migration data for '%s' (%s -> %s)",
             self.full_name,
@@ -694,6 +712,7 @@ class MigrationScanner(BaseScanner):
             "source": f"origin/{source_branch}",
             "target": f"{target_remote}/{target_branch}",
             "addon_path": module_path,
+            "target_addon_path": target_module_path,
             "upstream_org": self.org,
             "repo_path": self.path,
             "repo_name": self.name,
