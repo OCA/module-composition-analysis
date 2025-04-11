@@ -111,12 +111,33 @@ class OdooRepository(models.Model):
         return jobs
 
     def _scan_migration_module(self, migration_path_id, module_branch_id):
-        """Scan migration path for `module_branch_id`."""
+        """Scan migration path for `module_branch_id`.
+
+        The migration scan can only occur if:
+            - target module doesn't exist (and can be migrated)
+            - source and target modules share the same commits histories (able to
+              collect migration data)
+
+        Also, a target module could have been renamed while sharing the commits history.
+
+        But a module that has been replaced (different name, different commits
+        history, but providing the same feature) in next versions cannot be scanned.
+        Such module will get a migration status "Replaced".
+        """
         module = self.env["odoo.module.branch"].browse(module_branch_id).exists()
         module.ensure_one()
         migration_path = (
             self.env["odoo.migration.path"].browse(migration_path_id).exists()
         )
+        # Skip migration scan if module is replaced in next versions
+        if module._replaced_by_module_in_target_version(
+            migration_path.target_branch_id
+        ):
+            return (
+                f"{module.name} is now replaced by "
+                f"{module.next_odoo_version_module_id.name}, no need to collect "
+                "migration data."
+            )
         # Check if module has already been migrated on target version but in a
         # different repository. If so, tune the scanner parameters to perform
         # the scan from current repo to new one.
@@ -135,11 +156,15 @@ class OdooRepository(models.Model):
         params = self._prepare_migration_scanner_parameters(
             migration_path, target_repository
         )
+        module_names = [module.module_id.name]
+        if target_module:
+            if module.module_id != target_module.module_id:
+                module_names = [(module.module_id.name, target_module.module_id.name)]
         # Run the migration scan
         try:
             scanner = MigrationScannerOdooEnv(**params)
             return scanner.scan(
-                addons_path=module.addons_path, module_names=[module.module_id.name]
+                addons_path=module.addons_path, module_names=module_names
             )
         except Exception as exc:
             raise RetryableJobError("Scanner error") from exc

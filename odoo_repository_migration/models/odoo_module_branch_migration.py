@@ -85,13 +85,28 @@ class OdooModuleBranchMigration(models.Model):
             "same scope so it deserves a check during a migration."
         ),
     )
+    renamed_to_module_id = fields.Many2one(
+        comodel_name="odoo.module",
+        compute="_compute_renamed_to_module_id",
+        string="Renamed to",
+        store=True,
+        index=True,
+    )
+    replaced_by_module_id = fields.Many2one(
+        comodel_name="odoo.module",
+        compute="_compute_replaced_by_module_id",
+        string="Replaced by",
+        store=True,
+        index=True,
+    )
     state = fields.Selection(
         selection=[
             ("fully_ported", "Fully Ported"),
             ("migrate", "To migrate"),
-            ("port_commits", "Commits to port"),
-            ("review_migration", "Migration to review"),
-            ("moved_to_standard", "Moved to standard"),
+            ("port_commits", "Ported (missing commits?)"),
+            ("review_migration", "To review"),
+            ("replaced", "Replaced"),
+            ("moved_to_standard", "Moved to standard?"),
             ("moved_to_oca", "Moved to OCA"),
             ("moved_to_generic", "Moved to generic repo"),
         ],
@@ -136,13 +151,24 @@ class OdooModuleBranchMigration(models.Model):
                 f"{rec.source_branch_id.name} -> {rec.target_branch_id.name}"
             )
 
-    @api.depends("module_branch_id", "migration_path_id")
+    @api.depends(
+        "module_branch_id",
+        "migration_path_id",
+        "replaced_by_module_id",
+        "renamed_to_module_id",
+    )
     def _compute_target_module_branch_id(self):
         module_branch_model = self.env["odoo.module.branch"]
         for rec in self:
+            # Look for the right module technical name
+            module = (
+                rec.replaced_by_module_id
+                or rec.renamed_to_module_id
+                or rec.module_branch_id.module_id
+            )
             rec.target_module_branch_id = module_branch_model._find(
                 rec.migration_path_id.target_branch_id,
-                rec.module_branch_id.module_id,
+                module,
                 rec.module_branch_id.repository_id,
                 domain=[("installable", "=", True)],
             )
@@ -180,10 +206,45 @@ class OdooModuleBranchMigration(models.Model):
             )
 
     @api.depends(
-        "process", "pr_url", "moved_to_standard", "moved_to_oca", "moved_to_generic"
+        "module_branch_id.next_odoo_version_state",
+        "module_branch_id.next_odoo_version_module_id",
+        "target_branch_id",
+    )
+    def _compute_renamed_to_module_id(self):
+        for rec in self:
+            rec.renamed_to_module_id = (
+                rec.module_branch_id._renamed_to_module_in_target_version(
+                    rec.target_branch_id
+                )
+            )
+
+    @api.depends(
+        "module_branch_id.next_odoo_version_state",
+        "module_branch_id.next_odoo_version_module_id",
+        "target_branch_id",
+    )
+    def _compute_replaced_by_module_id(self):
+        for rec in self:
+            rec.replaced_by_module_id = (
+                rec.module_branch_id._replaced_by_module_in_target_version(
+                    rec.target_branch_id
+                )
+            )
+
+    @api.depends(
+        "replaced_by_module_id",
+        "process",
+        "pr_url",
+        "moved_to_standard",
+        "moved_to_oca",
+        "moved_to_generic",
     )
     def _compute_state(self):
         for rec in self:
+            if rec.replaced_by_module_id:
+                # Module replaced by another one
+                rec.state = "replaced"
+                continue
             if rec.moved_to_standard:
                 # Module moved to a standard repository (likely from OCA to
                 # odoo/odoo, like 'l10n_eu_oss', 'knowledge', ...).
@@ -214,6 +275,8 @@ class OdooModuleBranchMigration(models.Model):
             rec.results_text = pprint.pformat(rec.results)
 
     @api.depends(
+        "module_branch_id.last_scanned_commit",
+        "replaced_by_module_id",
         "repository_id.collect_migration_data",
         "last_source_scanned_commit",
         "last_target_scanned_commit",
@@ -232,6 +295,9 @@ class OdooModuleBranchMigration(models.Model):
                 continue
             # No migration scan for modules moved to Odoo/OCA/generic repo
             if rec.state and rec.state.startswith("moved_to"):
+                continue
+            # No migration scan for modules replaced by another module
+            if rec.replaced_by_module_id:
                 continue
             if (
                 rec.last_source_scanned_commit
