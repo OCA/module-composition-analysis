@@ -288,3 +288,103 @@ class TestOdooModuleBranch(common.Common):
         self.assertTrue(mig.moved_to_generic)
         self.assertEqual(mig.state, "moved_to_generic")
         self.assertFalse(mig.migration_scan)
+
+    def test_renamed_to_module_in_target_version(self):
+        self.odoo_repository.collect_migration_data = True
+        # Next version is 16.0
+        next_branch = self.env["odoo.branch"].search(
+            [("sequence", "=", self.branch.sequence + 1)]
+        )
+        # Create the target module
+        new_module = self.module.copy({"name": "new_module"})
+        target_module_branch = self._create_odoo_module_branch(
+            new_module,
+            next_branch,
+            specific=False,
+            repository_branch_id=self.repo_branch.id,
+            last_scanned_commit="sha",
+        )
+        # Generate migration data records
+        self.env["odoo.migration.path"].create(
+            {
+                "source_branch_id": self.branch.id,
+                "target_branch_id": next_branch.id,
+            }
+        )
+        self._simulate_migration_scan(
+            "target_commit1", report={"process": "migrate", "results": {}}
+        )
+        self.assertEqual(self.module_branch.next_odoo_version_id, next_branch)
+        # Module has been renamed starting from 16.0
+        self.module_branch.next_odoo_version_state = "renamed"
+        self.module_branch.next_odoo_version_module_id = new_module
+        renamed_to_module = self.module_branch._renamed_to_module_in_target_version(
+            self.module_branch.next_odoo_version_id
+        )
+        self.assertEqual(renamed_to_module, new_module)
+        # We target 17.0 to check if intermediate data in 16.0 is found
+        target_branch = self.env["odoo.branch"].search(
+            [("sequence", "=", self.branch.sequence + 2)]
+        )
+        renamed_to_module = self.module_branch._renamed_to_module_in_target_version(
+            target_branch
+        )
+        self.assertEqual(renamed_to_module, new_module)
+        # Check migration data
+        mig = self.module_branch.migration_ids
+        self.assertEqual(mig.renamed_to_module_id, new_module)
+        self.assertFalse(mig.replaced_by_module_id)
+        self.assertEqual(mig.target_module_branch_id, target_module_branch)
+        self.assertFalse(mig.last_target_scanned_commit)
+        self.assertEqual(mig.state, "migrate")
+        self.assertTrue(mig.migration_scan)
+
+    def test_replaced_by_module_in_target_version(self):
+        self.odoo_repository.collect_migration_data = True
+        # Next version is 16.0
+        next_branch = self.env["odoo.branch"].search(
+            [("sequence", "=", self.branch.sequence + 1)]
+        )
+        # Create the target module
+        new_module = self.module.copy({"name": "new_module"})
+        target_module_branch = self._create_odoo_module_branch(
+            new_module,
+            next_branch,
+            specific=False,
+            repository_branch_id=self.repo_branch.id,
+            last_scanned_commit="sha",
+        )
+        # Generate migration data records
+        self.env["odoo.migration.path"].create(
+            {
+                "source_branch_id": self.branch.id,
+                "target_branch_id": next_branch.id,
+            }
+        )
+        self._simulate_migration_scan(
+            "target_commit1", report={"process": "migrate", "results": {}}
+        )
+        self.assertEqual(self.module_branch.next_odoo_version_id, next_branch)
+        # New module is replacing current one starting from 16.0
+        self.module_branch.next_odoo_version_state = "replaced"
+        self.module_branch.next_odoo_version_module_id = new_module
+        replaced_by_module = self.module_branch._replaced_by_module_in_target_version(
+            self.module_branch.next_odoo_version_id
+        )
+        self.assertEqual(replaced_by_module, new_module)
+        # We target 17.0 to check if intermediate data in 16.0 is found
+        target_branch = self.env["odoo.branch"].search(
+            [("sequence", "=", self.branch.sequence + 2)]
+        )
+        replaced_by_module = self.module_branch._replaced_by_module_in_target_version(
+            target_branch
+        )
+        self.assertEqual(replaced_by_module, new_module)
+        # Check migration data
+        mig = self.module_branch.migration_ids
+        self.assertEqual(mig.replaced_by_module_id, new_module)
+        self.assertFalse(mig.renamed_to_module_id)
+        self.assertEqual(mig.target_module_branch_id, target_module_branch)
+        self.assertFalse(mig.last_target_scanned_commit)
+        self.assertEqual(mig.state, "replaced")
+        self.assertFalse(mig.migration_scan)

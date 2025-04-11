@@ -13,13 +13,23 @@
             <h1><field name="display_name" /></h1>
           </div>
           <group>
-            <field name="module_branch_id" />
-            <field name="target_module_branch_id" />
-            <field name="module_id" />
-            <field name="migration_path_id" options="{'no_open': True}" />
-            <field name="last_source_scanned_commit" />
-            <field name="last_target_scanned_commit" />
-            <field name="migration_scan" />
+            <group name="info" string="Info">
+              <field name="module_branch_id" />
+              <field
+                                name="replaced_by_module_id"
+                                attrs="{'invisible': [('replaced_by_module_id', '=', False)]}"
+                            />
+              <field
+                                name="renamed_to_module_id"
+                                attrs="{'invisible': [('renamed_to_module_id', '=', False)]}"
+                            />
+              <field name="target_module_branch_id" />
+            </group>
+            <group name="scan" string="Scan">
+              <field name="last_source_scanned_commit" />
+              <field name="last_target_scanned_commit" />
+              <field name="migration_scan" />
+            </group>
           </group>
           <group name="data" string="Data">
             <field name="state" />
