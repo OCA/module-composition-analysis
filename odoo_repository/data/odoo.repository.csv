@@ -171,6 +171,7 @@ repo_oca_spreadsheet,odoo_repository_org_oca,spreadsheet,https://github.com/OCA/
 repo_oca_stock_logistics_availability,odoo_repository_org_oca,stock-logistics-availability,https://github.com/OCA/stock-logistics-availability,https://github.com/OCA/stock-logistics-availability,github
 repo_oca_stock_logistics_barcode,odoo_repository_org_oca,stock-logistics-barcode,https://github.com/OCA/stock-logistics-barcode,https://github.com/OCA/stock-logistics-barcode,github
 repo_oca_stock_logistics_interfaces,odoo_repository_org_oca,stock-logistics-interfaces,https://github.com/OCA/stock-logistics-interfaces,https://github.com/OCA/stock-logistics-interfaces,github
+repo_oca_stock_logistics_putaway,odoo_repository_org_oca,stock-logistics-putaway,https://github.com/OCA/stock-logistics-putaway,https://github.com/OCA/stock-logistics-putaway,github
 repo_oca_stock_logistics_orderpoint,odoo_repository_org_oca,stock-logistics-orderpoint,https://github.com/OCA/stock-logistics-orderpoint,https://github.com/OCA/stock-logistics-orderpoint,github
 repo_oca_stock_logistics_release_channel,odoo_repository_org_oca,stock-logistics-release-channel,https://github.com/OCA/stock-logistics-release-channel,https://github.com/OCA/stock-logistics-release-channel,github
 repo_oca_stock_logistics_reporting,odoo_repository_org_oca,stock-logistics-reporting,https://github.com/OCA/stock-logistics-reporting,https://github.com/OCA/stock-logistics-reporting,github
