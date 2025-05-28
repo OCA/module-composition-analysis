@@ -58,8 +58,7 @@ class OdooModuleBranch(models.Model):
         # modules without knowing in advance what is their repo (orphaned modules).
         comodel_name="odoo.branch",
         ondelete="cascade",
-        string="Branch",
-        domain=[("odoo_version", "=", True)],
+        string="Odoo Version",
         required=True,
         index=True,
     )
@@ -243,16 +242,23 @@ class OdooModuleBranch(models.Model):
                 rec.module_name
             )
 
-    @api.depends("repository_id.repo_url", "branch_name", "addons_path", "module_name")
+    @api.depends(
+        "repository_id.repo_url",
+        "branch_name",
+        "repository_branch_id.cloned_branch",
+        "addons_path",
+        "module_name",
+    )
     def _compute_url(self):
         for rec in self:
             rec.url = False
             if not rec.repository_id:
                 continue
-            module_path = "/".join([self.addons_path or ".", self.module_name])
-            rec.url = self.repository_id._get_resource_url(
-                self.branch_name, module_path
-            )
+            branch = rec.branch_name
+            if rec.repository_branch_id.cloned_branch:
+                branch = rec.repository_branch_id.cloned_branch
+            module_path = "/".join([rec.addons_path or ".", rec.module_name])
+            rec.url = rec.repository_id._get_resource_url(branch, module_path)
 
     @api.depends("repository_branch_id.name", "module_id.name")
     def _compute_name(self):

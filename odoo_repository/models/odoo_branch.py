@@ -1,16 +1,26 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from odoo import api, fields, models
+import re
+
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class OdooBranch(models.Model):
     _name = "odoo.branch"
-    _description = "Odoo Branch"
+    _description = "Odoo Branch/Version"
     _order = "sequence, name"
 
-    name = fields.Char(required=True, index=True)
-    odoo_version = fields.Boolean(default=True)
+    name = fields.Char(
+        string="Version",
+        required=True,
+        index=True,
+        help=(
+            "An Odoo version is also used as an Odoo branch name in generic "
+            "repositories (Odoo, OCA...)."
+        ),
+    )
     active = fields.Boolean(default=True)
     repository_branch_ids = fields.One2many(
         comodel_name="odoo.repository.branch",
@@ -23,6 +33,14 @@ class OdooBranch(models.Model):
     _sql_constraints = [
         ("name_uniq", "UNIQUE (name)", "This branch already exists."),
     ]
+
+    @api.constrains("name")
+    def _constrains_name(self):
+        odoo_version_pattern = r"^[0-9]+\.[0-9]$"
+        for rec in self:
+            version = re.search(odoo_version_pattern, rec.name)
+            if not version:
+                raise ValidationError(_("Version must match the pattern 'x.y'."))
 
     @api.model
     def _recompute_sequence(self):
@@ -41,7 +59,6 @@ class OdooBranch(models.Model):
                                 ORDER BY string_to_array(name, '.')::int[]
                             ) AS position
                         FROM odoo_branch
-                        WHERE odoo_version = true
                     ) as pos
                     WHERE pos.id = %(id)s
                 )
@@ -76,8 +93,6 @@ class OdooBranch(models.Model):
         """
         return self.action_scan(force=True)
 
-    def _get_all_odoo_versions(self):
+    def _get_all_odoo_versions(self, active_test=False):
         """Return all Odoo versions, even archived ones."""
-        return self.with_context(active_test=False).search(
-            [("odoo_version", "=", True)]
-        )
+        return self.with_context(active_test=active_test).search([])

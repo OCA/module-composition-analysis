@@ -8,7 +8,7 @@ class TestSyncNode(Common):
     def test_sync_node(self):
         # Scan a repository
         self.odoo_repository.with_context(queue_job__no_delay=True).action_scan(
-            [self.branch.name]
+            self.branch.ids
         )
         # Check data to sync
         data = self.env["odoo.module.branch"]._get_modules_data()

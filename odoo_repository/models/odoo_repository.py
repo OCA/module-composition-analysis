@@ -77,19 +77,6 @@ class OdooRepository(models.Model):
         string="Token",
         help="Token used to clone/fetch this repository.",
     )
-    clone_branch_id = fields.Many2one(
-        comodel_name="odoo.branch",
-        ondelete="restrict",
-        string="Branch to clone",
-        help="Branch to clone if different than configured ones",
-        domain=[("odoo_version", "=", False)],
-    )
-    odoo_version_id = fields.Many2one(
-        comodel_name="odoo.branch",
-        ondelete="restrict",
-        string="Odoo Version",
-        domain=[("odoo_version", "=", True)],
-    )
     active = fields.Boolean(default=True)
     addons_path_ids = fields.Many2many(
         comodel_name="odoo.repository.addons_path",
@@ -100,7 +87,6 @@ class OdooRepository(models.Model):
         comodel_name="odoo.repository.branch",
         inverse_name="repository_id",
         string="Branches",
-        readonly=True,
     )
     scan_weekday_ids = fields.Many2many(
         comodel_name="time.weekday",
@@ -111,9 +97,6 @@ class OdooRepository(models.Model):
         ),
     )
     specific = fields.Boolean(
-        compute="_compute_specific",
-        store=True,
-        readonly=False,
         help=(
             "Host specific modules. "
             "By default if the repository clones a specific branch, "
@@ -143,8 +126,8 @@ class OdooRepository(models.Model):
 
     _sql_constraints = [
         (
-            "org_id_name_repository_id_uniq",
-            "UNIQUE (org_id, name, odoo_version_id)",
+            "org_id_name_uniq",
+            "UNIQUE (org_id, name)",
             "This repository already exists.",
         ),
     ]
@@ -153,11 +136,6 @@ class OdooRepository(models.Model):
     def _compute_display_name(self):
         for rec in self:
             rec.display_name = f"{rec.org_id.name}/{rec.name}"
-
-    @api.depends("clone_branch_id")
-    def _compute_specific(self):
-        for rec in self:
-            rec.specific = bool(rec.clone_branch_id)
 
     @api.onchange("repo_url", "to_scan", "clone_url")
     def _onchange_repo_url(self):
@@ -171,9 +149,11 @@ class OdooRepository(models.Model):
                 self.clone_url = self.repo_url
             break
 
-    @api.model
-    def _get_odoo_branches_to_clone(self):
-        return self.env["odoo.branch"].search([("odoo_version", "=", True)])
+    def _get_odoo_branches_to_scan(self):
+        self.ensure_one()
+        if self.specific:
+            return self.branch_ids.branch_id
+        return self.env["odoo.branch"]._get_all_odoo_versions(active_test=True)
 
     def _cron_scanner_domain(self):
         today = fields.Date.today()
@@ -197,12 +177,16 @@ class OdooRepository(models.Model):
         As the scanner is run on the same server than Odoo, a special class
         `RepositoryScannerOdooEnv` is used so the scanner can request Odoo
         through an environment (api.Environment).
+
+        `branches` parameter allows to filter the `odoo.branch` to take into
+        account for the scan, e.g. `branches=["16.0", "18.0"]`.
         """
         repositories = self.search(self._cron_scanner_domain())
-        if not branches:
-            branches = self._get_odoo_branches_to_clone().mapped("name")
+        branches_ = self.env["odoo.branch"]._get_all_odoo_versions(active_test=True)
+        if branches:
+            branches_ = branches_.filtered(lambda br: br.name in branches)
         for repo in repositories:
-            repo.action_scan(branches=branches, force=force, raise_exc=False)
+            repo.action_scan(branch_ids=branches_.ids, force=force, raise_exc=False)
 
     def _check_config(self):
         # Check the configuration of repositories folder
@@ -250,26 +234,34 @@ class OdooRepository(models.Model):
             return True
         return False
 
-    def action_scan(self, branches=None, force=False, raise_exc=True):
+    def action_scan(self, branch_ids=None, force=False, raise_exc=True):
         """Scan the whole repository."""
         self._check_config()
         for rec in self:
+            if not rec.to_scan:
+                continue
             if rec._check_existing_jobs(raise_exc=raise_exc):
                 continue
-            # Copy `branches` list to not override initial values
-            branches_ = branches and branches[:] or []
-            if not rec.to_scan:
-                return False
-            if rec.clone_branch_id:
-                # Repository qualified with e.g. '17.0' branch but cloning a
-                # different branch like 'main'
-                branches_ = [rec.clone_branch_id.name]
-            if not branches_:
-                branches_ = rec._get_odoo_branches_to_clone().mapped("name")
-            if not branches_:
-                raise UserError(_("No branches to scan."))
+            # Get branch records to scan
+            branches = rec._get_odoo_branches_to_scan()
+            if branch_ids:
+                branches = branches & self.env["odoo.branch"].search(
+                    [("id", "in", branch_ids)]
+                )
+            if not branches:
+                continue
+            # Branch names to scan could be different on specific repositories
+            # (e.g. 'master' or 'main' branch, representing a 16.0 Odoo version)
+            # => create a list of tuples ({odoo_version}, {branch_name}).
+            versions_branches = [(branch.name, branch.name) for branch in branches]
+            if rec.specific:
+                versions_branches = [
+                    (rb.branch_id.name, rb.cloned_branch or rb.branch_id.name)
+                    for rb in rec.branch_ids
+                    if rb.branch_id in branches
+                ]
             if force:
-                rec._reset_scanned_commits(branches_)
+                rec._reset_scanned_commits(branch_ids=branch_ids)
             # Scan repository branches sequentially as they need to be checked out
             # to perform the analysis
             # Here the launched job is responsible to:
@@ -278,27 +270,33 @@ class OdooRepository(models.Model):
             #   3) spawn a job to update the last scanned commit of the repo/branch
             #   4) spawn the next job responsible to detect modules updated
             #      on the next branch
-            branch = branches_[0]
-            next_branches = branches_[1:]
+            version_branch = versions_branches[0]
+            next_versions_branches = versions_branches[1:]
             job = rec._create_job_detect_modules_to_scan_on_branch(
-                branch, next_branches, branches_
+                version_branch, next_versions_branches, versions_branches
             )
             job.delay()
         return True
 
     def _create_job_detect_modules_to_scan_on_branch(
-        self, branch, next_branches, all_branches
+        self, version_branch, next_versions_branches, all_versions_branches
     ):
         self.ensure_one()
+        version, branch = version_branch
+        branch_str = branch
+        if version != branch:
+            branch_str = f"{branch} ({version})"
         delayable = self.delayable(
-            description=f"Detect modules to scan in {self.display_name}#{branch}",
+            description=f"Detect modules to scan in {self.display_name}#{branch_str}",
             identity_key=identity_exact,
         )
         return delayable._detect_modules_to_scan_on_branch(
-            branch, next_branches, all_branches
+            version_branch, next_versions_branches, all_versions_branches
         )
 
-    def _detect_modules_to_scan_on_branch(self, branch, next_branches, all_branches):
+    def _detect_modules_to_scan_on_branch(
+        self, version_branch, next_versions_branches, all_versions_branches
+    ):
         """Detect the modules to scan on `branch`.
 
         It will spawn a job for each module to scan, and two other jobs to:
@@ -307,14 +305,15 @@ class OdooRepository(models.Model):
 
         This ensure to scan different branches sequentially for a given repository.
         """
+        version, branch = version_branch
         try:
             # Get the list of modules updated since last scan
-            params = self._prepare_scanner_parameters(branch)
+            params = self._prepare_scanner_parameters(version, branch)
             scanner = RepositoryScannerOdooEnv(**params)
             data = scanner.detect_modules_to_scan()
             # Prepare all subsequent jobs based on modules to scan
             jobs = self._create_subsequent_jobs(
-                branch, next_branches, all_branches, data
+                version_branch, next_versions_branches, all_versions_branches, data
             )
             # Chain them  altogether
             if jobs:
@@ -322,13 +321,16 @@ class OdooRepository(models.Model):
         except Exception as exc:
             raise RetryableJobError("Scanner error") from exc
 
-    def _create_subsequent_jobs(self, branch, next_branches, all_branches, data):
+    def _create_subsequent_jobs(
+        self, version_branch, next_versions_branches, all_versions_branches, data
+    ):
         jobs = []
+        version, branch = version_branch
         # Spawn one job per module to scan
         for data_ in data.get("addons_paths", {}).values():
             for module_path in data_["modules_to_scan"]:
                 job = self._create_job_scan_module_on_branch(
-                    branch, module_path, data_["specs"]
+                    version, branch, module_path, data_["specs"]
                 )
                 jobs.append(job)
         # + another one to update the last scanned commit of the repository
@@ -339,28 +341,31 @@ class OdooRepository(models.Model):
             )
             jobs.append(job)
         # + another one to detect modules to scan on the next branch
-        branch = next_branches and next_branches[0]
-        next_branches = next_branches[1:]
-        if branch:
+        version_branch = next_versions_branches and next_versions_branches[0]
+        next_versions_branches = next_versions_branches[1:]
+        if version_branch:
             jobs.append(
                 self._create_job_detect_modules_to_scan_on_branch(
-                    branch, next_branches, all_branches
+                    version_branch, next_versions_branches, all_versions_branches
                 )
             )
         return jobs
 
-    def _create_job_scan_module_on_branch(self, branch, module_path, specs):
+    def _create_job_scan_module_on_branch(self, version, branch, module_path, specs):
         self.ensure_one()
+        branch_str = branch
+        if version != branch:
+            branch_str = f"{branch} ({version})"
         delayable = self.delayable(
-            description=f"Scan {self.display_name}#{branch} - {module_path}",
+            description=f"Scan {self.display_name}#{branch_str} - {module_path}",
             identity_key=identity_exact,
         )
-        return delayable._scan_module_on_branch(branch, module_path, specs)
+        return delayable._scan_module_on_branch(version, branch, module_path, specs)
 
-    def _scan_module_on_branch(self, branch, module_path, specs):
+    def _scan_module_on_branch(self, version, branch, module_path, specs):
         """Scan `module_path` from `branch`."""
         try:
-            params = self._prepare_scanner_parameters(branch)
+            params = self._prepare_scanner_parameters(version, branch)
             scanner = RepositoryScannerOdooEnv(**params)
             return scanner.scan_module(module_path, specs)
         except Exception as exc:
@@ -378,22 +383,20 @@ class OdooRepository(models.Model):
         )
         return delayable._update_last_scanned_commit(last_scanned_commit)
 
-    def _reset_scanned_commits(self, branches=None):
+    def _reset_scanned_commits(self, branch_ids=None):
         """Reset the scanned commits.
 
         This will make the next repository scan restarting from the beginning,
         and thus making it slower.
         """
         self.ensure_one()
-        if branches is None:
-            branches = []
-        branches_ = (
-            self.branch_ids.filtered(lambda br: br.branch_id.name in branches)
-            if branches and not self.clone_branch_id
-            else self.branch_ids
+        if branch_ids is None:
+            branch_ids = self.branch_ids.branch_id.ids
+        repo_branches = self.branch_ids.filtered(
+            lambda rb: rb.branch_id.id in branch_ids
         )
-        branches_.write({"last_scanned_commit": False})
-        branches_.module_ids.sudo().write({"last_scanned_commit": False})
+        repo_branches.write({"last_scanned_commit": False})
+        repo_branches.module_ids.sudo().write({"last_scanned_commit": False})
 
     def _get_token(self):
         """Return the first available token found for this repository.
@@ -410,13 +413,14 @@ class OdooRepository(models.Model):
             or os.environ.get("GITHUB_TOKEN")
         )
 
-    def _prepare_scanner_parameters(self, branch):
+    def _prepare_scanner_parameters(self, version, branch):
         ir_config = self.env["ir.config_parameter"]
         repositories_path = ir_config.sudo().get_param(self._repositories_path_key)
         return {
             "org": self.org_id.name,
             "name": self.name,
             "clone_url": self.clone_url,
+            "version": version,
             "branch": branch,
             "addons_paths_data": self.addons_path_ids.read(
                 [
@@ -437,14 +441,14 @@ class OdooRepository(models.Model):
             "env": self.env,
         }
 
-    def action_force_scan(self, branches=None, raise_exc=True):
+    def action_force_scan(self, branch_ids=None, raise_exc=True):
         """Force the scan of the repositories.
 
         It will restart the scan without considering the last scanned commit,
         overriding already collected module data if any.
         """
         self.ensure_one()
-        return self.action_scan(branches=branches, force=True, raise_exc=raise_exc)
+        return self.action_scan(branch_ids=branch_ids, force=True, raise_exc=raise_exc)
 
     @api.model
     def cron_fetch_data(self, branches=None, force=False):
@@ -456,7 +460,7 @@ class OdooRepository(models.Model):
         )
         if not main_node_url:
             return False
-        branch_domain = [("odoo_version", "=", True)]
+        branch_domain = []
         if branches:
             branch_domain.append(("name", "in", branches))
         branches = self.env["odoo.branch"].search(branch_domain)
@@ -485,9 +489,7 @@ class OdooRepository(models.Model):
 
     def _prepare_module_branch_values(self, data):
         # Get branch, repository and technical module
-        branch = self.env["odoo.branch"].search(
-            [("odoo_version", "=", True), ("name", "=", data["branch"])]
-        )
+        branch = self.env["odoo.branch"].search([("name", "=", data["branch"])])
         org = self._get_repository_org(data["repository"]["org"])
         repository = self._get_repository(
             org.id, data["repository"]["name"], data["repository"]
