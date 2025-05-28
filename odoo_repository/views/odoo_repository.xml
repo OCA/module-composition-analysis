@@ -64,22 +64,7 @@
                             attrs="{'invisible': [('to_scan', '=', False)]}"
                         >
               <field name="scan_weekday_ids" widget="many2many_tags" />
-              <field
-                                name="clone_branch_id"
-                                context="{'default_odoo_version': False}"
-                                options="{'no_open': True}"
-                                attrs="{'readonly': [('branch_ids', '!=', [])]}"
-                            />
               <field name="specific" />
-              <field
-                                name="odoo_version_id"
-                                options="{'no_open': True}"
-                                attrs="{
-                'required': [('clone_branch_id' , '!=', False)],
-                'invisible': [('clone_branch_id', '=', False)],
-                'readonly': [('branch_ids', '!=', [])]
-                }"
-                            />
               <field name="clone_name" groups="base.group_no_one" />
             </group>
           </group>
@@ -98,14 +83,22 @@
                 </tree>
               </field>
             </group>
-            <group
-                            name="branches"
-                            string="Branches"
-                            attrs="{'invisible': [('clone_branch_id', '!=', False)]}"
-                        >
-              <field name="branch_ids" nolabel="1" colspan="2">
-                <tree>
-                  <field name="branch_id" />
+            <group name="branches" string="Branches">
+            <field
+                                name="branch_ids"
+                                nolabel="1"
+                                colspan="2"
+                                attrs="{'readonly': [('specific', '=', False)]}"
+                            >
+                <tree editable="bottom">
+                  <field
+                                        name="branch_id"
+                                        attrs="{'readonly': [('parent.specific', '=', False)]}"
+                                    />
+                  <field
+                                        name="cloned_branch"
+                                        attrs="{'column_invisible': [('parent.specific', '=', False)]}"
+                                    />
                   <field name="module_ids" />
                   <field name="last_scanned_commit" />
                 </tree>

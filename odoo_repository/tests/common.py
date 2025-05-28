@@ -52,9 +52,9 @@ class Common(TransactionCase, CommonCase):
             self.branch = self.env["odoo.branch"].create(
                 {
                     "name": self.branch1_name,
-                    "odoo_version": True,
                 }
             )
+        self.branch.active = True
         # branch2
         self.branch2_name = self.source2.split("/")[1]
         self.branch2 = (
@@ -66,9 +66,9 @@ class Common(TransactionCase, CommonCase):
             self.branch2 = self.env["odoo.branch"].create(
                 {
                     "name": self.branch2_name,
-                    "odoo_version": True,
                 }
             )
+        self.branch2.active = True
         # branch3
         self.branch3_name = self.target2.split("/")[1]
         # technical module
@@ -136,10 +136,10 @@ class Common(TransactionCase, CommonCase):
         )
         return commit.hexsha
 
-    def _run_odoo_repository_action_scan(self, branch, force=False):
-        """Run `action_scan` for given `branch` on the Odoo repository."""
+    def _run_odoo_repository_action_scan(self, branch_id, force=False):
+        """Run `action_scan` for given `branch_id` on the Odoo repository."""
         self.odoo_repository.with_context(queue_job__no_delay=True).action_scan(
-            [branch], force=force
+            branch_ids=[branch_id], force=force
         )
 
     def _create_odoo_module(self, name):
