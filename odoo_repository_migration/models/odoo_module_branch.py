@@ -51,10 +51,7 @@ class OdooModuleBranch(models.Model):
             next_odoo_version = False
             if rec.branch_id:
                 next_odoo_version = self.env["odoo.branch"].search(
-                    [
-                        ("odoo_version", "=", True),
-                        ("sequence", ">", rec.branch_id.sequence),
-                    ],
+                    [("sequence", ">", rec.branch_id.sequence)],
                     limit=1,
                 )
             rec.next_odoo_version_id = next_odoo_version

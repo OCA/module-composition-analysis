@@ -70,13 +70,13 @@ class MigrationScannerOdooEnv(MigrationScanner):
             return migration.id
 
     def _get_odoo_module_branch_migration_data(
-        self, repo_id: int, module: str, source_branch: str, target_branch: str
+        self, repo_id: int, module: str, source_version: str, target_version: str
     ) -> dict:
         args = [
             ("module_branch_id.repository_id", "=", repo_id),
             ("module_id", "=", module),
-            ("source_branch_id", "=", source_branch),
-            ("target_branch_id", "=", target_branch),
+            ("source_branch_id", "=", source_version),
+            ("target_branch_id", "=", target_version),
         ]
         migration = self.env["odoo.module.branch.migration"].search(args)
         if migration:

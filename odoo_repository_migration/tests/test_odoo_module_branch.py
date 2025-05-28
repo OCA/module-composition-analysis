@@ -38,7 +38,9 @@ class TestOdooModuleBranch(common.Common):
         """Helper method that pushes scanned migration data."""
         data = {
             "module": self.module_branch.module_name,
+            "source_version": self.branch.name,
             "source_branch": self.branch.name,
+            "target_version": self.branch2.name,
             "target_branch": self.branch2.name,
             "source_commit": self.module_branch.last_scanned_commit,
             "target_commit": target_commit,
