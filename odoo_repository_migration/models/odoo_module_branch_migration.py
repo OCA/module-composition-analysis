@@ -318,8 +318,8 @@ class OdooModuleBranchMigration(models.Model):
     def push_scanned_data(self, module_branch_id, data):
         migration_path = self.env["odoo.migration.path"].search(
             [
-                ("source_branch_id", "=", data["source_branch"]),
-                ("target_branch_id", "=", data["target_branch"]),
+                ("source_branch_id", "=", data["source_version"]),
+                ("target_branch_id", "=", data["target_version"]),
             ]
         )
         values = {

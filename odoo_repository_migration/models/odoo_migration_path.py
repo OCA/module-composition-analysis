@@ -14,13 +14,11 @@ class OdooMigrationPath(models.Model):
     source_branch_id = fields.Many2one(
         comodel_name="odoo.branch",
         ondelete="cascade",
-        domain=[("odoo_version", "=", True)],
         required=True,
     )
     target_branch_id = fields.Many2one(
         comodel_name="odoo.branch",
         ondelete="cascade",
-        domain=[("odoo_version", "=", True)],
         required=True,
     )
 
