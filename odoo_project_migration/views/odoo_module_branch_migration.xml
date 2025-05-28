@@ -11,9 +11,9 @@
             ref="odoo_repository_migration.odoo_module_branch_migration_view_form"
         />
     <field name="arch" type="xml">
-      <field name="migration_scan" position="after">
+      <group name="info" position="inside">
         <field name="odoo_project_ids" widget="many2many_tags" />
-      </field>
+      </group>
     </field>
   </record>
 

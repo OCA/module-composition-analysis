@@ -8,8 +8,45 @@
     <field name="model">odoo.module.branch</field>
     <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form" />
     <field name="arch" type="xml">
+      <div name="button_box" position="inside">
+          <button
+                    name="open_next_module_branches"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-arrow-up"
+                    attrs="{'invisible': [('next_odoo_version_id', '=', False)]}"
+                >
+            <span>Next Versions</span>
+          </button>
+      </div>
       <notebook position="inside">
         <page name="migrations" string="Migrations">
+          <div
+                        class="alert alert-info"
+                        role="status"
+                        attrs="{'invisible': [('next_odoo_version_id', '=', False)]}"
+                    >
+            Starting from version <strong><field
+                                name="next_odoo_version_id"
+                                options="{'no_open': True}"
+                                nolabel="1"
+                            /></strong>,
+            this module <field name="next_odoo_version_state" />
+            <span attrs="{'invisible': [('next_odoo_version_state', '=', 'same')]}">
+              <field
+                                name="next_odoo_version_module_id"
+                                nolabel="1"
+                                options="{'no_quick_create':True,'no_create_edit':True}"
+                                attrs="{'required': [('next_odoo_version_state', '!=', 'same')]}"
+                            />
+              <i
+                                class="fa fa-warning text-danger"
+                                role="img"
+                                aria-label="Warning"
+                                title="Warning"
+                            />
+            </span>
+          </div>
           <field name="migration_ids" nolabel="1">
             <tree>
               <field name="migration_path_id" />

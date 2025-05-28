@@ -134,16 +134,26 @@ class OdooProjectExportMigrationReport(models.TransientModel):
 
     def _get_csv_module_info(self, module):
         migration = module.module_migration_id
-        info = ""
+        info = []
+        # Module renamed or replaced by another one
+        if migration.renamed_to_module_id:
+            info.append(f"Renamed to {migration.target_module_branch_id.module_name}")
+        elif migration.replaced_by_module_id:
+            info.append(
+                f"Replaced by {migration.target_module_branch_id.module_name} "
+                f"(in {migration.target_module_branch_id.repository_id.display_name})"
+            )
         # Migration to review or commits/PRs to port
         if migration.state == "review_migration":
-            info = migration.pr_url or ""
+            if migration.pr_url:
+                info.append(f"PR to review: {migration.pr_url}")
         elif migration.process == "port_commits":
             nb_prs = len(migration.results)
-            info = f"{nb_prs} PR(s) to check/port"
-            info = "\n".join(
-                [info] + [f"- {pr['url']}" for pr in migration.results.values()]
+            msg = f"{nb_prs} PR(s) to check/port"
+            msg = "\n".join(
+                [msg] + [f"- {pr['url']}" for pr in migration.results.values()]
             )
+            info.append(msg)
         # Migration scripts
         if module.migration_script_ids:
             nb_scripts = len(module.migration_script_ids)
@@ -152,8 +162,8 @@ class OdooProjectExportMigrationReport(models.TransientModel):
                 [info_mig]
                 + [f"- {sc.migration_script_url}" for sc in module.migration_script_ids]
             )
-            info += info_mig
-        return info
+            info.append(info_mig)
+        return "\n\n".join(info)
 
     def _get_csv_module_warning(self, module):
         warning = ""
