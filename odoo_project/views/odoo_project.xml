@@ -44,13 +44,17 @@
             <h1><field name="name" placeholder="Project Name" /></h1>
           </div>
           <group>
+            <field name="available_odoo_version_ids" invisible="1" />
             <field
                             name="repository_id"
-                            attrs="{'readonly': [('project_module_ids', '!=', [])]}"
+                            force_save="1"
+                            attrs="{'readonly': [('repository_id', '!=', False), ('project_module_ids', '!=', [])]}"
                         />
             <field
                             name="odoo_version_id"
-                            attrs="{'readonly': [('project_module_ids', '!=', [])]}"
+                            force_save="1"
+                            domain="[('id', 'in', available_odoo_version_ids)]"
+                            attrs="{'readonly': [('odoo_version_id', '!=', False), ('project_module_ids', '!=', [])]}"
                             options="{'no_open': True}"
                         />
           </group>
