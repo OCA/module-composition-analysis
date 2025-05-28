@@ -16,28 +16,34 @@ class OdooProject(models.Model):
     active = fields.Boolean(default=True)
     repository_id = fields.Many2one(
         comodel_name="odoo.repository",
-        ondelete="restrict",
         string="Repository",
-        domain=[
-            ("clone_branch_id", "!=", False),
-            ("specific", "=", True),
-            ("odoo_version_id", "!=", False),
-        ],
+        domain=[("specific", "=", True)],
+        store=True,
+        index=True,
         help=(
-            "Repository is optional. "
+            "Repository this project is based on (optional). "
             "You can start to build/simulate a project without repository "
             "to get some figures."
         ),
+    )
+    available_odoo_version_ids = fields.One2many(
+        comodel_name="odoo.branch",
+        compute="_compute_available_odoo_version_ids",
+        string="Available Odoo Versions",
     )
     odoo_version_id = fields.Many2one(
         comodel_name="odoo.branch",
         ondelete="restrict",
         string="Odoo Version",
-        domain=[("odoo_version", "=", True)],
-        required=True,
-        compute="_compute_odoo_version_id",
         store=True,
-        readonly=False,
+        index=True,
+    )
+    repository_branch_id = fields.Many2one(
+        comodel_name="odoo.repository.branch",
+        string="Repository / Branch",
+        compute="_compute_repository_branch_id",
+        store=True,
+        index=True,
     )
     project_module_ids = fields.One2many(
         comodel_name="odoo.project.module",
@@ -74,10 +80,22 @@ class OdooProject(models.Model):
     )
 
     @api.depends("repository_id")
-    def _compute_odoo_version_id(self):
+    def _compute_available_odoo_version_ids(self):
+        all_versions = self.env["odoo.branch"]._get_all_odoo_versions()
         for rec in self:
+            rec.available_odoo_version_ids = all_versions
             if rec.repository_id:
-                rec.odoo_version_id = rec.repository_id.odoo_version_id
+                rec.available_odoo_version_ids = rec.repository_id.branch_ids.branch_id
+
+    @api.depends("repository_id", "odoo_version_id")
+    def _compute_repository_branch_id(self):
+        for rec in self:
+            rec.repository_branch_id = False
+            if not rec.repository_id or not rec.odoo_version_id:
+                continue
+            rec.repository_branch_id = rec.repository_id.branch_ids.filtered(
+                lambda rb: rb.branch_id == rec.odoo_version_id
+            )
 
     @api.depends("project_module_ids.module_id")
     def _compute_module_ids(self):
@@ -90,11 +108,11 @@ class OdooProject(models.Model):
             rec.modules_count = len(rec.project_module_ids)
 
     @api.depends(
-        "repository_id.branch_ids.module_ids", "project_module_ids.module_branch_id"
+        "repository_branch_id.module_ids", "project_module_ids.module_branch_id"
     )
     def _compute_module_not_installed_ids(self):
         for rec in self:
-            all_module_ids = set(rec.repository_id.branch_ids.module_ids.ids)
+            all_module_ids = set(rec.repository_branch_id.module_ids.ids)
             installed_module_ids = set(rec.project_module_ids.module_branch_id.ids)
             rec.module_not_installed_ids = list(all_module_ids - installed_module_ids)
 
@@ -145,12 +163,12 @@ class OdooProject(models.Model):
             module.action_find_pr_url()
 
     def _get_repositories_to_scan(self):
-        """Returnt the repositories to scan."""
+        """Return the repositories to scan."""
         domain = self.env["odoo.repository"]._cron_scanner_domain()
         return self.project_module_ids.repository_id.filtered_domain(domain)
 
     def _get_branches_to_scan(self):
-        """Return the branches to scan."""
+        """Return the branches/versions to scan."""
         return self.project_module_ids.repository_branch_id.branch_id
 
     def action_scan(self, force=False):
@@ -163,7 +181,7 @@ class OdooProject(models.Model):
         branches = self._get_branches_to_scan()
         if branches:
             repositories.action_scan(
-                branches=branches.mapped("name"), force=force, raise_exc=False
+                branch_ids=branches.ids, force=force, raise_exc=False
             )
         # Scan the underlying project repository itself
         self.repository_id.action_scan(force=force, raise_exc=True)
