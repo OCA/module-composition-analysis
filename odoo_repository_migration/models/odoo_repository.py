@@ -19,16 +19,25 @@ class OdooRepository(models.Model):
         default=False,
     )
 
-    def _reset_scanned_commits(self, branches=None):
-        res = super()._reset_scanned_commits(branches)
-        if branches is None:
-            branches = []
-        branches_ = (
-            self.branch_ids.filtered(lambda br: br.branch_id.name in branches)
-            if branches
-            else self.branch_ids
+    def action_scan(self, branch_ids=None, force=False, raise_exc=True):
+        for rec in self:
+            # Scan only relevant branches regarding migration paths
+            rec_ctx = rec
+            if rec.specific:
+                rec_ctx = rec.with_context(strict_branches_scan=True)
+            super(OdooRepository, rec_ctx).action_scan(
+                branch_ids=branch_ids, force=force, raise_exc=raise_exc
+            )
+        return True
+
+    def _reset_scanned_commits(self, branch_ids=None):
+        res = super()._reset_scanned_commits(branch_ids=branch_ids)
+        if branch_ids is None:
+            branch_ids = self.branch_ids.branch_id.ids
+        repo_branches = self.branch_ids.filtered(
+            lambda rb: rb.branch_id.id in branch_ids
         )
-        branches_.module_ids.migration_ids.sudo().write(
+        repo_branches.module_ids.migration_ids.sudo().write(
             {
                 "last_source_scanned_commit": False,
                 "last_target_scanned_commit": False,
@@ -36,12 +45,14 @@ class OdooRepository(models.Model):
         )
         return res
 
-    def _create_subsequent_jobs(self, branch, next_branches, all_branches, data):
+    def _create_subsequent_jobs(
+        self, version_branch, next_versions_branches, all_versions_branches, data
+    ):
         jobs = super()._create_subsequent_jobs(
-            branch, next_branches, all_branches, data
+            version_branch, next_versions_branches, all_versions_branches, data
         )
         # Prepare migration scan jobs when its the last repository scan
-        last_scan = not next_branches
+        last_scan = not next_versions_branches
         if not last_scan:
             return jobs
         # Check if the addons_paths are compatible with 'oca_port'
@@ -50,50 +61,76 @@ class OdooRepository(models.Model):
             return jobs
         # Override to run the MigrationScanner once branches are scanned
         args = []
-        if all_branches:
+        if all_versions_branches:
+            all_versions = [vb[0] for vb in all_versions_branches]
             # A strict scan of branches avoids unwanted migration scans
             # For instance if we are interested only by 14.0 and 17.0 branches,
             # this avoids to scan other migration paths like 15.0 -> 17.0
-            strict_scan = self.env.context.get("strict_branches_scan")
+            # NOTE: a strict scan always occurs on specific repositories
+            strict_scan = self.env.context.get("strict_branches_scan") or self.specific
             args = [
                 "&" if strict_scan else "|",
-                ("source_branch_id", "in", all_branches),
-                ("target_branch_id", "in", all_branches),
+                ("source_branch_id", "in", all_versions),
+                ("target_branch_id", "in", all_versions),
             ]
         migration_paths = self.env["odoo.migration.path"].search(args)
         # Launch one job for all migration_paths
         if migration_paths:
+            # Migration paths parameter containing the migration path ID +
+            # the Odoo versions and branches to scan.
+            # E.g. {MIG_PATH_ID: [('14.0', 'master'), ('18.0', '18.0-mig')], ...}
+            migration_paths_param = {}
+            for migration_path in migration_paths:
+                mig_path = (
+                    migration_path.source_branch_id.name,
+                    migration_path.target_branch_id.name,
+                )
+                versions_branches = [
+                    vb for vb in all_versions_branches if vb[0] in mig_path
+                ]
+                migration_paths_param[migration_path.id] = versions_branches
+
             delayable = self.delayable(
                 description=f"Collect {self.display_name} migration data",
                 identity_key=identity_exact,
             )
-            job = delayable._scan_migration_paths(migration_paths.ids)
+            job = delayable._scan_migration_paths(migration_paths_param)
             jobs.append(job)
         return jobs
 
-    def _scan_migration_paths(self, migration_path_ids):
+    def _scan_migration_paths(self, migration_paths_param):
         """Scan repository branches to collect modules migration data.
 
         Spawn one job per module to scan.
         """
         self.ensure_one()
         jobs = []
-        migration_paths = (
-            self.env["odoo.migration.path"].browse(migration_path_ids).exists()
-        )
-        for migration_path in migration_paths:
+        for migration_path_id in migration_paths_param:
+            versions_branches = migration_paths_param[migration_path_id]
+            migration_path = (
+                self.env["odoo.migration.path"]
+                .browse(
+                    # Job encodes dict key as string => convert it to integer
+                    int(migration_path_id)
+                )
+                .exists()
+            )
+            if not migration_path:
+                continue
             modules_to_scan = self._migration_get_modules_to_scan(migration_path)
             if modules_to_scan:
                 jobs.extend(
                     self._migration_create_jobs_scan_module(
-                        migration_path, modules_to_scan
+                        migration_path, versions_branches, modules_to_scan
                     )
                 )
         if jobs:
             chain(*jobs).delay()
         return True
 
-    def _migration_create_jobs_scan_module(self, migration_path, modules_to_scan):
+    def _migration_create_jobs_scan_module(
+        self, migration_path, versions_branches, modules_to_scan
+    ):
         jobs = []
         mig_path = (
             migration_path.source_branch_id.name,
@@ -106,11 +143,15 @@ class OdooRepository(models.Model):
                 ),
                 identity_key=identity_exact,
             )
-            job = delayable._scan_migration_module(migration_path.id, module.id)
+            job = delayable._scan_migration_module(
+                migration_path.id, versions_branches, module.id
+            )
             jobs.append(job)
         return jobs
 
-    def _scan_migration_module(self, migration_path_id, module_branch_id):
+    def _scan_migration_module(
+        self, migration_path_id, versions_branches, module_branch_id
+    ):
         """Scan migration path for `module_branch_id`.
 
         The migration scan can only occur if:
@@ -154,7 +195,7 @@ class OdooRepository(models.Model):
                     f"{target_repository.display_name}."
                 )
         params = self._prepare_migration_scanner_parameters(
-            migration_path, target_repository
+            versions_branches, target_repository
         )
         module_names = [module.module_id.name]
         if target_module:
@@ -164,7 +205,9 @@ class OdooRepository(models.Model):
         try:
             scanner = MigrationScannerOdooEnv(**params)
             return scanner.scan(
-                addons_path=module.addons_path, module_names=module_names
+                addons_path=module.addons_path,
+                target_addons_path=target_module.addons_path or module.addons_path,
+                module_names=module_names,
             )
         except Exception as exc:
             raise RetryableJobError("Scanner error") from exc
@@ -172,7 +215,8 @@ class OdooRepository(models.Model):
     def _migration_get_modules_to_scan(self, migration_path):
         """Return `odoo.module.branch` records that need a migration scan."""
         self.ensure_one()
-        return self.env["odoo.module.branch"].search(
+        mb_model = self.env["odoo.module.branch"]
+        modules = mb_model.search(
             [
                 (
                     "repository_id",
@@ -183,21 +227,27 @@ class OdooRepository(models.Model):
                 ("migration_scan", "=", True),
             ]
         )
+        module_ids = []
+        for module in modules:
+            migration = module.migration_ids.filtered(
+                lambda mig: mig.migration_path_id == migration_path
+            )
+            if migration and not migration.migration_scan:
+                # Skip module that do not need a scan for the given migration path
+                continue
+            module_ids.append(module.id)
+        return mb_model.browse(module_ids)
 
     def _prepare_migration_scanner_parameters(
         self, migration_path, target_repository=None
     ):
         ir_config = self.env["ir.config_parameter"]
         repositories_path = ir_config.sudo().get_param(self._repositories_path_key)
-        mig_path = (
-            migration_path.source_branch_id.name,
-            migration_path.target_branch_id.name,
-        )
         params = {
             "org": self.org_id.name,
             "name": self.name,
             "clone_url": self.clone_url,
-            "migration_path": mig_path,
+            "migration_path": migration_path,
             "repositories_path": repositories_path,
             "repo_type": self.repo_type,
             "ssh_key": self.ssh_key_id.private_key,
@@ -221,10 +271,10 @@ class OdooRepository(models.Model):
         values["migration_ids"] = []
         for mig in migrations:
             source_branch = self.env["odoo.branch"].search(
-                [("odoo_version", "=", True), ("name", "=", mig["source_branch"])]
+                [("name", "=", mig["source_branch"])]
             )
             target_branch = self.env["odoo.branch"].search(
-                [("odoo_version", "=", True), ("name", "=", mig["target_branch"])]
+                [("name", "=", mig["target_branch"])]
             )
             if not source_branch or not target_branch:
                 # Such branches are not configured on this instance, skip
