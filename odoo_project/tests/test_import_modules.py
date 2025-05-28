@@ -134,8 +134,8 @@ class TestImportModules(Common):
 
     def test_match_project_repo_module(self):
         # Assign a repository to the project
-        self.odoo_repository.odoo_version_id = self.branch
         self.project.repository_id = self.odoo_repository
+        self.project.odoo_version_id = self.branch
         mod1 = "test1"
         mod2 = "test2"
         mod1_in_repo = self.wiz_model._get_module(mod1)
