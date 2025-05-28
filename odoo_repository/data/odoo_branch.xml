@@ -14,61 +14,56 @@
 
   <record id="odoo_branch_8" model="odoo.branch">
     <field name="name">8.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_9" model="odoo.branch">
     <field name="name">9.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_10" model="odoo.branch">
     <field name="name">10.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_11" model="odoo.branch">
     <field name="name">11.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_12" model="odoo.branch">
     <field name="name">12.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_13" model="odoo.branch">
     <field name="name">13.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_14" model="odoo.branch">
     <field name="name">14.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_15" model="odoo.branch">
     <field name="name">15.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_16" model="odoo.branch">
     <field name="name">16.0</field>
-    <field name="odoo_version" eval="True" />
     <field name="active" eval="False" />
   </record>
 
   <record id="odoo_branch_17" model="odoo.branch">
     <field name="name">17.0</field>
-    <field name="odoo_version" eval="True" />
+    <field name="active" eval="False" />
+  </record>
+
+  <record id="odoo_branch_18" model="odoo.branch">
+    <field name="name">18.0</field>
     <field name="active" eval="False" />
   </record>
 

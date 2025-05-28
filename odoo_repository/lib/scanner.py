@@ -421,6 +421,8 @@ class MigrationScanner(BaseScanner):
         org: str,
         name: str,
         clone_url: str,
+        # FIXME: put specific branch names to clone in 'migration_path':
+        #   E.g. [('14.0', 'master'), ('18.0', '18.0-mig')]
         migration_path: tuple[str],
         new_repo_name: str = None,
         new_repo_url: str = None,
@@ -431,7 +433,7 @@ class MigrationScanner(BaseScanner):
         workaround_fs_errors: bool = False,
         clone_name: str = None,
     ):
-        branches = sorted(migration_path)
+        branches = [mp[1] for mp in sorted(migration_path)]
         super().__init__(
             org,
             name,
@@ -460,7 +462,7 @@ class MigrationScanner(BaseScanner):
                 self._set_git_remote_url(repo, self.new_repo_name, self.new_repo_url)
         return res
 
-    def scan(self, addons_path=".", module_names=None):
+    def scan(self, addons_path=".", target_addons_path=".", module_names=None):
         # Clone/fetch has been done during the repository scan, the migration
         # scan will be processed on the current history of commits
         res = self.sync(fetch=False)
@@ -468,7 +470,10 @@ class MigrationScanner(BaseScanner):
         # there is nothing to scan then.
         if not res:
             return False
-        source_branch, target_branch = self.migration_path
+        source_version = self.migration_path[0][0]
+        source_branch = self.migration_path[0][1]
+        target_version = self.migration_path[1][0]
+        target_branch = self.migration_path[1][1]
         target_remote = "origin"
         with self.repo() as repo:
             if self.new_repo_name and self.new_repo_url:
@@ -482,10 +487,13 @@ class MigrationScanner(BaseScanner):
             ):
                 return self._scan_migration_path(
                     repo,
+                    source_version,
                     source_branch,
                     target_remote,
+                    target_version,
                     target_branch,
                     addons_path=addons_path,
+                    target_addons_path=target_addons_path,
                     module_names=module_names,
                 )
         return res
@@ -493,10 +501,13 @@ class MigrationScanner(BaseScanner):
     def _scan_migration_path(
         self,
         repo,
+        source_version,
         source_branch,
         target_remote,
+        target_version,
         target_branch,
         addons_path=".",
+        target_addons_path=".",
         module_names=None,
     ):
         repo_source_commit = self._get_last_fetched_commit(repo, source_branch)
@@ -520,23 +531,27 @@ class MigrationScanner(BaseScanner):
                 continue
             repo_id = self._get_odoo_repository_id()
             module_branch_id = self._get_odoo_module_branch_id(
-                repo_id, module, source_branch
+                repo_id, module, source_version
             )
             if not module_branch_id:
                 _logger.warning(
-                    "Module '%s' for branch %s does not exist on Odoo, "
+                    "Module '%s' for version %s does not exist on Odoo, "
                     "a new scan of the repository is required. Aborted"
-                    % (module, source_branch)
+                    % (module, source_version)
                 )
                 continue
             # For each module and source/target branch:
             #   - get commit of 'module' relative to the last fetched commit
             #   - get commit of 'module' relative to the last scanned commit
+            module_path = str(pathlib.Path(addons_path).joinpath(module))
+            target_module_path = str(
+                pathlib.Path(target_addons_path).joinpath(target_module)
+            )
             module_source_tree = self._get_subtree(
-                repo.commit(repo_source_commit).tree, module
+                repo.commit(repo_source_commit).tree, module_path
             )
             module_target_tree = self._get_subtree(
-                repo.commit(repo_target_commit).tree, target_module
+                repo.commit(repo_target_commit).tree, target_module_path
             )
             module_source_commit = self._get_last_commit_of_git_tree(
                 repo_source_commit, module_source_tree
@@ -550,7 +565,7 @@ class MigrationScanner(BaseScanner):
             )
             # Retrieve existing migration data if any and check if it is outdated
             data = self._get_odoo_module_branch_migration_data(
-                repo_id, module, source_branch, target_branch
+                repo_id, module, source_version, target_version
             )
             if (
                 data.get("last_source_mig_scanned_commit") != module_source_commit
@@ -559,11 +574,14 @@ class MigrationScanner(BaseScanner):
                 scanned_data = self._scan_module(
                     repo,
                     addons_path,
+                    target_addons_path,
                     module,
                     target_module,
                     module_branch_id,
+                    source_version,
                     source_branch,
                     target_remote,
+                    target_version,
                     target_branch,
                     module_source_commit,
                     module_target_commit,
@@ -579,11 +597,14 @@ class MigrationScanner(BaseScanner):
         self,
         repo: git.Repo,
         addons_path: str,
+        target_addons_path: str,
         module: str,
         target_module: str,
         module_branch_id: int,
+        source_version: str,
         source_branch: str,
         target_remote: str,
+        target_version: str,
         target_branch: str,
         source_commit: str,
         target_commit: str,
@@ -595,14 +616,19 @@ class MigrationScanner(BaseScanner):
         """Collect the migration data of a module."""
         data = {
             "addons_path": addons_path,
+            "target_addons_path": addons_path,
             "module": module,
+            "source_version": source_version,
             "source_branch": source_branch,
+            "target_version": target_version,
             "target_branch": target_branch,
             "source_commit": source_last_scanned_commit,
             "target_commit": target_last_scanned_commit,
         }
         module_path = str(pathlib.Path(addons_path).joinpath(module))
-        target_module_path = str(pathlib.Path(addons_path).joinpath(target_module))
+        target_module_path = str(
+            pathlib.Path(target_addons_path).joinpath(target_module)
+        )
         # If files updated in the module since the last scan are not relevant
         # (e.g. all new commits are updating PO files), we skip the scan.
         source_scan_relevant = self._is_scan_module_relevant(
@@ -631,14 +657,16 @@ class MigrationScanner(BaseScanner):
                 "%s: relevant changes detected in '%s' (%s -> %s)",
                 self.full_name,
                 module if source_scan_relevant else target_module,
-                source_branch,
-                target_branch,
+                source_version,
+                target_version,
             )
             oca_port_data = self._run_oca_port(
                 module_path,
                 target_module_path,
+                source_version,
                 source_branch,
                 target_remote,
+                target_version,
                 target_branch,
             )
             data["report"] = oca_port_data
@@ -696,8 +724,10 @@ class MigrationScanner(BaseScanner):
         self,
         module_path,
         target_module_path,
+        source_version,
         source_branch,
         target_remote,
+        target_version,
         target_branch,
     ):
         _logger.info(
@@ -710,7 +740,9 @@ class MigrationScanner(BaseScanner):
         # Initialize the oca-port app
         params = {
             "source": f"origin/{source_branch}",
+            "source_version": source_version,
             "target": f"{target_remote}/{target_branch}",
+            "target_version": target_version,
             "addon_path": module_path,
             "target_addon_path": target_module_path,
             "upstream_org": self.org,
@@ -756,7 +788,7 @@ class MigrationScanner(BaseScanner):
         raise NotImplementedError
 
     def _get_odoo_module_branch_migration_data(
-        self, repo_id, module, source_branch, target_branch
+        self, repo_id, module, source_version, target_version
     ) -> dict:
         """Return last scanned commits regarding `module`."""
         raise NotImplementedError
@@ -776,6 +808,7 @@ class RepositoryScanner(BaseScanner):
         org: str,
         name: str,
         clone_url: str,
+        version: str,
         branch: str,
         addons_paths_data: list,
         repositories_path: str = None,
@@ -797,6 +830,7 @@ class RepositoryScanner(BaseScanner):
             workaround_fs_errors,
             clone_name,
         )
+        self.version = version
         self.branch = branch
         self.addons_paths_data = addons_paths_data
 
@@ -813,8 +847,13 @@ class RepositoryScanner(BaseScanner):
     def _detect_modules_to_scan(self, repo, repo_id):
         if not self._branch_exists(repo, self.branch):
             return
-        branch_id = self._get_odoo_branch_id(repo_id, self.branch)
-        repo_branch_id = self._create_odoo_repository_branch(repo_id, branch_id)
+        branch_id = self._get_odoo_branch_id(self.version)
+        cloned_branch = None
+        if self.version != self.branch:
+            cloned_branch = self.branch
+        repo_branch_id = self._create_odoo_repository_branch(
+            repo_id, branch_id, cloned_branch=cloned_branch
+        )
         last_fetched_commit = self._get_last_fetched_commit(repo, self.branch)
         last_scanned_commit = self._get_repo_last_scanned_commit(repo_branch_id)
         data = {
@@ -877,8 +916,13 @@ class RepositoryScanner(BaseScanner):
     def scan_module(self, module_path, specs):
         self._apply_git_global_config()
         repo_id = self._get_odoo_repository_id()
-        branch_id = self._get_odoo_branch_id(repo_id, self.branch)
-        repo_branch_id = self._create_odoo_repository_branch(repo_id, branch_id)
+        branch_id = self._get_odoo_branch_id(self.version)
+        cloned_branch = None
+        if self.version != self.branch:
+            cloned_branch = self.branch
+        repo_branch_id = self._create_odoo_repository_branch(
+            repo_id, branch_id, cloned_branch=cloned_branch
+        )
         with self.repo() as repo:
             # Checkout the source branch to perform module code analysis
             branch_commit = self._get_last_fetched_commit(repo, self.branch)
@@ -1049,13 +1093,8 @@ class RepositoryScanner(BaseScanner):
         """Return the ID of the 'odoo.repository' record."""
         raise NotImplementedError
 
-    def _get_odoo_branch_id(self, repo_id, branch):
-        """Return the ID of the relevant 'odoo.branch' record.
-
-        If the repository is cloned from a specific branch name
-        (like 'master' or 'main'), return the ID of the configured
-        Odoo version (`odoo.branch.odoo_version_id`).
-        """
+    def _get_odoo_branch_id(self, version):
+        """Return the ID of the relevant 'odoo.branch' record."""
         raise NotImplementedError
 
     def _get_odoo_repository_branch_id(self, repo_id, branch_id):

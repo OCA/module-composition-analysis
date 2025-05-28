@@ -1,6 +1,8 @@
 # Copyright 2024 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+from odoo import fields
+
 from .common import Common
 
 
@@ -13,7 +15,7 @@ class TestOdooRepositoryScan(Common):
         self.assertFalse(self.odoo_repository.specific)
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         self.assertFalse(module)
-        self._run_odoo_repository_action_scan(self.branch.name)
+        self._run_odoo_repository_action_scan(self.branch.id)
         # Check module technical name
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         self.assertTrue(module)
@@ -54,8 +56,16 @@ class TestOdooRepositoryScan(Common):
     def test_action_scan_repo_specific(self):
         """Test the creation of a module when scanning a specific repository."""
         self.odoo_repository.specific = True
+        self.odoo_repository.write(
+            {
+                "specific": True,
+                "branch_ids": [
+                    fields.Command.create({"branch_id": self.branch.id}),
+                ],
+            }
+        )
         self.assertTrue(self.odoo_repository.specific)
-        self._run_odoo_repository_action_scan(self.branch.name)
+        self._run_odoo_repository_action_scan(self.branch.id)
         # Check module data
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         module_branch = self.env["odoo.module.branch"].search(
@@ -71,7 +81,7 @@ class TestOdooRepositoryScan(Common):
         scan will trigger an update of its data.
         """
         # First scan, like in `test_action_scan_first_time`
-        self._run_odoo_repository_action_scan(self.branch.name)
+        self._run_odoo_repository_action_scan(self.branch.id)
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         module_branch = self.env["odoo.module.branch"].search(
             [("module_id", "=", module.id), ("branch_id", "=", self.branch.id)]
@@ -79,7 +89,7 @@ class TestOdooRepositoryScan(Common):
         # Change some data in the module before triggering the second scan
         module_branch.write({"title": False})
         # Launch a second scan (force it to make it happen)
-        self._run_odoo_repository_action_scan(self.branch.name, force=True)
+        self._run_odoo_repository_action_scan(self.branch.id, force=True)
         self.assertEqual(module_branch.title, "Test")
 
     def test_action_scan_orphaned_module_exists(self):
@@ -96,7 +106,7 @@ class TestOdooRepositoryScan(Common):
         # Create an orphaned module.
         # To ease its creation, we run a scan to get the record created, and
         # we update it to make it orphaned.
-        self._run_odoo_repository_action_scan(self.branch.name)
+        self._run_odoo_repository_action_scan(self.branch.id)
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         module_branch = self.env["odoo.module.branch"].search(
             [("module_id", "=", module.id), ("branch_id", "=", self.branch.id)]
@@ -109,7 +119,7 @@ class TestOdooRepositoryScan(Common):
             }
         )
         # Launch a scan
-        self._run_odoo_repository_action_scan(self.branch.name, force=True)
+        self._run_odoo_repository_action_scan(self.branch.id, force=True)
         self.assertEqual(module_branch.repository_id, self.odoo_repository)
 
     def _create_wrong_repo_branch(self, repo_sequence=100):
@@ -134,7 +144,7 @@ class TestOdooRepositoryScan(Common):
     def _create_unmerged_module_branch(self):
         # To ease the creation of such module, we run a scan to get the record
         # created, and we update it to make it unmerged/pending.
-        self._run_odoo_repository_action_scan(self.branch.name)
+        self._run_odoo_repository_action_scan(self.branch.id)
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         module_branch = self.env["odoo.module.branch"].search(
             [("module_id", "=", module.id), ("branch_id", "=", self.branch.id)]
@@ -175,7 +185,7 @@ class TestOdooRepositoryScan(Common):
         self.assertFalse(module_branch.specific)
         self.assertNotEqual(module_branch.repository_id, self.odoo_repository)
         # Launch a scan
-        self._run_odoo_repository_action_scan(self.branch.name, force=True)
+        self._run_odoo_repository_action_scan(self.branch.id, force=True)
         self.assertFalse(module_branch.specific)
         self.assertEqual(module_branch.repository_id, self.odoo_repository)
 
@@ -191,7 +201,7 @@ class TestOdooRepositoryScan(Common):
         self.assertFalse(module_branch.specific)
         self.assertNotEqual(module_branch.repository_id, self.odoo_repository)
         # Launch a scan
-        self._run_odoo_repository_action_scan(self.branch.name, force=True)
+        self._run_odoo_repository_action_scan(self.branch.id, force=True)
         # Unmerged module hasn't been attached to the scanned repository
         self.assertNotEqual(module_branch.repository_id, self.odoo_repository)
 
@@ -206,7 +216,7 @@ class TestOdooRepositoryScan(Common):
         self._update_module_installable_on_branch(self.branch.name, installable=False)
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         self.assertFalse(module)
-        self._run_odoo_repository_action_scan(self.branch.name)
+        self._run_odoo_repository_action_scan(self.branch.id)
         module = self.env["odoo.module"].search([("name", "=", self.module_name)])
         self.assertTrue(module)
         # Check module branch

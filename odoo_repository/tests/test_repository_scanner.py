@@ -12,6 +12,7 @@ class TestRepositoryScanner(Common):
             "org": self.org.name,
             "name": self.repo_name,
             "clone_url": self.repo_upstream_path,
+            "version": self.branch.name,
             "branch": self.branch.name,
             "addons_paths_data": [
                 {
@@ -46,14 +47,13 @@ class TestRepositoryScanner(Common):
 
     def test_get_odoo_branch_id(self):
         scanner = self._init_scanner()
-        repo_id = scanner._get_odoo_repository_id()
-        branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+        branch_id = scanner._get_odoo_branch_id(self.branch.name)
         self.assertEqual(branch_id, self.branch.id)
 
     def test_create_odoo_repository_branch(self):
         scanner = self._init_scanner()
         repo_id = scanner._get_odoo_repository_id()
-        branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+        branch_id = scanner._get_odoo_branch_id(self.branch.name)
         # The repository branch doesn't exist yet
         expected_repo_branch_id = scanner._get_odoo_repository_branch_id(
             repo_id, branch_id
@@ -69,7 +69,7 @@ class TestRepositoryScanner(Common):
     def test_get_repo_last_scanned_commit(self):
         scanner = self._init_scanner()
         repo_id = scanner._get_odoo_repository_id()
-        branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+        branch_id = scanner._get_odoo_branch_id(self.branch.name)
         repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
         repo_branch = self.env["odoo.repository.branch"].browse(repo_branch_id)
         # Nothing has been scanned until now
@@ -101,7 +101,7 @@ class TestRepositoryScanner(Common):
         with scanner.repo() as repo:
             scanner._checkout_branch(repo, self.branch.name)
             repo_id = scanner._get_odoo_repository_id()
-            branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+            branch_id = scanner._get_odoo_branch_id(self.branch.name)
             repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
             last_fetched_commit = scanner._get_last_fetched_commit(
                 repo, self.branch.name
@@ -124,7 +124,7 @@ class TestRepositoryScanner(Common):
         with scanner.repo() as repo:
             scanner._checkout_branch(repo, self.branch.name)
             repo_id = scanner._get_odoo_repository_id()
-            branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+            branch_id = scanner._get_odoo_branch_id(self.branch.name)
             repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
             module_path = self.addon
             remote_branch = f"origin/{self.branch.name}"
@@ -158,7 +158,7 @@ class TestRepositoryScanner(Common):
         with scanner.repo() as repo:
             scanner._checkout_branch(repo, self.branch.name)
             repo_id = scanner._get_odoo_repository_id()
-            branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+            branch_id = scanner._get_odoo_branch_id(self.branch.name)
             repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
             module = self.addon
             remote_branch = f"origin/{self.branch.name}"
@@ -201,7 +201,7 @@ class TestRepositoryScanner(Common):
         scanner = self._init_scanner()
         scanner._clone()
         repo_id = scanner._get_odoo_repository_id()
-        branch_id = scanner._get_odoo_branch_id(repo_id, self.branch.name)
+        branch_id = scanner._get_odoo_branch_id(self.branch.name)
         repo_branch_id = scanner._create_odoo_repository_branch(repo_id, branch_id)
         repo_branch = self.env["odoo.repository.branch"].browse(repo_branch_id)
         with scanner.repo() as repo:

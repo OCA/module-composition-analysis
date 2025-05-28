@@ -22,6 +22,7 @@
           <group>
             <field name="repository_id" />
             <field name="branch_id" options="{'no_open': True}" />
+            <field name="cloned_branch" />
             <field name="last_scanned_commit" />
           </group>
           <group name="modules" string="Modules">
@@ -39,6 +40,7 @@
       <tree>
         <field name="repository_id" />
         <field name="branch_id" />
+        <field name="cloned_branch" />
       </tree>
     </field>
   </record>
