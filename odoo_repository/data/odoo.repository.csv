@@ -165,6 +165,7 @@ repo_oca_server_env,odoo_repository_org_oca,server-env,https://github.com/OCA/se
 repo_oca_server_tools,odoo_repository_org_oca,server-tools,https://github.com/OCA/server-tools,https://github.com/OCA/server-tools,github
 repo_oca_server_ux,odoo_repository_org_oca,server-ux,https://github.com/OCA/server-ux,https://github.com/OCA/server-ux,github
 repo_oca_shift_planning,odoo_repository_org_oca,shift-planning,https://github.com/OCA/shift-planning,https://github.com/OCA/shift-planning,github
+repo_oca_shopfloor_app,odoo_repository_org_oca,shopfloor-app,https://github.com/OCA/shopfloor-app,https://github.com/OCA/shopfloor-app
 repo_oca_sign,odoo_repository_org_oca,sign,https://github.com/OCA/sign,https://github.com/OCA/sign,github
 repo_oca_social,odoo_repository_org_oca,social,https://github.com/OCA/social,https://github.com/OCA/social,github
 repo_oca_spreadsheet,odoo_repository_org_oca,spreadsheet,https://github.com/OCA/spreadsheet,https://github.com/OCA/spreadsheet,github
