@@ -13,6 +13,7 @@ repo_oca_account_reconcile,odoo_repository_org_oca,account-reconcile,https://git
 repo_oca_agreement,odoo_repository_org_oca,agreement,https://github.com/OCA/agreement,https://github.com/OCA/agreement,github
 repo_oca_apps_store,odoo_repository_org_oca,apps-store,https://github.com/OCA/apps-store,https://github.com/OCA/apps-store,github
 repo_oca_bank_payment,odoo_repository_org_oca,bank-payment,https://github.com/OCA/bank-payment,https://github.com/OCA/bank-payment,github
+repo_oca_bank_payment_alternative,odoo_repository_org_oca,bank-payment-alternative,https://github.com/OCA/bank-payment-alternative,https://github.com/OCA/bank-payment-alternative,github
 repo_oca_bank_statement_import,odoo_repository_org_oca,bank-statement-import,https://github.com/OCA/bank-statement-import,https://github.com/OCA/bank-statement-import,github
 repo_oca_brand,odoo_repository_org_oca,brand,https://github.com/OCA/brand,https://github.com/OCA/brand,github
 repo_oca_business_requirement,odoo_repository_org_oca,business-requirement,https://github.com/OCA/business-requirement,https://github.com/OCA/business-requirement,github
