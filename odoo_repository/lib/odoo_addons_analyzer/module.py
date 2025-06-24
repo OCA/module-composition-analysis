@@ -27,11 +27,16 @@ class ModuleAnalysis:
 
     @property
     def file_paths(self):
-        return [
-            os.path.join(dirpath, f)
-            for (dirpath, dirnames, filenames) in os.walk(self.folder_path)
-            for f in filenames
-        ]
+        paths = []
+        for (dirpath, _dirnames, filenames) in os.walk(
+            self.folder_path, followlinks=False
+        ):
+            for f in filenames:
+                file_path = pathlib.Path(os.path.join(dirpath, f))
+                if file_path.is_symlink():
+                    continue
+                paths.append(file_path)
+        return paths
 
     @property
     def manifest(self):
