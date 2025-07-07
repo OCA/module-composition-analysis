@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_project_stat_config_view_tree" model="ir.ui.view">
+    <field name="name">odoo.project.stat.config.tree</field>
+    <field name="model">odoo.project.stat.config</field>
+    <field name="arch" type="xml">
+      <tree editable="bottom">
+        <field name="sequence" widget="handle" />
+        <field name="name" />
+        <field name="color" widget="color" />
+        <field name="residual" />
+        <field
+                    name="domain"
+                    widget="domain"
+                    options="{'model': 'odoo.project.module'}"
+                    attrs="{'required': [('residual', '=', False)]}"
+                />
+      </tree>
+    </field>
+  </record>
+
+  <record id="odoo_project_stat_config_action" model="ir.actions.act_window">
+    <field name="name">Project Stats</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.project.stat.config</field>
+    <field name="view_id" ref="odoo_project_stat_config_view_tree" />
+  </record>
+
+  <menuitem
+        id="odoo_project_stat_config_menu"
+        parent="odoo_repository.config_odoo_repository_menu"
+        action="odoo_project_stat_config_action"
+    />
+
+</odoo>
