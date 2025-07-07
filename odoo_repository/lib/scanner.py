@@ -309,7 +309,11 @@ class BaseScanner:
         branch_commit = repo.remotes[remote].refs[branch].commit
         addons_trees = branch_commit.tree.trees
         if relative_tree_path:
-            addons_trees = (branch_commit.tree / relative_tree_path).trees
+            try:
+                addons_trees = (branch_commit.tree / relative_tree_path).trees
+            except KeyError:
+                # 'relative_tree_path' doesn't exist
+                return []
         module_paths = [tree.path for tree in addons_trees if self._odoo_module(tree)]
         return sorted(module_paths)
 
