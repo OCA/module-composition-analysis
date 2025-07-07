@@ -96,11 +96,17 @@ class OdooRepository(models.Model):
             "certain days only. If not defined, the scan will happen every day."
         ),
     )
+    manual_branches = fields.Boolean(
+        string="Configure branches manually",
+        help=(
+            "By default repository branches follows the configured Odoo versions "
+            "(e.g: 17.0, 18.0...). Enable this option to configure your own branches."
+        ),
+    )
     specific = fields.Boolean(
         help=(
-            "Host specific modules. "
-            "By default if the repository clones a specific branch, "
-            "that means it hosts specific modules."
+            "Host specific modules (that are not generic). "
+            "Used for project repositories."
         ),
     )
 
@@ -151,7 +157,7 @@ class OdooRepository(models.Model):
 
     def _get_odoo_branches_to_scan(self):
         self.ensure_one()
-        if self.specific:
+        if self.manual_branches:
             return self.branch_ids.branch_id
         return self.env["odoo.branch"]._get_all_odoo_versions(active_test=True)
 
@@ -250,11 +256,9 @@ class OdooRepository(models.Model):
                 )
             if not branches:
                 continue
-            # Branch names to scan could be different on specific repositories
-            # (e.g. 'master' or 'main' branch, representing a 16.0 Odoo version)
-            # => create a list of tuples ({odoo_version}, {branch_name}).
+            # Create a list of tuples ({odoo_version}, {branch_name})
             versions_branches = [(branch.name, branch.name) for branch in branches]
-            if rec.specific:
+            if rec.manual_branches:
                 versions_branches = [
                     (rb.branch_id.name, rb.cloned_branch or rb.branch_id.name)
                     for rb in rec.branch_ids
