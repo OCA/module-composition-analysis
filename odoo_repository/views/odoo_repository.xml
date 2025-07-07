@@ -64,6 +64,10 @@
                             attrs="{'invisible': [('to_scan', '=', False)]}"
                         >
               <field name="scan_weekday_ids" widget="many2many_tags" />
+              <field
+                                name="manual_branches"
+                                attrs="{'readonly': [('branch_ids', '!=', [])]}"
+                            />
               <field name="specific" />
               <field name="clone_name" groups="base.group_no_one" />
             </group>
@@ -88,16 +92,16 @@
                                 name="branch_ids"
                                 nolabel="1"
                                 colspan="2"
-                                attrs="{'readonly': [('specific', '=', False)]}"
+                                attrs="{'readonly': [('manual_branches', '=', False)]}"
                             >
                 <tree editable="bottom">
                   <field
                                         name="branch_id"
-                                        attrs="{'readonly': [('parent.specific', '=', False)]}"
+                                        attrs="{'readonly': [('parent.manual_branches', '=', False)]}"
                                     />
                   <field
                                         name="cloned_branch"
-                                        attrs="{'column_invisible': [('parent.specific', '=', False)]}"
+                                        attrs="{'column_invisible': [('parent.manual_branches', '=', False)]}"
                                     />
                   <field name="module_ids" />
                   <field name="last_scanned_commit" />

@@ -17,11 +17,13 @@ class OdooRepositoryBranch(models.Model):
         index=True,
         readonly=True,
     )
+    manual_branches = fields.Boolean(
+        related="repository_id.manual_branches",
+        store=True,
+    )
     specific = fields.Boolean(
-        string="Specific",
         related="repository_id.specific",
         store=True,
-        index=True,
     )
     branch_id = fields.Many2one(
         comodel_name="odoo.branch",
@@ -31,7 +33,10 @@ class OdooRepositoryBranch(models.Model):
         index=True,
     )
     cloned_branch = fields.Char(
-        help="Force the branch to clone (optional). Used on specific repositories.",
+        help=(
+            "Force the branch to clone (optional). Used on repositories with "
+            "'Configure branches manually' option enabled."
+        ),
     )
     module_ids = fields.One2many(
         comodel_name="odoo.module.branch",
