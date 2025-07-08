@@ -153,6 +153,7 @@ repo_oca_rest_api,odoo_repository_org_oca,rest-api,https://github.com/OCA/rest-a
 repo_oca_rest_framework,odoo_repository_org_oca,rest-framework,https://github.com/OCA/rest-framework,https://github.com/OCA/rest-framework,github
 repo_oca_rma,odoo_repository_org_oca,rma,https://github.com/OCA/rma,https://github.com/OCA/rma,github
 repo_oca_role_policy,odoo_repository_org_oca,role-policy,https://github.com/OCA/role-policy,https://github.com/OCA/role-policy,github
+repo_oca_sale_blanket,odoo_repository_org_oca,sale-blanket,https://github.com/OCA/sale-blanket,https://github.com/OCA/sale-blanket,github
 repo_oca_sale_channel,odoo_repository_org_oca,sale-channel,https://github.com/OCA/sale-channel,https://github.com/OCA/sale-channel,github
 repo_oca_sale_financial,odoo_repository_org_oca,sale-financial,https://github.com/OCA/sale-financial,https://github.com/OCA/sale-financial,github
 repo_oca_sale_promotion,odoo_repository_org_oca,sale-promotion,https://github.com/OCA/sale-promotion,https://github.com/OCA/sale-promotion,github
