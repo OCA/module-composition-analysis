@@ -664,9 +664,11 @@ class OdooModuleBranch(models.Model):
         e.g. `domain=[('installable', '=', True)]`.
         """
         # Look for the module first in the current repository
-        module_branch = self._get_module_branch(
-            branch, module, repo=repo, domain=domain
-        )
+        module_branch = self.browse()
+        if repo:
+            module_branch = self._get_module_branch(
+                branch, module, repo=repo, domain=domain
+            )
         # Then look among generic modules
         if not module_branch:
             modules_branch = self._get_module_branch(
