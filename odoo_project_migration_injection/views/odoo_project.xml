@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Akretion
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="odoo_project_view_inject_form" model="ir.ui.view">
+    <field name="name">odoo.project.form.inherit</field>
+    <field name="model">odoo.project</field>
+    <field name="inherit_id" ref="odoo_project.odoo_project_view_form" />
+    <field name="arch" type="xml">
+      <xpath expr="//page[@name='status']" position="after">
+        <page name="migration" string="Migration">
+          <group name="modules_to_inject" string="Modules to add">
+            <field name="module_branch_id_to_inject_mig" nolabel="1" colspan="2">
+              <tree>
+                <field name="branch_id" />
+                <field name="module_id" />
+                <field name="repository_id" />
+              </tree>
+            </field>
+          </group>
+          <group name="modules_to_reject" string="Modules to remove">
+            <field name="module_branch_id_to_reject_mig" nolabel="1" colspan="2">
+              <tree>
+                <field name="branch_id" />
+                <field name="module_id" />
+                <field name="repository_id" />
+              </tree>
+            </field>
+          </group>
+        </page>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>
