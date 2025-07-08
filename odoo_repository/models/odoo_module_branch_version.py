@@ -105,8 +105,10 @@ class OdooModuleBranchVersion(models.Model):
                         rec.manifest_value,
                     ]
                 )
+                rb = rec.module_branch_id.repository_branch_id
+                branch_name = rb.cloned_branch or rb.branch_id.name
                 rec.migration_script_url = repo._get_resource_url(
-                    rec.module_branch_id.branch_name, migration_path
+                    branch_name, migration_path
                 )
 
     def _to_dict(self):

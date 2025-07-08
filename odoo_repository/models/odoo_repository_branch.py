@@ -17,13 +17,26 @@ class OdooRepositoryBranch(models.Model):
         index=True,
         readonly=True,
     )
+    manual_branches = fields.Boolean(
+        related="repository_id.manual_branches",
+        store=True,
+    )
+    specific = fields.Boolean(
+        related="repository_id.specific",
+        store=True,
+    )
     branch_id = fields.Many2one(
         comodel_name="odoo.branch",
         ondelete="cascade",
-        string="Branch",
+        string="Odoo Version",
         required=True,
         index=True,
-        readonly=True,
+    )
+    cloned_branch = fields.Char(
+        help=(
+            "Force the branch to clone (optional). Used on repositories with "
+            "'Configure branches manually' option enabled."
+        ),
     )
     module_ids = fields.One2many(
         comodel_name="odoo.module.branch",
@@ -55,7 +68,7 @@ class OdooRepositoryBranch(models.Model):
     def action_scan(self, force=False, raise_exc=True):
         """Scan the repository/branch."""
         return self.repository_id.action_scan(
-            branches=self.branch_id.mapped("name"), force=force, raise_exc=raise_exc
+            branch_ids=self.branch_id.ids, force=force, raise_exc=raise_exc
         )
 
     def action_force_scan(self, raise_exc=True):

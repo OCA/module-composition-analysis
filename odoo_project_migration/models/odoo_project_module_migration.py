@@ -6,7 +6,6 @@ from odoo import api, fields, models
 
 class OdooProjectModuleMigration(models.Model):
     _name = "odoo.project.module.migration"
-    # TODO test to inherit from 'module_migration_id' field too
     _inherits = {"odoo.module.branch": "source_module_branch_id"}
     _description = "Module migration line of an Odoo Project"
     _order = (
@@ -144,7 +143,12 @@ class OdooProjectModuleMigration(models.Model):
                 domain=[("installable", "=", True)],
             )
 
-    @api.depends("migration_path_id", "source_module_branch_id")
+    # NOTE: 'migration_scan' is here to re-trigger the computation
+    # each time the source module has its state updated regarding migration.
+    # FIXME: this could trigger too much computations on irrelevant records
+    # (one not related to the updated migration path), we should switch to
+    # component events to handle such cases.
+    @api.depends("migration_path_id", "source_module_branch_id.migration_scan")
     def _compute_module_migration_id(self):
         migration_model = self.env["odoo.module.branch.migration"]
         for rec in self:

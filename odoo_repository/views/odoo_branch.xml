@@ -31,10 +31,6 @@
                             name="name"
                             attrs="{'readonly': [('repository_branch_ids', '!=', [])]}"
                         />
-            <field
-                            name="odoo_version"
-                            attrs="{'readonly': [('repository_branch_ids', '!=', [])]}"
-                        />
           </group>
           <group name="repositories" string="Repositories">
             <field name="repository_branch_ids" nolabel="1" colspan="2">
@@ -56,7 +52,6 @@
     <field name="arch" type="xml">
       <tree>
         <field name="name" />
-        <field name="odoo_version" />
       </tree>
     </field>
   </record>
@@ -69,17 +64,12 @@
       <search>
         <field name="name" />
         <filter name="archived" string="Archived" domain="[('active', '=', False)]" />
-        <filter
-                    name="odoo_version"
-                    string="Odoo Versions"
-                    domain="[('odoo_version', '=', True)]"
-                />
       </search>
     </field>
   </record>
 
   <record id="odoo_branch_action" model="ir.actions.act_window">
-    <field name="name">Branches</field>
+    <field name="name">Versions</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.branch</field>
     <field name="view_id" ref="odoo_branch_view_tree" />

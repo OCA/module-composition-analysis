@@ -25,14 +25,8 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
             .id
         )
 
-    def _get_odoo_branch_id(self, repo_id, branch):
-        repo = self.env["odoo.repository"].browse(repo_id)
-        if repo.clone_branch_id and repo.odoo_version_id:
-            return repo.odoo_version_id.id
-        branch = self.env["odoo.branch"].search(
-            [("name", "=", branch), ("odoo_version", "=", True)]
-        )
-        return branch.id
+    def _get_odoo_branch_id(self, version):
+        return self.env["odoo.branch"].search([("name", "=", version)]).id
 
     def _get_odoo_repository_branch_id(self, repo_id, branch_id):
         args = [
@@ -43,13 +37,15 @@ class RepositoryScannerOdooEnv(RepositoryScanner):
         if repo_branch:
             return repo_branch.id
 
-    def _create_odoo_repository_branch(self, repo_id, branch_id):
+    def _create_odoo_repository_branch(self, repo_id, branch_id, cloned_branch=None):
         repo_branch_id = self._get_odoo_repository_branch_id(repo_id, branch_id)
         if not repo_branch_id:
             values = {
                 "repository_id": repo_id,
                 "branch_id": branch_id,
             }
+            if cloned_branch:
+                values["cloned_branch"] = cloned_branch
             repo_branch_model = self.env["odoo.repository.branch"]
             repo_branch_id = repo_branch_model.create(values).id
         return repo_branch_id
