@@ -2,10 +2,13 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl)
 
 import ast
+import logging
 import os
 import pathlib
 
 import pygount
+
+_logger = logging.getLogger(__name__)
 
 
 class ModuleAnalysis:
@@ -28,7 +31,7 @@ class ModuleAnalysis:
     @property
     def file_paths(self):
         paths = []
-        for (dirpath, _dirnames, filenames) in os.walk(
+        for dirpath, _dirnames, filenames in os.walk(
             self.folder_path, followlinks=False
         ):
             for f in filenames:
@@ -53,12 +56,18 @@ class ModuleAnalysis:
 
     def _run(self):
         for file_path in self.file_paths:
-            source_analysis = pygount.SourceAnalysis.from_file(
-                file_path,
-                group=os.path.basename(self.folder_path),
-                encoding="utf-8",
-            )
-            self.summary.add(source_analysis)
+            try:
+                source_analysis = pygount.SourceAnalysis.from_file(
+                    file_path,
+                    group=os.path.basename(self.folder_path),
+                    encoding="utf-8",
+                )
+            except Exception:
+                _logger.warning(
+                    f"Unable to analyze {file_path}", stack_info=True, exc_info=True
+                )
+            else:
+                self.summary.add(source_analysis)
 
     def to_dict(self):
         summaries = dict.fromkeys(self.languages, 0)
