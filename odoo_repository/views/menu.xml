@@ -10,17 +10,23 @@
         name="Odoo Repositories"
     />
   <menuitem
+        id="report_odoo_repository_menu"
+        parent="main_odoo_repository_menu"
+        name="Report"
+        sequence="20"
+    />
+  <menuitem
         id="misc_odoo_repository_menu"
         parent="main_odoo_repository_menu"
         name="Misc."
-        sequence="20"
+        sequence="30"
     />
   <menuitem
         id="config_odoo_repository_menu"
         parent="main_odoo_repository_menu"
         groups="odoo_repository.group_odoo_repository_manager"
         name="Configuration"
-        sequence="30"
+        sequence="40"
     />
 
 </odoo>
