@@ -271,16 +271,24 @@
     </field>
   </record>
 
-
   <record id="odoo_module_branch_view_pivot" model="ir.ui.view">
       <field name="name">odoo.module.branch.pivot</field>
       <field name="model">odoo.module.branch</field>
       <field name="arch" type="xml">
           <pivot string="Modules" sample="1">
-              <field name="org_id" type="row" />
               <field name="repository_id" type="row" />
               <field name="branch_id" type="col" />
           </pivot>
+      </field>
+  </record>
+
+  <record id="odoo_module_branch_view_graph" model="ir.ui.view">
+      <field name="name">odoo.module.branch.graph</field>
+      <field name="model">odoo.module.branch</field>
+      <field name="arch" type="xml">
+          <graph string="Modules" type="line" sample="1" stacked="0">
+              <field name="org_id" />
+          </graph>
       </field>
   </record>
 
@@ -288,12 +296,29 @@
     <field name="name">Modules</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.module.branch</field>
-    <field name="view_mode">tree,form,pivot</field>
+    <field name="view_mode">tree,form</field>
     <field name="view_id" ref="odoo_module_branch_view_tree" />
     <field name="context">{
       'search_default_installable': 1,
       'search_default_with_repository': 2
-      'pivot_measures': ['__count__'],
+      }</field>
+  </record>
+
+  <record id="odoo_module_branch_report_action" model="ir.actions.act_window">
+    <field name="name">Modules Analysis</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">odoo.module.branch</field>
+    <field name="view_mode">pivot,graph</field>
+    <field name="view_id" ref="odoo_module_branch_view_tree" />
+    <field name="context">{
+      'search_default_installable': 1,
+      'search_default_with_repository': 2,
+      'pivot_column_groupby': ['branch_id'],
+      'pivot_row_groupby': ['org_id', 'repository_id'],
+      'graph_mode': 'line',
+      'graph_stacked': 0,
+      'graph_measure': '__count__',
+      'graph_groupbys': ['branch_id', 'org_id'],
       }</field>
   </record>
 
@@ -311,6 +336,12 @@
         id="odoo_module_branch_menu"
         parent="main_odoo_repository_menu"
         action="odoo_module_branch_action"
+    />
+
+  <menuitem
+        id="odoo_module_branch_report_menu"
+        parent="report_odoo_repository_menu"
+        action="odoo_module_branch_report_action"
     />
 
 </odoo>
