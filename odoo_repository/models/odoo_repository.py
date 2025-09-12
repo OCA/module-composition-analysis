@@ -651,3 +651,14 @@ class OdooRepository(models.Model):
         # NOTE: GitHub and GitLab supports the same URL pattern
         url = "/".join(["tree", branch, path])
         return urljoin(self.repo_url + "/", url)
+
+    def unlink(self):
+        # There is no deletion on cascade policy by default, but for specific
+        # repositories we want to remove specific modules anyway.
+        # This will also avoid to raise UNIQUE constraint
+        # 'odoo_module_branch_uniq_null(module_id, branch_id)' if module names
+        # are shared between repositories.
+        for rec in self:
+            if rec.specific:
+                rec.branch_ids.module_ids.sudo().unlink()
+        return super().unlink()
