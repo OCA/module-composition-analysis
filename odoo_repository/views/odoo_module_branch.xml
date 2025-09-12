@@ -271,14 +271,30 @@
     </field>
   </record>
 
+
+  <record id="odoo_module_branch_view_pivot" model="ir.ui.view">
+      <field name="name">odoo.module.branch.pivot</field>
+      <field name="model">odoo.module.branch</field>
+      <field name="arch" type="xml">
+          <pivot string="Modules" sample="1">
+              <field name="org_id" type="row" />
+              <field name="repository_id" type="row" />
+              <field name="branch_id" type="col" />
+          </pivot>
+      </field>
+  </record>
+
   <record id="odoo_module_branch_action" model="ir.actions.act_window">
     <field name="name">Modules</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">odoo.module.branch</field>
+    <field name="view_mode">tree,form,pivot</field>
     <field name="view_id" ref="odoo_module_branch_view_tree" />
-    <field
-            name="context"
-        >{'search_default_installable': 1, 'search_default_with_repository': 2}</field>
+    <field name="context">{
+      'search_default_installable': 1,
+      'search_default_with_repository': 2
+      'pivot_measures': ['__count__'],
+      }</field>
   </record>
 
   <record
