@@ -297,6 +297,7 @@ class TestOdooModuleBranch(common.Common):
         next_branch = self.env["odoo.branch"].search(
             [("sequence", "=", self.branch.sequence + 1)]
         )
+        self.assertEqual(self.branch.next_id, next_branch)
         # Create the target module
         new_module = self.module.copy({"name": "new_module"})
         target_module_branch = self._create_odoo_module_branch(
@@ -316,12 +317,16 @@ class TestOdooModuleBranch(common.Common):
         self._simulate_migration_scan(
             "target_commit1", report={"process": "migrate", "results": {}}
         )
-        self.assertEqual(self.module_branch.next_odoo_version_id, next_branch)
         # Module has been renamed starting from 16.0
-        self.module_branch.next_odoo_version_state = "renamed"
-        self.module_branch.next_odoo_version_module_id = new_module
+        self.module_branch.timeline_ids.create(
+            {
+                "module_branch_id": self.module_branch.id,
+                "state": "renamed",
+                "next_module_id": new_module.id,
+            }
+        )
         renamed_to_module = self.module_branch._renamed_to_module_in_target_version(
-            self.module_branch.next_odoo_version_id
+            next_branch
         )
         self.assertEqual(renamed_to_module, new_module)
         # We target 17.0 to check if intermediate data in 16.0 is found
@@ -347,6 +352,7 @@ class TestOdooModuleBranch(common.Common):
         next_branch = self.env["odoo.branch"].search(
             [("sequence", "=", self.branch.sequence + 1)]
         )
+        self.assertEqual(self.branch.next_id, next_branch)
         # Create the target module
         new_module = self.module.copy({"name": "new_module"})
         target_module_branch = self._create_odoo_module_branch(
@@ -366,12 +372,16 @@ class TestOdooModuleBranch(common.Common):
         self._simulate_migration_scan(
             "target_commit1", report={"process": "migrate", "results": {}}
         )
-        self.assertEqual(self.module_branch.next_odoo_version_id, next_branch)
         # New module is replacing current one starting from 16.0
-        self.module_branch.next_odoo_version_state = "replaced"
-        self.module_branch.next_odoo_version_module_id = new_module
+        self.module_branch.timeline_ids.create(
+            {
+                "module_branch_id": self.module_branch.id,
+                "state": "replaced",
+                "next_module_id": new_module.id,
+            }
+        )
         replaced_by_module = self.module_branch._replaced_by_module_in_target_version(
-            self.module_branch.next_odoo_version_id
+            next_branch
         )
         self.assertEqual(replaced_by_module, new_module)
         # We target 17.0 to check if intermediate data in 16.0 is found
