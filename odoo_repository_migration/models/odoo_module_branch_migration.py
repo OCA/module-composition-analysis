@@ -206,8 +206,8 @@ class OdooModuleBranchMigration(models.Model):
             )
 
     @api.depends(
-        "module_branch_id.next_odoo_version_state",
-        "module_branch_id.next_odoo_version_module_id",
+        "module_branch_id.timeline_ids.state",
+        "module_branch_id.timeline_ids.next_module_id",
         "target_branch_id",
     )
     def _compute_renamed_to_module_id(self):
@@ -219,8 +219,8 @@ class OdooModuleBranchMigration(models.Model):
             )
 
     @api.depends(
-        "module_branch_id.next_odoo_version_state",
-        "module_branch_id.next_odoo_version_module_id",
+        "module_branch_id.timeline_ids.state",
+        "module_branch_id.timeline_ids.next_module_id",
         "target_branch_id",
     )
     def _compute_replaced_by_module_id(self):

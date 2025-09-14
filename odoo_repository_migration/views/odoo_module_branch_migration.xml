@@ -145,8 +145,9 @@
 
   <menuitem
         id="odoo_module_branch_migration_menu"
-        parent="odoo_repository.main_odoo_repository_menu"
+        parent="odoo_repository.modules_odoo_repository_menu"
         action="odoo_module_branch_migration_action"
+        sequence="30"
     />
 
 </odoo>
