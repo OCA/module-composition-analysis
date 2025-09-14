@@ -29,6 +29,10 @@ class OdooBranch(models.Model):
         readonly=True,
     )
     sequence = fields.Integer()
+    next_id = fields.Many2one(
+        comodel_name="odoo.branch",
+        compute="_compute_next_id",
+    )
 
     _sql_constraints = [
         ("name_uniq", "UNIQUE (name)", "This branch already exists."),
@@ -41,6 +45,15 @@ class OdooBranch(models.Model):
             version = re.search(odoo_version_pattern, rec.name)
             if not version:
                 raise ValidationError(_("Version must match the pattern 'x.y'."))
+
+    @api.depends("sequence")
+    def _compute_next_id(self):
+        for rec in self:
+            rec.next_id = self.search(
+                [("sequence", ">", rec.sequence)],
+                order="sequence",
+                limit=1,
+            )
 
     @api.model
     def _recompute_sequence(self):
