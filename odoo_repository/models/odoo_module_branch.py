@@ -65,6 +65,9 @@ class OdooModuleBranch(models.Model):
     branch_name = fields.Char(
         string="Branch Name", related="branch_id.name", store=True, index=True
     )
+    branch_sequence = fields.Integer(
+        string="Branch Sequence", related="branch_id.sequence", store=True, index=True
+    )
     pr_url = fields.Char(string="PR URL")
     is_standard = fields.Boolean(
         string="Standard?",
