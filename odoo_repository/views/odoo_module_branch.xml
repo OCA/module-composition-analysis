@@ -333,8 +333,14 @@
   </record>
 
   <menuitem
+        id="modules_odoo_repository_menu"
+        parent="data_odoo_repository_menu"
+        name="Modules"
+    />
+
+  <menuitem
         id="odoo_module_branch_menu"
-        parent="main_odoo_repository_menu"
+        parent="modules_odoo_repository_menu"
         action="odoo_module_branch_action"
     />
 
