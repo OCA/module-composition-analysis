@@ -7,27 +7,10 @@ from odoo import _, api, fields, models
 class OdooModuleBranch(models.Model):
     _inherit = "odoo.module.branch"
 
-    next_odoo_version_id = fields.Many2one(
-        comodel_name="odoo.branch",
-        compute="_compute_next_odoo_version_id",
-    )
-    next_odoo_version_state = fields.Selection(
-        selection=[
-            ("same", "is named the same"),
-            ("renamed", "has been renamed to"),
-            ("replaced", "has been replaced by"),
-        ],
-        inverse="_inverse_next_odoo_version_fields",
-        default="same",
-        required=True,
-        index=True,
-    )
-    next_odoo_version_module_id = fields.Many2one(
-        comodel_name="odoo.module",
-        ondelete="restrict",
-        inverse="_inverse_next_odoo_version_fields",
-        string="Next Odoo Version Module",
-        index=True,
+    timeline_ids = fields.One2many(
+        comodel_name="odoo.module.branch.timeline",
+        inverse_name="module_branch_id",
+        string="Timeline",
     )
     next_odoo_version_module_branch_id = fields.Many2one(
         comodel_name="odoo.module.branch",
@@ -45,72 +28,33 @@ class OdooModuleBranch(models.Model):
         help="Technical field telling if this module is elligible for a migration scan.",
     )
 
-    @api.depends("branch_id")
-    def _compute_next_odoo_version_id(self):
-        for rec in self:
-            next_odoo_version = False
-            if rec.branch_id:
-                next_odoo_version = self.env["odoo.branch"].search(
-                    [("sequence", ">", rec.branch_id.sequence)],
-                    limit=1,
-                )
-            rec.next_odoo_version_id = next_odoo_version
-
-    @api.depends("next_odoo_version_id", "next_odoo_version_module_id")
+    @api.depends("branch_id.next_id", "timeline_ids")
     def _compute_next_odoo_version_module_branch_id(self):
         for rec in self:
             rec.next_odoo_version_module_branch_id = False
             # Stop there if no next version
-            if not rec.next_odoo_version_id:
+            if not rec.branch_id.next_id:
                 continue
             # Look for the next available version for this module name
             rec.next_odoo_version_module_branch_id = self.search(
                 [
-                    ("branch_id", "=", rec.next_odoo_version_id.id),
+                    ("branch_sequence", ">=", rec.branch_id.next_id.sequence),
                     ("module_id", "=", rec.module_id.id),
                 ],
+                order="branch_sequence",
                 limit=1,
             )
             # Stop there if no renaming/relacement
-            if not rec.next_odoo_version_module_id:
+            if not rec.timeline_ids:
                 continue
             rec.next_odoo_version_module_branch_id = self.search(
                 [
-                    ("branch_id", "=", rec.next_odoo_version_id.id),
-                    ("module_id", "=", rec.next_odoo_version_module_id.id),
+                    ("branch_sequence", ">=", rec.branch_id.next_id.sequence),
+                    ("module_id", "=", rec.timeline_ids.next_module_id.id),
                 ],
+                order="branch_sequence",
                 limit=1,
             )
-
-    def _inverse_next_odoo_version_fields(self):
-        # Reset selected module if the module name doesn't change with next version
-        if self.next_odoo_version_state == "same":
-            self.next_odoo_version_module_id = False
-        # If module is renamed or replaced in next Odoo version, we reset the
-        # last target scan commits on all impacted migration paths.
-        # E.g.
-        #   if a module on 17.0 is set as renamed starting from 18.0,
-        #   all migration paths of this module targetting versions >= 18.0
-        #   should re-trigger a migration scan.
-        else:
-            migrations = (
-                self.env["odoo.module.branch.migration"]
-                .search(
-                    [
-                        ("module_id", "=", self.module_id.id),
-                        (
-                            "target_branch_id.sequence",
-                            ">=",
-                            self.next_odoo_version_id.sequence,
-                        ),
-                    ]
-                )
-                .sudo()
-            )
-            migrations.last_target_scanned_commit = False
-            migrations._compute_renamed_to_module_id()
-            migrations._compute_replaced_by_module_id()
-            migrations._compute_state()
 
     def _replaced_by_module_in_target_version(self, target_branch):
         """Return the module replacing current one in last module versions.
@@ -126,8 +70,8 @@ class OdooModuleBranch(models.Model):
         for module in modules.sorted(
             key=lambda mod: mod.branch_id.sequence, reverse=True
         ):
-            if module.next_odoo_version_state == "replaced":
-                return module.next_odoo_version_module_id
+            if module.timeline_ids.state == "replaced":
+                return module.timeline_ids.next_module_id
         return self.env["odoo.module"]
 
     def _renamed_to_module_in_target_version(self, target_branch):
@@ -144,8 +88,8 @@ class OdooModuleBranch(models.Model):
         for module in modules.sorted(
             key=lambda mod: mod.branch_id.sequence, reverse=True
         ):
-            if module.next_odoo_version_state == "renamed":
-                return module.next_odoo_version_module_id
+            if module.timeline_ids.state == "renamed":
+                return module.timeline_ids.next_module_id
         return self.env["odoo.module"]
 
     def _get_next_versions(self, target_branch):
