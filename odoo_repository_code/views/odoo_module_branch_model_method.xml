@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Sebastien Alix <https://github.com/sebalix>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_module_branch_model_method_view_form" model="ir.ui.view">
+        <field name="name">odoo.module.branch.model.method.form</field>
+        <field name="model">odoo.module.branch.model.method</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="open_parent_methods"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-code-fork"
+                            invisible="not parent_ids"
+                        >
+                            <span>Parents</span>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="module_branch_model_id" />
+                            <field name="name" />
+                            <field name="root_id" />
+                        </group>
+                    </group>
+                    <group name="code" string="Code">
+                        <field
+                            name="code"
+                            widget="ace"
+                            options="{'mode': 'python'}"
+                            nolabel="1"
+                            colspan="2"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_model_method_view_tree" model="ir.ui.view">
+        <field name="name">odoo.module.branch.model.method.list</field>
+        <field name="model">odoo.module.branch.model.method</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active">
+                <field name="odoo_version_id" optional="show" />
+                <field name="module_branch_id" optional="show" />
+                <field name="odoo_model_id" optional="show" />
+                <field name="name" />
+                <field name="repository_id" optional="hide" />
+                <field name="global_dependency_level" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_model_method_view_tree2" model="ir.ui.view">
+        <field name="name">odoo.module.branch.model.method.list</field>
+        <field name="model">odoo.module.branch.model.method</field>
+        <field name="arch" type="xml">
+            <list default_order="global_dependency_level" decoration-muted="not active">
+                <field name="name" />
+                <field name="module_name" />
+                <field name="global_dependency_level" />
+            </list>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_model_method_view_search" model="ir.ui.view">
+        <field name="name">odoo.module.branch.model.method.search</field>
+        <field name="model">odoo.module.branch.model.method</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="odoo_model_id" />
+                <field name="odoo_version_id" />
+                <field name="repository_id" />
+                <field name="org_id" />
+                <field name="code" />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_name"
+                        string="Name"
+                        context="{'group_by': 'name'}"
+                    />
+                    <filter
+                        name="group_by_odoo_model_id"
+                        string="Model"
+                        context="{'group_by': 'odoo_model_id'}"
+                    />
+                    <filter
+                        name="group_by_module_name"
+                        string="Module"
+                        context="{'group_by': 'module_name'}"
+                    />
+                    <filter
+                        name="group_by_odoo_version_id"
+                        string="Odoo Version"
+                        context="{'group_by': 'odoo_version_id'}"
+                    />
+                    <filter
+                        name="group_by_org_id"
+                        string="Organization"
+                        context="{'group_by': 'org_id'}"
+                    />
+                    <filter
+                        name="group_by_repository_id"
+                        string="Repository"
+                        context="{'group_by': 'repository_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_model_method_action" model="ir.actions.act_window">
+        <field name="name">Methods</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.module.branch.model.method</field>
+        <field name="view_id" ref="odoo_module_branch_model_method_view_tree" />
+        <field
+            name="context"
+        >{'search_default_group_by_odoo_version_id': 1, 'search_default_group_by_odoo_model_id': 2}</field>
+    </record>
+
+    <record id="odoo_module_branch_model_method_action2" model="ir.actions.act_window">
+        <field name="name">Methods</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.module.branch.model.method</field>
+        <field name="view_id" ref="odoo_module_branch_model_method_view_tree2" />
+    </record>
+
+    <menuitem
+        id="odoo_module_branch_model_method_menu"
+        parent="code_odoo_repository_menu"
+        action="odoo_module_branch_model_method_action"
+        sequence="30"
+    />
+</odoo>

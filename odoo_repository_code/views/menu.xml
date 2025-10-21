@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Sebastien Alix <https://github.com/sebalix>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <menuitem
+        id="code_odoo_repository_menu"
+        parent="odoo_repository.data_odoo_repository_menu"
+        name="Code"
+        sequence="30"
+    />
+</odoo>
