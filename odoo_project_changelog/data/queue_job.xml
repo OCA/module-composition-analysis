@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+
+  <record id="queue_job_channel_odoo_project_changelog" model="queue.job.channel">
+    <field name="name">odoo_project_changelog</field>
+    <field name="parent_id" ref="queue_job.channel_root" />
+  </record>
+
+  <record
+        id="queue_job_function_odoo_project_repository_generate_changelog"
+        model="queue.job.function"
+    >
+    <field name="model_id" ref="model_odoo_project_repository" />
+    <field name="method">_generate_changelog</field>
+    <field name="channel_id" ref="queue_job_channel_odoo_project_changelog" />
+    <field name="retry_pattern" eval="{1: 1, 5: 5, 10: 10, 15: 30}" />
+  </record>
+
+  <record
+        id="queue_job_function_odoo_project_generate_changelog_report"
+        model="queue.job.function"
+    >
+    <field name="model_id" ref="model_odoo_project" />
+    <field name="method">_generate_changelog_report</field>
+    <field name="channel_id" ref="queue_job_channel_odoo_project_changelog" />
+    <field name="retry_pattern" eval="{1: 1, 5: 5, 10: 10, 15: 30}" />
+  </record>
+
+</odoo>
