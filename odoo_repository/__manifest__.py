@@ -49,9 +49,8 @@
     "external_dependencies": {
         "python": [
             "gitpython",
-            "pygount",
+            "odoo-addons-parser",
             # TODO to publish
-            # "odoo-addons-analyzer",
             # "odoo-repository-scanner"
         ],
     },

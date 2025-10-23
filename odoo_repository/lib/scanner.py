@@ -15,10 +15,9 @@ from urllib.parse import urlparse, urlunparse
 
 import git
 import oca_port
+from odoo_addons_parser import ModuleParser
 
-from .odoo_addons_analyzer import ModuleAnalysis
-
-# Disable logging from 'pygount' (used by odoo_addons_analyzer)
+# Disable logging from 'pygount' (used by odoo_addons_parser)
 logging.getLogger("pygount").setLevel(logging.ERROR)
 
 _logger = logging.getLogger(__name__)
@@ -1037,8 +1036,8 @@ class RepositoryScanner(BaseScanner):
     ):
         """Perform a code analysis of `module_path`."""
         # Get current code analysis data
-        module_analysis = ModuleAnalysis(f"{self.path}/{module_path}")
-        data = module_analysis.to_dict()
+        parser = ModuleParser(f"{self.path}/{module_path}", scan_models=False)
+        data = parser.to_dict()
         # Append the history of versions
         versions = self._read_module_versions(
             repo, module_path, branch, from_commit, to_commit
