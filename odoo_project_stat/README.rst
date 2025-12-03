@@ -16,13 +16,41 @@ Odoo Project Stats
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-camptocamp%2Fodoo--repository-lightgray.png?logo=github
-    :target: https://github.com/camptocamp/odoo-repository/tree/16.0/odoo_project_stat
-    :alt: camptocamp/odoo-repository
+.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fodoo--repository-lightgray.png?logo=github
+    :target: https://github.com/OCA/odoo-repository/tree/16.0/odoo_project_stat
+    :alt: OCA/odoo-repository
+.. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
+    :target: https://translation.odoo-community.org/projects/odoo-repository-16-0/odoo-repository-16-0-odoo_project_stat
+    :alt: Translate me on Weblate
+.. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/odoo-repository&target_branch=16.0
+    :alt: Try me on Runboat
 
-|badge1| |badge2| |badge3|
+|badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module allows to generate and render some stats about your Odoo projects.
+This module allows to generate and render some pie charts for your Odoo
+projects.
+
+It consists of two pie charts on the project form view:
+
+- number of installed modules
+- number of lines of code
+
+Both measures are split based on some criteria (configurable), by
+default:
+
+- Odoo CE
+- Odoo Enterprise
+- OCA
+- Community (not OCA)
+- Specific code
+- Misc. (everything not part of other criteria above)
+
+Each criteria having a rendering color used on the charts.
+
+|Project Pie Charts|
+
+.. |Project Pie Charts| image:: https://raw.githubusercontent.com/OCA/odoo-repository/16.0/odoo_project_stat/static/img/project_pie_charts.png
 
 **Table of contents**
 
@@ -32,10 +60,10 @@ This module allows to generate and render some stats about your Odoo projects.
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/camptocamp/odoo-repository/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/OCA/odoo-repository/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/camptocamp/odoo-repository/issues/new?body=module:%20odoo_project_stat%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/odoo-repository/issues/new?body=module:%20odoo_project_stat%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -43,19 +71,30 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Camptocamp
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Camptocamp
-  * Sébastien Alix <sebastien.alix@camptocamp.com>
+- Camptocamp
+
+  - Sébastien Alix <seb@usr-src.org>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
-This module is part of the `camptocamp/odoo-repository <https://github.com/camptocamp/odoo-repository/tree/16.0/odoo_project_stat>`_ project on GitHub.
+This module is maintained by the OCA.
 
-You are welcome to contribute.
+.. image:: https://odoo-community.org/logo.png
+   :alt: Odoo Community Association
+   :target: https://odoo-community.org
+
+OCA, or the Odoo Community Association, is a nonprofit organization whose
+mission is to support the collaborative development of Odoo features and
+promote its widespread use.
+
+This module is part of the `OCA/odoo-repository <https://github.com/OCA/odoo-repository/tree/16.0/odoo_project_stat>`_ project on GitHub.
+
+You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
