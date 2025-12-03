@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ===========================
 Odoo Project Migration Data
 ===========================
@@ -17,7 +13,7 @@ Odoo Project Migration Data
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fodoo--repository-lightgray.png?logo=github
@@ -32,8 +28,10 @@ Odoo Project Migration Data
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module integrates the migration data collected by `odoo_repository_migration`
-in your Odoo projects, allowing to analyze their migrations.
+This module integrates the migration data collected by
+``odoo_repository_migration`` module in your Odoo projects. It allows to
+generate migration reports, giving some hints about the effort to
+provide to migrate the project to a newer Odoo version.
 
 **Table of contents**
 
@@ -54,18 +52,19 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Camptocamp
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Camptocamp
-  * Sébastien Alix <sebastien.alix@camptocamp.com>
+- Camptocamp
+
+  - Sébastien Alix <seb@usr-src.org>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
