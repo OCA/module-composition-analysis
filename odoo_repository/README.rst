@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ======================
 Odoo Repositories Data
 ======================
@@ -17,7 +13,7 @@ Odoo Repositories Data
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fodoo--repository-lightgray.png?logo=github
@@ -33,6 +29,14 @@ Odoo Repositories Data
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
 Base module to host data collected from Odoo repositories.
+
+It allows you to:
+
+- declare the Odoo versions (last 3 versions by default)
+- declare repositories containing modules (Odoo and OCA repositories
+  included by default)
+- scan these repositories to collect modules informations per Odoo
+  version
 
 **Table of contents**
 
@@ -53,18 +57,19 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Camptocamp
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Camptocamp
-  * Sébastien Alix <sebastien.alix@camptocamp.com>
+- Camptocamp
+
+  - Sébastien Alix <seb@usr-src.org>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
