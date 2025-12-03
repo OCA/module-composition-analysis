@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ============
 Odoo Project
 ============
@@ -17,7 +13,7 @@ Odoo Project
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fodoo--repository-lightgray.png?logo=github
@@ -32,7 +28,19 @@ Odoo Project
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module allows to declare your Odoo projects and analyze their code bases.
+This module allows you to declare your Odoo projects with the list of
+installed modules.
+
+Based on the data collected by ``odoo_repository`` module, it will:
+
+- give some code stats (lines of code, and how they are spread among
+  Odoo/OCA/your organization)
+- give the list of modules available for upgrade in current Odoo version
+  (based on module versions)
+- list modules still hosted in a pending Pull Request (so not yet
+  merged, could be considered as technical debt)
+- list modules available in your project repository (if any) but not
+  installed in your database (dead code)
 
 **Table of contents**
 
@@ -53,18 +61,19 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Camptocamp
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Camptocamp
-  * Sébastien Alix <sebastien.alix@camptocamp.com>
+- Camptocamp
+
+  - Sébastien Alix <seb@usr-src.org>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
