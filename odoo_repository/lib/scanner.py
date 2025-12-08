@@ -494,7 +494,7 @@ class MigrationScanner(BaseScanner):
 
     def scan(self, addons_path=".", target_addons_path=".", module_names=None):
         # Clone/fetch has been done during the repository scan, the migration
-        # scan will be processed on the current history of commits
+        # scan will be processed on the current history of commits, increasing speed.
         res = self.sync(fetch=False)
         # 'super()' could return False if the branch to scan doesn't exist,
         # there is nothing to scan then.
@@ -580,6 +580,28 @@ class MigrationScanner(BaseScanner):
             module_source_tree = self._get_subtree(
                 repo.commit(repo_source_commit).tree, module_path
             )
+            # Odoo could know a module that doesn't exist in local repo, this
+            # could happen if the repo storage has been restored from an older
+            # backup. In such case, re-fetch the branches.
+            if not module_source_tree:
+                _logger.warning(
+                    "%s: module '%s' doesn't exist in branch %s at commit %s, "
+                    "but it could have been added meanwhile. Fetching branches...",
+                    self.full_name,
+                    module,
+                    source_branch,
+                    repo_source_commit,
+                )
+                self.sync()
+                module_source_tree = self._get_subtree(
+                    repo.commit(repo_source_commit).tree, module_path
+                )
+                if module_source_tree:
+                    _logger.info(
+                        "%s: module '%s' has now been found!",
+                        self.full_name,
+                        module,
+                    )
             module_target_tree = self._get_subtree(
                 repo.commit(repo_target_commit).tree, target_module_path
             )
