@@ -3,7 +3,7 @@
 {
     "name": "Odoo Repositories Data",
     "summary": "Base module to host data collected from Odoo repositories.",
-    "version": "16.0.1.3.0",
+    "version": "16.0.1.3.1",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/camptocamp/odoo-repository",
