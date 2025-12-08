@@ -421,7 +421,9 @@ class OdooModuleBranch(models.Model):
             python_dependency_ids = []
             if manifest.get("installable", True):
                 dependency_ids = self._get_dependency_ids(
-                    repo_branch, manifest.get("depends", [])
+                    repo_branch,
+                    # Set at least a dependency on "base" if not defined
+                    manifest.get("depends", ["base"]),
                 )
                 external_dependencies = manifest.get("external_dependencies", {})
                 python_dependency_ids = self._get_python_dependency_ids(
@@ -523,7 +525,36 @@ class OdooModuleBranch(models.Model):
             module_branch.sudo().write(values)
         else:
             module_branch = self.sudo().create(values)
+            # Special case: when creating 'base' module, ensure that all previously
+            # scanned modules without dependency for the same Odoo version get
+            # a dependency against this 'base' module.
+            if module_branch.module_name == "base":
+                module_branch._update_modules_to_depend_on_base()
         return module_branch
+
+    @api.model
+    def _update_modules_to_depend_on_base(self):
+        """Make all scanned modules without dependency depending on 'base'.
+
+        It is executed when a 'base' module is scanned for the first time.
+        """
+        # Update only scanned modules (ones found in repositories)
+        all_modules = self.search(
+            [
+                ("dependency_ids", "=", False),
+                ("last_scanned_commit", "!=", False),
+                ("branch_id", "!=", False),
+                ("module_name", "!=", "base"),
+            ],
+        )
+        for branch, modules in tools.groupby(all_modules, key=lambda m: m.branch_id):
+            base = self.search(
+                [("module_name", "=", "base"), ("branch_id", "=", branch.id)],
+                limit=1,
+            )
+            if not base:
+                continue
+            self.union(*modules).dependency_ids |= base
 
     def _filter_module_to_update(self, repo_branch, module_branch):
         """Hook called by '_create_or_update'.
