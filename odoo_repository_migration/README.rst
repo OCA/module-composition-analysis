@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ==============================
 Odoo Repository Migration Data
 ==============================
@@ -17,7 +13,7 @@ Odoo Repository Migration Data
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fodoo--repository-lightgray.png?logo=github
@@ -32,12 +28,81 @@ Odoo Repository Migration Data
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module collects modules migration data from Odoo repositories.
+This module collects and records modules migration data from Odoo
+repositories.
+
+Thanks to `oca-port <https://github.com/OCA/oca-port/>`__ and data
+collected by ``odoo_repository``, this module will generate migration
+data on each module for declared migration paths (e.g. 16.0 -> 18.0).
+
+Also, for specific cases you can declare what a module became in a given
+Odoo version, like OCA ``web_domain_field`` replaced by standard Odoo
+module ``web`` starting from 17.0 (with an optional explanation that
+could help users, like how to use this new module compared to the
+previous one).
+
+Given a migration path, a module can get one of this migration status:
+
++-----------------------------+---------------------------------------+
+| Status                      | Description                           |
++=============================+=======================================+
+| *Fully Ported*              | All commits from source version are   |
+|                             | present in target version             |
++-----------------------------+---------------------------------------+
+| *To migrate*                | The module doesn't exist on target    |
+|                             | version                               |
++-----------------------------+---------------------------------------+
+| *Ported (missing commits?)* | Some commits from source version are  |
+|                             | not ported in target version (could   |
+|                             | be false-positive)                    |
++-----------------------------+---------------------------------------+
+| *To review*                 | A migration PR has been detected      |
++-----------------------------+---------------------------------------+
+| *Replaced*                  | The module has been replaced by       |
+|                             | another one (not sharing the same git |
+|                             | history)                              |
++-----------------------------+---------------------------------------+
+| *Moved to standard?*        | The module name has been detected in  |
+|                             | Odoo standard repositories for target |
+|                             | version. High chance this module is   |
+|                             | or should be replaced by another one  |
+|                             | instead (by creating a timeline), so  |
+|                             | it mainly helps to detect such cases. |
++-----------------------------+---------------------------------------+
+| *Moved to OCA*              | the module name is available in an    |
+|                             | OCA repository (could be a            |
+|                             | false-positive because sharing the    |
+|                             | same name, in such case a timeline    |
+|                             | has to be created)                    |
++-----------------------------+---------------------------------------+
+| *Moved to generic repo*     | a specific module (only available in  |
+|                             | a project) in source version now      |
+|                             | exists in a generic repository (could |
+|                             | be a false-positive if both modules   |
+|                             | have only their name in common)       |
++-----------------------------+---------------------------------------+
+
+It helps to build a consolidated knowledge database accross different
+Odoo versions for everyone: functionals and developers.
 
 **Table of contents**
 
 .. contents::
    :local:
+
+Usage
+=====
+
+To enable this feature, the option *Collect migration data* should be
+enabled on repositories (opt-in).
+
+To record what a module became starting from a given Odoo version, you
+should do it through the *Odoo Repositories / Data / Modules /
+Timelines* menu.
+
+Once the scheduled action ran, the migration data are available on each
+module in *Migration* tab, or through the *Odoo Repositories / Data /
+Modules / Migrations* menu.
 
 Bug Tracker
 ===========
@@ -53,18 +118,19 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Camptocamp
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Camptocamp
-  * Sébastien Alix <sebastien.alix@camptocamp.com>
+- Camptocamp
+
+  - Sébastien Alix <seb@usr-src.org>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
