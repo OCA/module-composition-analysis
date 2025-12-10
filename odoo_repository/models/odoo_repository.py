@@ -109,6 +109,12 @@ class OdooRepository(models.Model):
             "Used for project repositories."
         ),
     )
+    module_ids = fields.One2many(
+        comodel_name="odoo.module.branch",
+        inverse_name="repository_id",
+        string="Modules",
+        readonly=True,
+    )
 
     @api.model
     def default_get(self, fields_list):
@@ -662,3 +668,13 @@ class OdooRepository(models.Model):
             if rec.specific:
                 rec.branch_ids.module_ids.sudo().unlink()
         return super().unlink()
+
+    def open_modules(self):
+        self.ensure_one()
+        xml_id = "odoo_repository.odoo_module_branch_action"
+        action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
+        action["domain"] = [("repository_id", "=", self.id)]
+        action["context"] = {"search_default_installable": True}
+        if len(self.module_ids.branch_id) > 1:
+            action["context"]["search_default_group_by_branch_id"] = True
+        return action

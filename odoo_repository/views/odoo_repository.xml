@@ -28,12 +28,23 @@
                     />
         </header>
         <sheet>
-          <div class="oe_button_box" name="button_box" />
+          <div class="oe_button_box" name="button_box">
+              <field name="module_ids" invisible="1" />
+              <button
+                            name="open_modules"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-sitemap icon"
+                            attrs="{'invisible': [('module_ids', '=', [])]}"
+                        >
+                <span>Modules</span>
+              </button>
+          </div>
           <group>
             <group name="repository" string="Repository">
               <group colspan="2">
-                <field name="org_id" attrs="{'readonly': [('branch_ids', '!=', [])]}" />
-                <field name="name" attrs="{'readonly': [('branch_ids', '!=', [])]}" />
+                <field name="org_id" attrs="{'readonly': [('module_ids', '!=', [])]}" />
+                <field name="name" attrs="{'readonly': [('module_ids', '!=', [])]}" />
                 <field name="repo_url" widget="url" />
                 <field name="to_scan" />
                 <field name="sequence" />
@@ -66,7 +77,7 @@
               <field name="scan_weekday_ids" widget="many2many_tags" />
               <field
                                 name="manual_branches"
-                                attrs="{'readonly': [('branch_ids', '!=', [])]}"
+                                attrs="{'readonly': [('module_ids', '!=', [])]}"
                             />
               <field name="specific" />
               <field name="clone_name" groups="base.group_no_one" />
