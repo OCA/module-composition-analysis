@@ -116,6 +116,7 @@ class TestOdooRepositoryScan(Common):
                 "repository_branch_id": False,
                 "last_scanned_commit": False,
                 "dependency_ids": False,
+                "version_ids": False,
             }
         )
         # Launch a scan
@@ -159,6 +160,7 @@ class TestOdooRepositoryScan(Common):
                 "repository_branch_id": wrong_repo_branch,
                 "last_scanned_commit": False,
                 "dependency_ids": False,
+                "version_ids": False,
                 "pr_url": f"{wrong_repo.repo_url}/pull/1",
                 "specific": False,
             }
