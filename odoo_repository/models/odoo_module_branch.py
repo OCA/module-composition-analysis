@@ -40,6 +40,7 @@ class OdooModuleBranch(models.Model):
     repository_id = fields.Many2one(
         related="repository_branch_id.repository_id",
         store=True,
+        index=True,
         precompute=True,
         string="Repository",
     )
