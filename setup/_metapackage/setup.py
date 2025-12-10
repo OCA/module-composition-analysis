@@ -4,8 +4,8 @@ with open('VERSION.txt', 'r') as f:
     version = f.read().strip()
 
 setuptools.setup(
-    name="odoo-addons-oca-odoo-repository",
-    description="Meta package for oca-odoo-repository Odoo addons",
+    name="odoo-addons-oca-module-composition-analysis",
+    description="Meta package for oca-module-composition-analysis Odoo addons",
     version=version,
     install_requires=[
         'odoo-addon-odoo_project>=16.0dev,<16.1dev',
