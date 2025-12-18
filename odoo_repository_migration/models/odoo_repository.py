@@ -186,12 +186,13 @@ class OdooRepository(models.Model):
             self.env["odoo.migration.path"].browse(migration_path_id).exists()
         )
         # Skip migration scan if module is replaced in next versions
-        if module._replaced_by_module_in_target_version(
+        replaced_by_module = module._replaced_by_module_in_target_version(
             migration_path.target_branch_id
-        ):
+        )
+        if replaced_by_module:
             return (
                 f"{module.name} is now replaced by "
-                f"{module.next_odoo_version_module_id.name}, no need to collect "
+                f"{replaced_by_module.name}, no need to collect "
                 "migration data."
             )
         # Check if module has already been migrated on target version but in a
