@@ -424,7 +424,7 @@ class OdooModuleBranch(models.Model):
                 dependency_ids = self._get_dependency_ids(
                     repo_branch,
                     # Set at least a dependency on "base" if not defined
-                    manifest.get("depends", ["base"]),
+                    manifest.get("depends") or ["base"],
                 )
                 external_dependencies = manifest.get("external_dependencies", {})
                 python_dependency_ids = self._get_python_dependency_ids(
