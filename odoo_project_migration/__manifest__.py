@@ -6,7 +6,7 @@
     "version": "16.0.1.1.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
-    "website": "https://github.com/camptocamp/odoo-repository",
+    "website": "https://github.com/OCA/module-composition-analysis",
     "data": [
         "security/ir.model.access.csv",
         "views/odoo_module_branch_migration.xml",
