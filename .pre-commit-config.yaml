@@ -44,13 +44,13 @@ repos:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
       - id: oca-fix-manifest-website
-        args: ["https://github.com/camptocamp/odoo-repository"]
+        args: ["https://github.com/OCA/module-composition-analysis"]
       - id: oca-gen-addon-readme
         args:
           - --addons-dir=.
           - --branch=16.0
-          - --org-name=camptocamp
-          - --repo-name=odoo-repository
+          - --org-name=OCA
+          - --repo-name=module-composition-analysis
           - --if-source-changed
           - --keep-source-digest
   - repo: https://github.com/OCA/odoo-pre-commit-hooks
