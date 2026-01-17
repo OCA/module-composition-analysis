@@ -3,7 +3,7 @@
 {
     "name": "Odoo Project Migration Data",
     "summary": "Analyze your Odoo project migrations.",
-    "version": "16.0.1.1.0",
+    "version": "16.0.1.1.1",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",
