@@ -6,7 +6,7 @@
     "version": "16.0.1.4.3",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
-    "website": "https://github.com/camptocamp/odoo-repository",
+    "website": "https://github.com/OCA/module-composition-analysis",
     "data": [
         "security/res_groups.xml",
         "security/ir.model.access.csv",
