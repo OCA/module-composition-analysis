@@ -3,7 +3,7 @@
 {
     "name": "Odoo Repositories Data",
     "summary": "Base module to host data collected from Odoo repositories.",
-    "version": "16.0.1.4.3",
+    "version": "16.0.1.4.4",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",
