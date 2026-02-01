@@ -10,7 +10,10 @@ class ResCompany(models.Model):
     config_odoo_repository_default_token_id = fields.Many2one(
         comodel_name="authentication.token",
         string="Default token",
-        help="Default token used to clone repositories and authenticate on API like GitHub.",
+        help=(
+            "Default token used to clone repositories and authenticate "
+            "on API like GitHub."
+        ),
     )
     config_odoo_repository_workaround_fs_errors = fields.Boolean(
         string="Workaround FS errors",

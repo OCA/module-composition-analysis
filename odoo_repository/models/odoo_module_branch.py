@@ -613,7 +613,9 @@ class OdooModuleBranch(models.Model):
                     )
                     continue
             module_version = module_branch.version_ids.filtered(
-                lambda v: v.name == name and v.manifest_value == manifest_value
+                lambda v, name=name, manifest_value=manifest_value: (
+                    v.name == name and v.manifest_value == manifest_value
+                )
             )
             values = {
                 "name": name,
@@ -724,7 +726,7 @@ class OdooModuleBranch(models.Model):
 
     @api.model
     def _find_or_create(self, branch, module, repo, domain=None):
-        """Find an `odoo.module.branch` record (see `_find`), or create an orphaned one."""
+        """Find an `odoo.module.branch` record, or create an orphaned one."""
         module_branch = self._find(branch, module, repo, domain=domain)
         # If still not found, create the module as an orphaned module
         # (it will hopefully be bound to a repository later)

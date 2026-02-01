@@ -565,9 +565,9 @@ class MigrationScanner(BaseScanner):
             )
             if not module_branch_id:
                 _logger.warning(
-                    "Module '%s' for version %s does not exist on Odoo, "
-                    "a new scan of the repository is required. Aborted"
-                    % (module, source_version)
+                    "Module '%(module)s' for version %(version)s does not exist "
+                    "on Odoo, a new scan of the repository is required. Aborted",
+                    {"module": module, "version": source_version},
                 )
                 continue
             # For each module and source/target branch:

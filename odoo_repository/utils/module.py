@@ -21,5 +21,5 @@ def adapt_version(major_version: str, module_version: str):
     if module_version == major_version or not module_version.startswith(
         major_version + "."
     ):
-        module_version = "%s.%s" % (major_version, module_version)
+        module_version = f"{major_version}.{module_version}"
     return module_version
