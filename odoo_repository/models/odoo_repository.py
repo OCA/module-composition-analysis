@@ -207,8 +207,8 @@ class OdooRepository(models.Model):
         if not repositories_path:
             raise UserError(
                 _(
-                    "Please define the '{key}' system parameter to "
-                    "clone repositories in the folder of your choice.".format(key=key)
+                    f"Please define the '{key}' system parameter to "
+                    "clone repositories in the folder of your choice."
                 )
             )
         # Ensure the folder exists

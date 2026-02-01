@@ -208,7 +208,7 @@ class OdooModuleBranch(models.Model):
                 CREATE UNIQUE INDEX IF NOT EXISTS odoo_module_branch_uniq_null
                 ON odoo_module_branch (module_id, branch_id)
                 WHERE repository_id IS NULL;
-            """
+            """,
             # PostgreSQL >= 15 (with NULLS NOT DISTINCT)
             # """
             #     CREATE UNIQUE INDEX odoo_module_branch_uniq
@@ -291,9 +291,7 @@ class OdooModuleBranch(models.Model):
             rec.non_std_dependency_level = (
                 # Set 0 on all std modules so they will always have a dependency
                 # level inferior to non-std modules
-                (non_std_max_parent_level + 1)
-                if not rec.is_standard
-                else 0
+                (non_std_max_parent_level + 1) if not rec.is_standard else 0
             )
 
     def _get_recursive_dependencies(self, domain=None):
