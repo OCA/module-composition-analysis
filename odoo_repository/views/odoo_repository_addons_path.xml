@@ -23,12 +23,12 @@
         <field name="name">odoo.repository.addons_path.tree</field>
         <field name="model">odoo.repository.addons_path</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="relative_path" />
                 <field name="is_standard" />
                 <field name="is_enterprise" />
                 <field name="is_community" />
-            </tree>
+            </list>
         </field>
     </record>
 

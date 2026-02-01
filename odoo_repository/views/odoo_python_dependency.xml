@@ -6,9 +6,9 @@
         <field name="name">odoo.python.dependency.tree</field>
         <field name="model">odoo.python.dependency</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 

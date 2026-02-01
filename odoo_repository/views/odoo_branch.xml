@@ -26,18 +26,15 @@
                 </header>
                 <sheet>
                     <group>
-                        <field
-                            name="name"
-                            attrs="{'readonly': [('repository_branch_ids', '!=', [])]}"
-                        />
+                        <field name="name" readonly="repository_branch_ids" />
                     </group>
                     <group name="repositories" string="Repositories">
                         <field name="repository_branch_ids" nolabel="1" colspan="2">
-                            <tree>
+                            <list>
                                 <field name="repository_id" />
                                 <field name="module_ids" />
                                 <field name="last_scanned_commit" />
-                            </tree>
+                            </list>
                         </field>
                     </group>
                 </sheet>
@@ -49,9 +46,9 @@
         <field name="name">odoo.branch.tree</field>
         <field name="model">odoo.branch</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 

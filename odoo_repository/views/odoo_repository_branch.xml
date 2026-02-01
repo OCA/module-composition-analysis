@@ -41,11 +41,11 @@
         <field name="name">odoo.repository.branch.tree</field>
         <field name="model">odoo.repository.branch</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="repository_id" />
                 <field name="branch_id" />
                 <field name="cloned_branch" />
-            </tree>
+            </list>
         </field>
     </record>
 

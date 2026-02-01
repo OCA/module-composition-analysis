@@ -9,7 +9,7 @@ class ResCompany(models.Model):
 
     config_odoo_repository_default_token_id = fields.Many2one(
         comodel_name="authentication.token",
-        string="Default token",
+        string="Default Authentication Token",
         help=(
             "Default token used to clone repositories and authenticate "
             "on API like GitHub."

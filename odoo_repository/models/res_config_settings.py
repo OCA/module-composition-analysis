@@ -19,5 +19,5 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
     )
     config_odoo_repository_main_node_url = fields.Char(
-        string="Endpoint URL", config_parameter="odoo_repository_main_node_url"
+        string="Main Node", config_parameter="odoo_repository_main_node_url"
     )

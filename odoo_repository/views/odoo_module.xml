@@ -11,7 +11,7 @@
                     <div
                         class="alert alert-info"
                         role="alert"
-                        attrs="{'invisible': [('blacklisted', '=', False)]}"
+                        invisible="not blacklisted"
                     >
                         <p class="my-0">
                             <span
@@ -25,10 +25,10 @@
                     <group
                         name="branch_modules"
                         string="Exist on repositories/branches:"
-                        attrs="{'invisible': [('blacklisted', '=', True)]}"
+                        invisible="blacklisted"
                     >
                         <field name="module_branch_ids" nolabel="1" colspan="2">
-                            <tree>
+                            <list>
                                 <field name="repository_branch_id" />
                                 <field name="version" />
                                 <field name="author_ids" widget="many2many_tags" />
@@ -37,7 +37,7 @@
                                 <field name="sloc_xml" />
                                 <field name="sloc_js" />
                                 <field name="sloc_css" />
-                            </tree>
+                            </list>
                         </field>
                     </group>
                 </sheet>
@@ -49,10 +49,10 @@
         <field name="name">odoo.module.tree</field>
         <field name="model">odoo.module</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="blacklisted" />
-            </tree>
+            </list>
         </field>
     </record>
 

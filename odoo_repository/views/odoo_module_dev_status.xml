@@ -6,9 +6,9 @@
         <field name="name">odoo.module.dev.status.tree</field>
         <field name="model">odoo.module.dev.status</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 

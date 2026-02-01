@@ -20,9 +20,9 @@
         <field name="name">odoo.repository.org.tree</field>
         <field name="model">odoo.repository.org</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 
