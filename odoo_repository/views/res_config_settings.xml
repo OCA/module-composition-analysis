@@ -2,116 +2,124 @@
 <!-- Copyright 2023 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
-
-  <record id="res_config_settings_view_form" model="ir.ui.view">
-    <field name="name">res.config.settings.form.inherit</field>
-    <field name="model">res.config.settings</field>
-    <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
-    <field name="arch" type="xml">
-      <xpath expr="//div[hasclass('settings')]" position="inside">
-        <div
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form.inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div
                     class="app_settings_block"
                     string="Odoo Repositories"
                     data-string="Odoo Repositories"
                     data-key="odoo_repository"
                     groups="odoo_repository.group_odoo_repository_manager"
                 >
-          <div id="odoo_repository">
-            <h2>Odoo Repositories</h2>
-            <div
+                    <div id="odoo_repository">
+                        <h2>Odoo Repositories</h2>
+                        <div
                             class="row mt16 o_settings_container"
                             name="odoo_repository_storage_path"
                         >
-              <div class="o_setting_right_pane">
-                <span class="o_form_label">Storage local path</span>
-                <div class="text-muted">
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Storage local path</span>
+                                <div class="text-muted">
                   Where to clone repositories on the local filesystem.
                 </div>
-                <div class="content-group">
-                  <div class="mt16">
-                    <field
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field
                                             name="config_odoo_repository_storage_path"
                                             colspan="2"
                                             placeholder="/var/lib/odoo-repository/"
                                         />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
                             class="row mt16 o_settings_container"
                             name="odoo_repository_workaround_fs_errors"
                         >
-              <div class="col-xs-12 col-lg-6 o_setting_box">
-                <div class="o_setting_left_pane">
-                  <field name="config_odoo_repository_workaround_fs_errors" />
-                </div>
-                <div class="o_setting_right_pane">
-                  <span class="o_form_label">Workaround FS errors</span>
-                  <div class="text-muted">
+                            <div class="col-xs-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field
+                                        name="config_odoo_repository_workaround_fs_errors"
+                                    />
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <span
+                                        class="o_form_label"
+                                    >Workaround FS errors</span>
+                                    <div class="text-muted">
                     Fix file system permissions when cloning repositories.
                   </div>
-                </div>
-              </div>
-            </div>
-            <div
+                                </div>
+                            </div>
+                        </div>
+                        <div
                             class="row mt16 o_settings_container"
                             name="odoo_repository_github_token"
                         >
-              <div class="o_setting_right_pane">
-                <span class="o_form_label">Default Authentication Token</span>
-                <div class="text-muted">
+                            <div class="o_setting_right_pane">
+                                <span
+                                    class="o_form_label"
+                                >Default Authentication Token</span>
+                                <div class="text-muted">
                   Default token used to clone repositories and authenticate on API like GitHub.
                 </div>
-                <div class="content-group">
-                  <div class="mt16">
-                    <field
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field
                                             name="config_odoo_repository_default_token_id"
                                             options="{'no_open': True}"
                                             colspan="2"
                                         />
-                  </div>
-                </div>
-                <div class="text-muted">
+                                    </div>
+                                </div>
+                                <div class="text-muted">
                   If the environment variable <strong
-                                    >GITHUB_TOKEN</strong> is set on the running system, it will be used as fallback.
+                                >GITHUB_TOKEN</strong> is set on the running system, it will be used as fallback.
                 </div>
-              </div>
-            </div>
-            <div class="row mt16 o_settings_container" name="odoo_repository_main_node">
-              <div class="o_setting_right_pane">
-                <span class="o_form_label">Main Node</span>
-                  <div class="text-muted">
+                            </div>
+                        </div>
+                        <div
+                            class="row mt16 o_settings_container"
+                            name="odoo_repository_main_node"
+                        >
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Main Node</span>
+                                <div class="text-muted">
                     Endpoint URL of the main node from which modules data can be fetched.
                   </div>
-                  <div class="content-group">
-                    <div class="mt16">
-                      <field
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field
                                             name="config_odoo_repository_main_node_url"
                                             colspan="2"
                                             placeholder="https://example.net/odoo-repository/data"
                                         />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </xpath>
-    </field>
-  </record>
+                </div>
+            </xpath>
+        </field>
+    </record>
 
-  <record id="action_odoo_repository_config_settings" model="ir.actions.act_window">
-    <field name="name">Settings</field>
-    <field name="type">ir.actions.act_window</field>
-    <field name="res_model">res.config.settings</field>
-    <field name="view_id" ref="res_config_settings_view_form" />
-    <field name="view_mode">form</field>
-    <field name="target">inline</field>
-    <field name="context">{'module' : 'odoo_repository', 'bin_size': False}</field>
-  </record>
+    <record id="action_odoo_repository_config_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_settings_view_form" />
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'odoo_repository', 'bin_size': False}</field>
+    </record>
 
-  <menuitem
+    <menuitem
         id="settings_odoo_repository_menu"
         name="Settings"
         sequence="1"
@@ -119,5 +127,4 @@
         parent="config_odoo_repository_menu"
         groups="odoo_repository.group_odoo_repository_manager"
     />
-
 </odoo>
