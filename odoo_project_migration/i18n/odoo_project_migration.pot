@@ -1,0 +1,617 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* odoo_project_migration
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_view_form
+msgid "<span class=\"o_stat_text\"> Migration Data</span>"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__addons_path
+msgid "Addons Path"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__branch_name
+msgid ""
+"An Odoo version is also used as an Odoo branch name in generic repositories "
+"(Odoo, OCA...)."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__application
+msgid "Application"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__author_ids
+msgid "Authors"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__auto_install
+msgid "Auto-Install"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__available
+msgid "Available"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__available_migration_path_ids
+msgid "Available Migration Paths"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__branch_name
+msgid "Branch Name"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__branch_sequence
+msgid "Branch Sequence"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__sloc_css
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_tree
+msgid "CSS"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__sloc_css
+msgid "CSS source lines of code"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_export_migration_report_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_generate_migration_data_view_form
+msgid "Cancel"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__category_id
+msgid "Category"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__is_community
+msgid "Community?"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__create_uid
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__create_uid
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__create_date
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__create_date
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__dependency_ids
+msgid "Dependencies"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__non_std_dependency_level
+msgid "Dependency level excluding all standard Odoo modules."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__global_dependency_level
+msgid "Dependency level including all standard Odoo modules."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__odoo_project_module_ids
+msgid "Deployed Modules"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__title
+msgid "Descriptive name"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__development_status_id
+msgid "Develoment Status"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__display_name
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__display_name
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__is_enterprise
+msgid "Enterprise?"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_generate_migration_data_view_form
+msgid "Existing data for the selected migration path will be removed."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_export_migration_report_view_form
+msgid "Export"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.actions.act_window,name:odoo_project_migration.odoo_project_export_migration_report_action
+msgid "Export a migration report"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model,name:odoo_project_migration.model_odoo_project_export_migration_report
+msgid "Export a migration report for an Odoo project"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_view_form
+msgid "Export migration report"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__external_dependencies
+msgid "External Dependencies"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__full_path
+msgid "Full Path"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__fully_ported
+msgid "Fully Ported"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_generate_migration_data_view_form
+msgid "Generate"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.actions.act_window,name:odoo_project_migration.odoo_project_generate_migration_data_action
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_view_form
+msgid "Generate migration data"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model,name:odoo_project_migration.model_odoo_project_generate_migration_data
+msgid "Generate migration data for an Odoo project"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__global_dependency_level
+msgid "Global Dep. Level"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__id
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__id
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__id
+msgid "ID"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_form
+msgid "Info"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__installable
+msgid "Installable"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__project_module_id
+msgid "Installed Module"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_module_branch_migration_view_search
+msgid "Installed in projects"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__is_community
+msgid "Is this module a contribution of the community?"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__is_enterprise
+msgid "Is this module designed for Odoo Enterprise only?"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__is_standard
+msgid "Is this module part of Odoo standard?"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__sloc_js
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_tree
+msgid "JS"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__sloc_js
+msgid "JavaScript source lines of code"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report____last_update
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data____last_update
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__last_scanned_commit
+msgid "Last Scanned Commit"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__write_uid
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__write_uid
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__write_date
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__write_date
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__version
+msgid "Last version"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__license_id
+msgid "License"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__maintainer_ids
+msgid "Maintainers"
+msgstr ""
+
+#. module: odoo_project_migration
+#. odoo-python
+#: code:addons/odoo_project_migration/models/odoo_project.py:0
+#: code:addons/odoo_project_migration/wizards/generate_migration_data.py:0
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__module_migration_id
+#, python-format
+msgid "Migration"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project__module_migration_ids
+msgid "Migration Data"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__migration_path_id
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__migration_path_id
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__migration_path_id
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_search
+msgid "Migration Path"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__migration_scan
+msgid "Migration Scan"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__migration_script_ids
+msgid "Migration Scripts"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_search
+msgid "Migration Status"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model,name:odoo_project_migration.model_odoo_module_branch_migration
+msgid "Migration data for a module of a given branch."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__migration_script_ids
+msgid ""
+"Migration scripts available between the installed version and the last version available on the target branch.\n"
+"Ones that rework the database schema or data could be mandatory."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_form
+msgid "Migration scripts to consider"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__state
+msgid "Migration status"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.actions.act_window,name:odoo_project_migration.odoo_project_module_migration_action
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__migration_ids
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_view_form
+msgid "Migrations"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project__migrations_count
+msgid "Migrations Count"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__module_name
+msgid "Module Technical Name"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model,name:odoo_project_migration.model_odoo_project_module_migration
+msgid "Module migration line of an Odoo Project"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__specific
+msgid ""
+"Module specific to a project repository.It cannot be used across different "
+"projects."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__moved_to_oca
+msgid "Moved to OCA"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__moved_to_generic
+msgid "Moved to generic repo"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__moved_to_standard
+msgid "Moved to standard?"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__next_odoo_version_module_branch_id
+msgid "Next Odoo Version Module Branch"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__non_std_dependency_level
+msgid "Non-Std Dep. Level"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model,name:odoo_project_migration.model_odoo_project
+msgid "Odoo Project"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model,name:odoo_project_migration.model_odoo_project_module
+msgid "Odoo Project Module"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__odoo_version_id
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__odoo_version_id
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__branch_id
+msgid "Odoo Version"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__org_id
+msgid "Organization"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__pr_url
+msgid "PR URL"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__port_commits
+msgid "Ported (missing commits?)"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__odoo_project_id
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data__odoo_project_id
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__odoo_project_id
+msgid "Project"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_module_branch_migration__odoo_project_ids
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__odoo_project_ids
+msgid "Projects"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__sloc_python
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_tree
+msgid "Python"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__python_dependency_ids
+msgid "Python Dependencies"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__sloc_python
+msgid "Python source lines of code"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__removed
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__removed
+msgid "Removed"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__replaced
+msgid "Replaced"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__repository_id
+msgid "Repository"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__repository_branch_id
+msgid "Repository Branch"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__results_text
+msgid "Results Text"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__reverse_dependency_ids
+msgid "Reverse Dependencies"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__repository_sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__source_module_branch_id
+msgid "Source"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__specific
+msgid "Specific"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__is_standard
+msgid "Standard?"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__summary
+msgid "Summary"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__target_module_branch_id
+msgid "Target"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__name
+msgid "Techname"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__module_name
+msgid "Technical Name"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__migration_scan
+msgid ""
+"Technical field telling if this module is elligible for a migration scan."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__addons_path
+msgid "Technical field. Where the module is located in the repository."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__module_id
+msgid "Technical name"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.constraint,message:odoo_project_migration.constraint_odoo_project_module_migration_uniq
+msgid "This module migration path already exists."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__timeline_ids
+msgid "Timeline"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__title
+msgid "Title"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__migrate
+msgid "To migrate"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__review_migration
+msgid "To review"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__url
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_form
+msgid "URL"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__project_module_id
+msgid "Version of the module installed in the project."
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__version_ids
+msgid "Versions"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__sloc_xml
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_project_module_migration_view_tree
+msgid "XML"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__sloc_xml
+msgid "XML source lines of code"
+msgstr ""
