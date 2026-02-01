@@ -5,106 +5,55 @@
     <record id="res_config_settings_view_form" model="ir.ui.view">
         <field name="name">res.config.settings.form.inherit</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div
-                    class="app_settings_block"
-                    string="Odoo Repositories"
-                    data-string="Odoo Repositories"
-                    data-key="odoo_repository"
+            <xpath expr="//form" position="inside">
+                <app
+                    string="Odoo MCA"
+                    data-string="Odoo MCA"
+                    name="odoo_repository"
                     groups="odoo_repository.group_odoo_repository_manager"
                 >
-                    <div id="odoo_repository">
-                        <h2>Odoo Repositories</h2>
-                        <div
-                            class="row mt16 o_settings_container"
-                            name="odoo_repository_storage_path"
+                    <block title="Odoo MCA" name="odoo_repository">
+                        <setting
+                            id="odoo_repository_storage_path"
+                            help="Where to clone repositories on the local filesystem."
                         >
-                            <div class="o_setting_right_pane">
-                                <span class="o_form_label">Storage local path</span>
-                                <div class="text-muted">
-                  Where to clone repositories on the local filesystem.
-                </div>
-                                <div class="content-group">
-                                    <div class="mt16">
-                                        <field
-                                            name="config_odoo_repository_storage_path"
-                                            colspan="2"
-                                            placeholder="/var/lib/odoo-repository/"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="row mt16 o_settings_container"
-                            name="odoo_repository_workaround_fs_errors"
+                            <field
+                                name="config_odoo_repository_storage_path"
+                                placeholder="/var/lib/odoo-repository/"
+                            />
+                        </setting>
+                        <setting
+                            id="odoo_repository_workaround_fs_errors"
+                            help="Fix file system permissions when cloning repositories."
                         >
-                            <div class="col-xs-12 col-lg-6 o_setting_box">
-                                <div class="o_setting_left_pane">
-                                    <field
-                                        name="config_odoo_repository_workaround_fs_errors"
-                                    />
-                                </div>
-                                <div class="o_setting_right_pane">
-                                    <span
-                                        class="o_form_label"
-                                    >Workaround FS errors</span>
-                                    <div class="text-muted">
-                    Fix file system permissions when cloning repositories.
-                  </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="row mt16 o_settings_container"
-                            name="odoo_repository_github_token"
+                            <field name="config_odoo_repository_workaround_fs_errors" />
+                        </setting>
+                        <setting
+                            id="odoo_repository_github_token"
+                            help="Used to clone repositories and authenticate on API like GitHub."
                         >
-                            <div class="o_setting_right_pane">
-                                <span
-                                    class="o_form_label"
-                                >Default Authentication Token</span>
-                                <div class="text-muted">
-                  Default token used to clone repositories and authenticate on API like GitHub.
-                </div>
-                                <div class="content-group">
-                                    <div class="mt16">
-                                        <field
-                                            name="config_odoo_repository_default_token_id"
-                                            options="{'no_open': True}"
-                                            colspan="2"
-                                        />
-                                    </div>
-                                </div>
-                                <div class="text-muted">
-                  If the environment variable <strong
-                                >GITHUB_TOKEN</strong> is set on the running system, it will be used as fallback.
-                </div>
+                            <field
+                                name="config_odoo_repository_default_token_id"
+                                options="{'no_open': True}"
+                            />
+                            <div class="text-muted">
+                                If the environment variable <strong
+                            >GITHUB_TOKEN</strong> is set on the running system, it will be used as fallback.
                             </div>
-                        </div>
-                        <div
-                            class="row mt16 o_settings_container"
-                            name="odoo_repository_main_node"
+                        </setting>
+                        <setting
+                            id="odoo_repository_main_node"
+                            help="Endpoint URL of the main node from which modules data can be fetched."
                         >
-                            <div class="o_setting_right_pane">
-                                <span class="o_form_label">Main Node</span>
-                                <div class="text-muted">
-                    Endpoint URL of the main node from which modules data can be fetched.
-                  </div>
-                                <div class="content-group">
-                                    <div class="mt16">
-                                        <field
-                                            name="config_odoo_repository_main_node_url"
-                                            colspan="2"
-                                            placeholder="https://example.net/odoo-repository/data"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            <field
+                                name="config_odoo_repository_main_node_url"
+                                placeholder="https://example.net/odoo-repository/data"
+                            />
+                        </setting>
+                    </block>
+                </app>
             </xpath>
         </field>
     </record>

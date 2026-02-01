@@ -64,13 +64,9 @@
                                 <field
                                     name="pr_url"
                                     widget="url"
-                                    attrs="{'invisible': [('pr_url', '=', False)]}"
+                                    invisible="not pr_url"
                                 />
-                                <field
-                                    name="url"
-                                    widget="url"
-                                    attrs="{'invisible': [('pr_url', '=', True)]}"
-                                />
+                                <field name="url" widget="url" invisible="pr_url" />
                                 <field name="last_scanned_commit" readonly="1" />
                                 <field name="removed" readonly="1" />
                                 <field name="is_standard" readonly="1" />
@@ -90,16 +86,16 @@
                     <notebook>
                         <page name="versions" string="Versions">
                             <field name="version_ids" nolabel="1" readonly="1">
-                                <tree>
+                                <list>
                                     <field name="name" />
                                     <field name="commit" />
                                     <field name="migration_script_url" widget="url" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page name="dependencies" string="Dependencies">
                             <field name="dependency_ids" nolabel="1" readonly="1">
-                                <tree>
+                                <list>
                                     <field name="module_id" />
                                     <field name="repository_branch_id" />
                                     <field name="version" />
@@ -116,7 +112,7 @@
                                         name="non_std_dependency_level"
                                         optional="show"
                                     />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page name="reverse_dependencies" string="Reverse Dependencies">
@@ -125,7 +121,7 @@
                                 nolabel="1"
                                 readonly="1"
                             >
-                                <tree>
+                                <list>
                                     <field name="module_id" />
                                     <field name="repository_branch_id" />
                                     <field name="version" />
@@ -142,7 +138,7 @@
                                         name="non_std_dependency_level"
                                         optional="show"
                                     />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page name="python_dependency_ids" string="Python Dependencies">
@@ -162,7 +158,7 @@
         <field name="name">odoo.module.branch.tree</field>
         <field name="model">odoo.module.branch</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="module_id" />
                 <field name="repository_id" optional="show" />
                 <field name="branch_id" optional="show" />
@@ -189,7 +185,7 @@
                 <field name="sloc_xml" sum="XML" optional="show" />
                 <field name="sloc_js" sum="JS" optional="show" />
                 <field name="sloc_css" sum="CSS" optional="show" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -200,11 +196,11 @@
         <field name="mode">primary</field>
         <field name="priority">100</field>
         <field name="arch" type="xml">
-            <tree position="attributes">
+            <list position="attributes">
                 <attribute
                     name="default_order"
                 >global_dependency_level, non_std_dependency_level, module_name</attribute>
-            </tree>
+            </list>
             <field name="application" position="attributes">
                 <attribute name="optional">show</attribute>
             </field>
@@ -341,7 +337,7 @@
         <field name="name">Modules</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">odoo.module.branch</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="odoo_module_branch_view_tree" />
         <field name="context">{
       'search_default_installable': 1,

@@ -13,7 +13,7 @@
                     </group>
                     <group string="Modules maintained">
                         <field name="module_branch_ids" nolabel="1" colspan="2">
-                            <tree>
+                            <list>
                                 <field name="repository_branch_id" />
                                 <field name="version" />
                                 <field name="author_ids" widget="many2many_tags" />
@@ -22,7 +22,7 @@
                                 <field name="sloc_xml" />
                                 <field name="sloc_js" />
                                 <field name="sloc_css" />
-                            </tree>
+                            </list>
                         </field>
                     </group>
                 </sheet>
@@ -34,10 +34,10 @@
         <field name="name">odoo.maintainer.tree</field>
         <field name="model">odoo.maintainer</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="github_url" widget="url" />
-            </tree>
+            </list>
         </field>
     </record>
 

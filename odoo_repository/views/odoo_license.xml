@@ -6,9 +6,9 @@
         <field name="name">odoo.license.tree</field>
         <field name="model">odoo.license</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 

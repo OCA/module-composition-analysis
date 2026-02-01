@@ -14,7 +14,7 @@
                         string="Scan"
                         class="btn-primary"
                         groups="odoo_repository.group_odoo_repository_manager"
-                        attrs="{'invisible': [('to_scan', '=', False)]}"
+                        invisible="not to_scan"
                     />
                     <button
                         name="action_force_scan"
@@ -23,7 +23,7 @@
                         class="btn-secondary"
                         confirm="This operation will restart the scan from the beginning. Are you sure?"
                         groups="odoo_repository.group_odoo_repository_manager"
-                        attrs="{'invisible': [('to_scan', '=', False)]}"
+                        invisible="not to_scan"
                     />
                 </header>
                 <sheet>
@@ -34,7 +34,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-sitemap icon"
-                            attrs="{'invisible': [('module_ids', '=', [])]}"
+                            invisible="not module_ids"
                         >
                             <span>Modules</span>
                         </button>
@@ -42,51 +42,32 @@
                     <group>
                         <group name="repository" string="Repository">
                             <group colspan="2">
-                                <field
-                                    name="org_id"
-                                    attrs="{'readonly': [('module_ids', '!=', [])]}"
-                                />
-                                <field
-                                    name="name"
-                                    attrs="{'readonly': [('module_ids', '!=', [])]}"
-                                />
+                                <field name="org_id" readonly="module_ids" />
+                                <field name="name" readonly="module_ids" />
                                 <field name="repo_url" widget="url" />
                                 <field name="to_scan" />
                                 <field name="sequence" />
                             </group>
-                            <group
-                                attrs="{'invisible': [('to_scan', '=', False)]}"
-                                colspan="2"
-                            >
+                            <group invisible="not to_scan" colspan="2">
                                 <field name="clone_url" />
-                                <field
-                                    name="repo_type"
-                                    attrs="{'required': [('to_scan', '=', True)]}"
-                                />
+                                <field name="repo_type" required="to_scan" />
                                 <field
                                     name="token_id"
                                     options="{'no_open': True}"
                                     groups="odoo_repository.group_odoo_repository_manager"
-                                    attrs="{'invisible': [('ssh_key_id', '!=', False)]}"
+                                    invisible="ssh_key_id"
                                 />
                                 <field
                                     name="ssh_key_id"
                                     options="{'no_open': True}"
                                     groups="odoo_repository.group_odoo_repository_manager"
-                                    attrs="{'invisible': [('token_id', '!=', False)]}"
+                                    invisible="token_id"
                                 />
                             </group>
                         </group>
-                        <group
-                            name="options"
-                            string="Options"
-                            attrs="{'invisible': [('to_scan', '=', False)]}"
-                        >
+                        <group name="options" string="Options" invisible="not to_scan">
                             <field name="scan_weekday_ids" widget="many2many_tags" />
-                            <field
-                                name="manual_branches"
-                                attrs="{'readonly': [('module_ids', '!=', [])]}"
-                            />
+                            <field name="manual_branches" readonly="module_ids" />
                             <field name="specific" />
                             <field name="clone_name" groups="base.group_no_one" />
                         </group>
@@ -95,15 +76,15 @@
                         <group
                             name="addons_path"
                             string="Addons Path"
-                            attrs="{'invisible': [('to_scan', '=', False)]}"
+                            invisible="not to_scan"
                         >
                             <field name="addons_path_ids" nolabel="1" colspan="2">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="relative_path" readonly="1" />
                                     <field name="is_standard" readonly="1" />
                                     <field name="is_enterprise" readonly="1" />
                                     <field name="is_community" readonly="1" />
-                                </tree>
+                                </list>
                             </field>
                         </group>
                         <group name="branches" string="Branches">
@@ -111,20 +92,20 @@
                                 name="branch_ids"
                                 nolabel="1"
                                 colspan="2"
-                                attrs="{'readonly': [('manual_branches', '=', False)]}"
+                                readonly="not manual_branches"
                             >
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field
                                         name="branch_id"
-                                        attrs="{'readonly': [('parent.manual_branches', '=', False)]}"
+                                        readonly="not parent.manual_branches"
                                     />
                                     <field
                                         name="cloned_branch"
-                                        attrs="{'column_invisible': [('parent.manual_branches', '=', False)]}"
+                                        column_invisible="not parent.manual_branches"
                                     />
                                     <field name="module_ids" />
                                     <field name="last_scanned_commit" />
-                                </tree>
+                                </list>
                             </field>
                         </group>
                     </group>
@@ -137,13 +118,13 @@
         <field name="name">odoo.repository.tree</field>
         <field name="model">odoo.repository</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="org_id" />
                 <field name="name" />
                 <field name="repo_url" widget="url" />
                 <field name="to_scan" />
                 <field name="repo_type" />
-            </tree>
+            </list>
         </field>
     </record>
 

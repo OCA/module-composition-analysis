@@ -6,7 +6,7 @@
         id="main_odoo_repository_menu"
         groups="odoo_repository.group_odoo_repository_user"
         web_icon="odoo_repository,static/description/icon.png"
-        name="Odoo Repositories"
+        name="Odoo MCA"
     />
     <menuitem
         id="data_odoo_repository_menu"
