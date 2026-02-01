@@ -1,6 +1,7 @@
 # Copyright 2024 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+import logging
 import os
 import pathlib
 import re
@@ -8,9 +9,12 @@ import tempfile
 from unittest.mock import patch
 
 import git
+import psutil
 from oca_port.tests.common import CommonCase
 
 from odoo.tests.common import TransactionCase
+
+_logger = logging.getLogger(__name__)
 
 
 class Common(TransactionCase, CommonCase):
@@ -24,6 +28,7 @@ class Common(TransactionCase, CommonCase):
             "odoo_repository_storage_path", cls.repositories_path
         )
         cls._apply_git_config()
+        cls._handle_cleanup()
 
     def setUp(self):
         super().setUp()
@@ -112,6 +117,7 @@ class Common(TransactionCase, CommonCase):
         # Commit
         repo.index.add(self.manifest_path)
         commit = repo.index.commit(f"[IMP] {self.addon}: bump version to {version}")
+        del repo
         return commit.hexsha
 
     def _update_module_installable_on_branch(self, branch, installable=True):
@@ -134,6 +140,7 @@ class Common(TransactionCase, CommonCase):
         commit = repo.index.commit(
             f"[IMP] {self.addon}: make installable={installable}"
         )
+        del repo
         return commit.hexsha
 
     def _run_odoo_repository_action_scan(self, branch_id, force=False):
@@ -160,3 +167,27 @@ class Common(TransactionCase, CommonCase):
         }
         vals.update(values)
         return self.env["odoo.module.branch"].create(vals)
+
+    @classmethod
+    def _handle_cleanup(cls):
+        """Cleanup dandling git processes once tests are done.
+
+        GitPython is spawning git processes, themselves spawning others
+        dettached git processes which can take few seconds to stop afterwards.
+        Odoo >= 17.0 is randomly WARNING about such dangling processes when
+        running tests (depending if they are already stopped or not),
+        so here we are cleaning them before Odoo gets a chance to detect them
+        (see 'check_remaining_processes' in 'tests.common.BaseCase').
+        """
+
+        def kill_remaining_git_processes():
+            current_process = psutil.Process()
+            children = current_process.children(recursive=False)
+            for child in children:
+                if child.name() != "git":
+                    continue
+                _logger.info("A git process was found, killing it: %s", child)
+                child.kill()
+            psutil.wait_procs(children, timeout=10)
+
+        cls.addClassCleanup(kill_remaining_git_processes)
