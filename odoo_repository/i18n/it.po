@@ -1,0 +1,1294 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* odoo_repository
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "/var/lib/odoo-repository/"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Default Authentication Token</span>"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Main Node</span>"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Storage local path</span>"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Workaround FS errors</span>"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
+msgid "<span>Dependencies</span>"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_form
+msgid "<span>Modules</span>"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_view_form
+msgid ""
+"<span>You can only create blacklisted module names. The scanner is "
+"responsible to create technical module names automatically, but will ignore "
+"blacklisted modules.</span>"
+msgstr ""
+
+#. module: odoo_repository
+#. odoo-python
+#: code:addons/odoo_repository/models/odoo_repository.py:0
+#, python-format
+msgid "A scan is already ongoing for repository %s"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__active
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__active
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__active
+msgid "Active"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_repository_addons_path
+msgid "Addons"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_repository_addons_path_action
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__addons_path
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__addons_path_ids
+#: model:ir.ui.menu,name:odoo_repository.odoo_repository_addons_path_menu
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_form
+msgid "Addons Path"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_branch__name
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__branch_name
+msgid ""
+"An Odoo version is also used as an Odoo branch name in generic repositories "
+"(Odoo, OCA...)."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__application
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Application"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_branch_view_search
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_search
+msgid "Archived"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_authentication_token
+msgid "Authentication Token"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.authentication_token_action
+#: model:ir.ui.menu,name:odoo_repository.authentication_token_menu
+msgid "Authentication Tokens"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Author"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_author_action
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__author_ids
+#: model:ir.ui.menu,name:odoo_repository.odoo_author_menu
+msgid "Authors"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__auto_install
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Auto-Install"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__blacklisted
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_view_search
+msgid "Blacklisted"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module__blacklisted
+msgid "Blacklisted modules won't be scanned."
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Branch"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__branch_name
+msgid "Branch Name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__branch_sequence
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__branch_sequence
+msgid "Branch Sequence"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__branch_ids
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_form
+msgid "Branches"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__manual_branches
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository_branch__manual_branches
+msgid ""
+"By default repository branches follows the configured Odoo versions (e.g: "
+"17.0, 18.0...). Enable this option to configure your own branches."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__sloc_css
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_tree
+msgid "CSS"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__sloc_css
+msgid "CSS source lines of code"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_module_category_action
+#: model:ir.ui.menu,name:odoo_repository.odoo_module_category_menu
+msgid "Categories"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__category_id
+msgid "Category"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__clone_name
+msgid "Clone Name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__clone_url
+msgid "Clone URL"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__cloned_branch
+msgid "Cloned Branch"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
+msgid "Code analysis"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__commit
+msgid "Commit"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Community Contribution"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__is_community
+msgid "Community Contribution?"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__is_community
+msgid "Community?"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.ui.menu,name:odoo_repository.config_odoo_repository_menu
+msgid "Configuration"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__manual_branches
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__manual_branches
+msgid "Configure branches manually"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_author__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_dev_status__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_python_dependency__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_author__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_dev_status__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_python_dependency__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.ui.menu,name:odoo_repository.data_odoo_repository_menu
+msgid "Data"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_res_company__config_odoo_repository_default_token_id
+#: model:ir.model.fields,field_description:odoo_repository.field_res_config_settings__config_odoo_repository_default_token_id
+msgid "Default token"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_res_company__config_odoo_repository_default_token_id
+#: model:ir.model.fields,help:odoo_repository.field_res_config_settings__config_odoo_repository_default_token_id
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid ""
+"Default token used to clone repositories and authenticate on API like "
+"GitHub."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_module_branch_action_recursive_dependencies
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__dependency_ids
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
+msgid "Dependencies"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__non_std_dependency_level
+msgid "Dependency level excluding all standard Odoo modules."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__global_dependency_level
+msgid "Dependency level including all standard Odoo modules."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__title
+msgid "Descriptive name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__development_status_id
+msgid "Develoment Status"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_module_dev_status_action
+#: model:ir.ui.menu,name:odoo_repository.odoo_module_dev_status_menu
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Development Status"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_author__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_dev_status__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_python_dependency__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository_addons_path__is_enterprise
+msgid ""
+"Does this folder contain Enterprise modules?\n"
+"(from Odoo S.A., a contributor or your organization)"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository_addons_path__is_community
+msgid ""
+"Does this folder contain Odoo generic community modules?\n"
+"(from OCA, a contributor or your organization)"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository_addons_path__is_standard
+msgid "Does this folder contain modules from Odoo S.A.?"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_res_config_settings__config_odoo_repository_main_node_url
+msgid "Endpoint URL"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "Endpoint URL of the main node from which modules data can be fetched."
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Enterprise"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__is_enterprise
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__is_enterprise
+msgid "Enterprise?"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_view_form
+msgid "Exist on repositories/branches:"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__external_dependencies
+msgid "External Dependencies"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "Fix file system permissions when cloning repositories."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_res_company__config_odoo_repository_workaround_fs_errors
+#: model:ir.model.fields,help:odoo_repository.field_res_config_settings__config_odoo_repository_workaround_fs_errors
+msgid ""
+"Fix file system permissions when cloning repositories. Errors could be "
+"triggered on some file systems when git tries to execute 'chown' commands on"
+" its internal configuration files. This option will workaround this issue."
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_branch_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_branch_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_form
+msgid "Force Scan"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository_branch__cloned_branch
+msgid ""
+"Force the branch to clone (optional). Used on repositories with 'Configure "
+"branches manually' option enabled."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__clone_name
+msgid ""
+"Force the name of the cloned repository (folder on disk). If not set, the "
+"name of the repository will be used."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__full_path
+msgid "Full Path"
+msgstr ""
+
+#. module: odoo_repository
+#. odoo-python
+#: code:addons/odoo_repository/models/odoo_module_branch.py:0
+#, python-format
+msgid ""
+"Generic module %(generic_mod)s cannot depend on specific module(s): "
+"%(specific_mods)s"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields.selection,name:odoo_repository.selection__odoo_repository__repo_type__github
+msgid "GitHub"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__github_url
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__github_url
+msgid "GitHub URL"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields.selection,name:odoo_repository.selection__odoo_repository__repo_type__gitlab
+msgid "GitLab"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__global_dependency_level
+msgid "Global Dep. Level"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__has_migration_script
+msgid "Has Migration Script"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__specific
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository_branch__specific
+msgid ""
+"Host specific modules (that are not generic). Used for project repositories."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_author__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_dev_status__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_python_dependency__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__id
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__id
+msgid "ID"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid ""
+"If the environment variable <strong>GITHUB_TOKEN</strong> is set on the "
+"running system, it will be used as fallback."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__installable
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Installable"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__is_community
+msgid "Is this module a contribution of the community?"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__is_enterprise
+msgid "Is this module designed for Odoo Enterprise only?"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__is_standard
+msgid "Is this module part of Odoo standard?"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__sloc_js
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_tree
+msgid "JS"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__sloc_js
+msgid "JavaScript source lines of code"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_author____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_license____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_dev_status____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_python_dependency____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org____last_update
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__last_scanned_commit
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__last_scanned_commit
+msgid "Last Scanned Commit"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_author__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_dev_status__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_python_dependency__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_author__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_dev_status__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_python_dependency__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__version
+msgid "Last version"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__license_id
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "License"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_license_action
+#: model:ir.ui.menu,name:odoo_repository.odoo_license_menu
+msgid "Licenses"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__scan_weekday_ids
+msgid ""
+"Limit scanning of this repository by the scheduled action to certain days "
+"only. If not defined, the scan will happen every day."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_maintainer_action
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__module_branch_ids
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__maintainer_ids
+#: model:ir.ui.menu,name:odoo_repository.odoo_maintainer_menu
+msgid "Maintainers"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
+msgid "Manifest"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__manifest_value
+msgid "Manifest Value"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__migration_script_url
+msgid "Migration Script"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.ui.menu,name:odoo_repository.misc_odoo_repository_menu
+msgid "Misc."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__module_branch_id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__module_id
+msgid "Module"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__module_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__module_name
+msgid "Module Technical Name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__specific
+msgid ""
+"Module specific to a project repository.It cannot be used across different "
+"projects."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_module_branch_action
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__module_branch_ids
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__module_ids
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__module_ids
+#: model:ir.ui.menu,name:odoo_repository.modules_odoo_repository_menu
+#: model:ir.ui.menu,name:odoo_repository.odoo_module_branch_menu
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_graph
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_pivot
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_branch_view_form
+msgid "Modules"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_module_branch_report_action
+#: model:ir.ui.menu,name:odoo_repository.odoo_module_branch_report_menu
+msgid "Modules Analysis"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_maintainer_view_form
+msgid "Modules maintained"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_author__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_dev_status__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_python_dependency__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__name
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__name
+msgid "Name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__next_id
+msgid "Next"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__non_std_dependency_level
+msgid "Non-Std Dep. Level"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_branch
+msgid "Odoo Branch/Version"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_license
+msgid "Odoo License"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_author
+msgid "Odoo Module Author"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_module_branch
+msgid "Odoo Module Branch"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_module_category
+msgid "Odoo Module Category"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_module_dev_status
+msgid "Odoo Module Development Status"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_maintainer
+msgid "Odoo Module Maintainer"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_module
+msgid "Odoo Module Technical Name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_repository
+msgid "Odoo Modules Repository"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_repository_branch
+msgid "Odoo Modules Repository Branch"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_python_dependency
+msgid "Odoo Python Dependency"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.ui.menu,name:odoo_repository.main_odoo_repository_menu
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "Odoo Repositories"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.server,name:odoo_repository.cron_fetch_data_ir_actions_server
+#: model:ir.cron,cron_name:odoo_repository.cron_fetch_data
+msgid "Odoo Repositories - Fetch data from main node"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.server,name:odoo_repository.cron_scanner_ir_actions_server
+#: model:ir.cron,cron_name:odoo_repository.cron_scanner
+msgid "Odoo Repositories - Scanner"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.module.category,name:odoo_repository.module_category_odoo_repository
+msgid "Odoo Repository"
+msgstr ""
+
+#. module: odoo_repository
+#: model:res.groups,name:odoo_repository.group_odoo_repository_manager
+msgid "Odoo Repository Manager"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_repository_org
+msgid "Odoo Repository Organization"
+msgstr ""
+
+#. module: odoo_repository
+#: model:res.groups,name:odoo_repository.group_odoo_repository_user
+msgid "Odoo Repository User"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__branch_id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__branch_id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__branch_id
+msgid "Odoo Version"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_form
+msgid "Options"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__org_id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__org_id
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_search
+msgid "Organization"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
+msgid "Others"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__pr_url
+msgid "PR URL"
+msgstr ""
+
+#. module: odoo_repository
+#. odoo-python
+#: code:addons/odoo_repository/models/odoo_repository.py:0
+#, python-format
+msgid ""
+"Please define the '{key}' system parameter to clone repositories in the "
+"folder of your choice."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__private_key
+msgid "Private Key"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__sloc_python
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_tree
+msgid "Python"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_python_dependency_action
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__python_dependency_ids
+#: model:ir.ui.menu,name:odoo_repository.odoo_python_dependency_menu
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
+msgid "Python Dependencies"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__sloc_python
+msgid "Python source lines of code"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__relative_path
+msgid "Relative Path"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__addons_path_ids
+msgid "Relative path of folders in this repository hosting Odoo modules"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__removed
+msgid "Removed"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__repo_type
+msgid "Repo Type"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.ui.menu,name:odoo_repository.report_odoo_repository_menu
+msgid "Report"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_repository_action
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__repository_branch_ids
+#: model:ir.ui.menu,name:odoo_repository.odoo_repository_menu
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_branch_view_form
+msgid "Repositories"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__repository_id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__repository_id
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_form
+msgid "Repository"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__repository_branch_id
+msgid "Repository Branch"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_repository_org_action
+#: model:ir.ui.menu,name:odoo_repository.odoo_repository_org_menu
+msgid "Repository Organizations"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__reverse_dependency_ids
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
+msgid "Reverse Dependencies"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__ssh_key_id
+msgid "SSH Key"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.ssh_key_action
+#: model:ir.ui.menu,name:odoo_repository.ssh_key_menu
+msgid "SSH Keys"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__ssh_key_id
+msgid "SSH key used to clone/fetch this repository."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_ssh_key
+msgid "SSH private key"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_ssh_key__private_key
+msgid "SSH private key without passphrase."
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_branch_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_branch_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_form
+msgid "Scan"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__to_scan
+msgid "Scan this repository to collect data."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__scan_weekday_ids
+msgid "Scanning days"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__sequence
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__repository_sequence
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__sequence
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.action_odoo_repository_config_settings
+#: model:ir.ui.menu,name:odoo_repository.settings_odoo_repository_menu
+msgid "Settings"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__specific
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__specific
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_branch__specific
+msgid "Specific"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Standard"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__is_standard
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_addons_path__is_standard
+msgid "Standard?"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_res_config_settings__config_odoo_repository_storage_path
+msgid "Storage local path"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__summary
+msgid "Summary"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__name
+msgid "Techname"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_module_action
+#: model:ir.ui.menu,name:odoo_repository.odoo_module_menu
+msgid "Technical Module Names"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module__name
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__module_name
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch_version__module_name
+msgid "Technical Name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch_version__manifest_value
+msgid "Technical field to host the manifest value."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__addons_path
+msgid "Technical field. Where the module is located in the repository."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__module_id
+msgid "Technical name"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_python_dependency_name_uniq
+msgid "This Python dependency already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_repository_addons_path_addons_path_uniq
+msgid "This addons-path already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_author_name_uniq
+msgid "This author already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_repository_branch_repository_id_branch_id_uniq
+msgid "This branch already exists for this repository."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_branch_name_uniq
+msgid "This branch already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_module_dev_status_name_uniq
+msgid "This development_status already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_license_name_uniq
+msgid "This license already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_maintainer_name_uniq
+msgid "This maintainer already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_module_branch_module_id_branch_id_repository_id_uniq
+msgid "This module already exists for this repository/branch."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_module_category_name_uniq
+msgid "This module category already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_module_name_uniq
+msgid "This module technical name already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_branch_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_branch_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_form
+msgid "This operation will restart the scan from the beginning. Are you sure?"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_repository_org_name_uniq
+msgid "This organization already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_repository_org_id_name_uniq
+msgid "This repository already exists."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.constraint,message:odoo_repository.constraint_odoo_module_branch_version_module_branch_id_name_manifest_value_uniq
+msgid "This version already exists for this module."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__title
+msgid "Title"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__to_scan
+msgid "To Scan"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_repository_view_search
+msgid "To scan"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_authentication_token__token
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__token_id
+msgid "Token"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__token_id
+msgid "Token used to clone/fetch this repository."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__url
+msgid "URL"
+msgstr ""
+
+#. module: odoo_repository
+#. odoo-python
+#: code:addons/odoo_repository/models/odoo_repository.py:0
+#, python-format
+msgid "Unable to decode data received from %s"
+msgstr ""
+
+#. module: odoo_repository
+#. odoo-python
+#: code:addons/odoo_repository/models/odoo_repository.py:0
+#, python-format
+msgid "Unable to fetch data from %s"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Unmerged"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__clone_url
+msgid "Used to clone the repository."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__name
+msgid "Version"
+msgstr ""
+
+#. module: odoo_repository
+#. odoo-python
+#: code:addons/odoo_repository/models/odoo_branch.py:0
+#, python-format
+msgid "Version must match the pattern 'x.y'."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_module_branch_version
+msgid "Version of a Odoo Module on a given branch"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.act_window,name:odoo_repository.odoo_branch_action
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__version_ids
+#: model:ir.ui.menu,name:odoo_repository.odoo_branch_menu
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
+msgid "Versions"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__repo_url
+msgid "Web URL"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository__repo_url
+msgid "Web access to this repository."
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "Where to clone repositories on the local filesystem."
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "With Repository"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_search
+msgid "Without Repository"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_res_company__config_odoo_repository_workaround_fs_errors
+#: model:ir.model.fields,field_description:odoo_repository.field_res_config_settings__config_odoo_repository_workaround_fs_errors
+msgid "Workaround FS errors"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__sloc_xml
+#: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_tree
+msgid "XML"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__sloc_xml
+msgid "XML source lines of code"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "https://example.net/odoo-repository/data"
+msgstr ""
