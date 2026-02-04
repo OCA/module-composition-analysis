@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_repository_view_form" model="ir.ui.view">
+        <field name="name">odoo.repository.form</field>
+        <field name="model">odoo.repository</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_scan"
+                        type="object"
+                        string="Scan"
+                        class="btn-primary"
+                        groups="odoo_repository.group_odoo_repository_manager"
+                        invisible="not to_scan"
+                    />
+                    <button
+                        name="action_force_scan"
+                        type="object"
+                        string="Force Scan"
+                        class="btn-secondary"
+                        confirm="This operation will restart the scan from the beginning. Are you sure?"
+                        groups="odoo_repository.group_odoo_repository_manager"
+                        invisible="not to_scan"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <field name="module_ids" invisible="1" />
+                        <button
+                            name="open_modules"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-sitemap icon"
+                            invisible="not module_ids"
+                        >
+                            <span>Modules</span>
+                        </button>
+                    </div>
+                    <group>
+                        <group name="repository" string="Repository">
+                            <group colspan="2">
+                                <field name="org_id" readonly="module_ids" />
+                                <field name="name" readonly="module_ids" />
+                                <field name="repo_url" widget="url" />
+                                <field name="to_scan" />
+                                <field name="sequence" />
+                            </group>
+                            <group invisible="not to_scan" colspan="2">
+                                <field name="clone_url" />
+                                <field name="repo_type" required="to_scan" />
+                                <field
+                                    name="token_id"
+                                    options="{'no_open': True}"
+                                    groups="odoo_repository.group_odoo_repository_manager"
+                                    invisible="ssh_key_id"
+                                />
+                                <field
+                                    name="ssh_key_id"
+                                    options="{'no_open': True}"
+                                    groups="odoo_repository.group_odoo_repository_manager"
+                                    invisible="token_id"
+                                />
+                            </group>
+                        </group>
+                        <group name="options" string="Options" invisible="not to_scan">
+                            <field name="scan_weekday_ids" widget="many2many_tags" />
+                            <field name="manual_branches" readonly="module_ids" />
+                            <field name="specific" />
+                            <field name="clone_name" groups="base.group_no_one" />
+                        </group>
+                    </group>
+                    <group>
+                        <group
+                            name="addons_path"
+                            string="Addons Path"
+                            invisible="not to_scan"
+                        >
+                            <field name="addons_path_ids" nolabel="1" colspan="2">
+                                <list editable="bottom">
+                                    <field name="relative_path" readonly="1" />
+                                    <field name="is_standard" readonly="1" />
+                                    <field name="is_enterprise" readonly="1" />
+                                    <field name="is_community" readonly="1" />
+                                </list>
+                            </field>
+                        </group>
+                        <group name="branches" string="Branches">
+                            <field
+                                name="branch_ids"
+                                nolabel="1"
+                                colspan="2"
+                                readonly="not manual_branches"
+                            >
+                                <list editable="bottom">
+                                    <field
+                                        name="branch_id"
+                                        readonly="not parent.manual_branches"
+                                    />
+                                    <field
+                                        name="cloned_branch"
+                                        column_invisible="not parent.manual_branches"
+                                    />
+                                    <field name="module_ids" />
+                                    <field name="last_scanned_commit" />
+                                </list>
+                            </field>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="odoo_repository_view_tree" model="ir.ui.view">
+        <field name="name">odoo.repository.tree</field>
+        <field name="model">odoo.repository</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="org_id" />
+                <field name="name" />
+                <field name="repo_url" widget="url" />
+                <field name="to_scan" />
+                <field name="repo_type" />
+            </list>
+        </field>
+    </record>
+
+    <record id="odoo_repository_view_search" model="ir.ui.view">
+        <field name="name">odoo.repository.search</field>
+        <field name="model">odoo.repository</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="org_id" />
+                <filter
+                    name="to_scan"
+                    string="To scan"
+                    domain="[('to_scan', '=', True)]"
+                />
+                <filter
+                    name="archived"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_org_id"
+                        string="Organization"
+                        context="{'group_by': 'org_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="odoo_repository_action" model="ir.actions.act_window">
+        <field name="name">Repositories</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.repository</field>
+        <field name="view_id" ref="odoo_repository_view_tree" />
+    </record>
+
+    <menuitem
+        id="odoo_repository_menu"
+        parent="config_odoo_repository_menu"
+        action="odoo_repository_action"
+    />
+</odoo>

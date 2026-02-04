@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form.inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app
+                    string="Odoo MCA"
+                    data-string="Odoo MCA"
+                    name="odoo_repository"
+                    groups="odoo_repository.group_odoo_repository_manager"
+                >
+                    <block title="Odoo MCA" name="odoo_repository">
+                        <setting
+                            id="odoo_repository_storage_path"
+                            help="Where to clone repositories on the local filesystem."
+                        >
+                            <field
+                                name="config_odoo_repository_storage_path"
+                                placeholder="/var/lib/odoo-repository/"
+                            />
+                        </setting>
+                        <setting
+                            id="odoo_repository_workaround_fs_errors"
+                            help="Fix file system permissions when cloning repositories."
+                        >
+                            <field name="config_odoo_repository_workaround_fs_errors" />
+                        </setting>
+                        <setting
+                            id="odoo_repository_github_token"
+                            help="Used to clone repositories and authenticate on API like GitHub."
+                        >
+                            <field
+                                name="config_odoo_repository_default_token_id"
+                                options="{'no_open': True}"
+                            />
+                            <div class="text-muted">
+                                If the environment variable <strong
+                            >GITHUB_TOKEN</strong> is set on the running system, it will be used as fallback.
+                            </div>
+                        </setting>
+                        <setting
+                            id="odoo_repository_main_node"
+                            help="Endpoint URL of the main node from which modules data can be fetched."
+                        >
+                            <field
+                                name="config_odoo_repository_main_node_url"
+                                placeholder="https://example.net/odoo-repository/data"
+                            />
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_odoo_repository_config_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_settings_view_form" />
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'odoo_repository', 'bin_size': False}</field>
+    </record>
+
+    <menuitem
+        id="settings_odoo_repository_menu"
+        name="Settings"
+        sequence="1"
+        action="action_odoo_repository_config_settings"
+        parent="config_odoo_repository_menu"
+        groups="odoo_repository.group_odoo_repository_manager"
+    />
+</odoo>

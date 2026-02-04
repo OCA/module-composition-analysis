@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_module_branch_view_form" model="ir.ui.view">
+        <field name="name">odoo.module.branch.form</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="open_recursive_dependencies"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-sitemap icon"
+                        >
+                            <span>Dependencies</span>
+                        </button>
+                    </div>
+                    <group>
+                        <group name="manifest" string="Manifest">
+                            <field name="title" readonly="1" />
+                            <field name="summary" readonly="1" />
+                            <field
+                                name="author_ids"
+                                widget="many2many_tags"
+                                readonly="1"
+                            />
+                            <field
+                                name="maintainer_ids"
+                                widget="many2many_tags"
+                                readonly="1"
+                            />
+                            <field
+                                name="category_id"
+                                options="{'no_open': True}"
+                                readonly="1"
+                            />
+                            <field
+                                name="license_id"
+                                options="{'no_open': True}"
+                                readonly="1"
+                            />
+                            <field name="version" readonly="1" />
+                            <field
+                                name="development_status_id"
+                                options="{'no_open': True}"
+                                readonly="1"
+                            />
+                            <field name="application" readonly="1" />
+                            <field name="installable" readonly="1" />
+                            <field name="auto_install" readonly="1" />
+                        </group>
+                        <group col="1">
+                            <group name="others" string="Others">
+                                <field name="module_id" readonly="1" />
+                                <field
+                                    name="branch_id"
+                                    options="{'no_open': True}"
+                                    readonly="1"
+                                />
+                                <field name="repository_branch_id" readonly="1" />
+                                <field
+                                    name="pr_url"
+                                    widget="url"
+                                    invisible="not pr_url"
+                                />
+                                <field name="url" widget="url" invisible="pr_url" />
+                                <field name="last_scanned_commit" readonly="1" />
+                                <field name="removed" readonly="1" />
+                                <field name="is_standard" readonly="1" />
+                                <field name="is_enterprise" readonly="1" />
+                                <field name="is_community" readonly="1" />
+                                <field name="global_dependency_level" />
+                                <field name="non_std_dependency_level" />
+                            </group>
+                            <group name="code" string="Code analysis">
+                                <field name="sloc_python" readonly="1" />
+                                <field name="sloc_xml" readonly="1" />
+                                <field name="sloc_js" readonly="1" />
+                                <field name="sloc_css" readonly="1" />
+                            </group>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="versions" string="Versions">
+                            <field name="version_ids" nolabel="1" readonly="1">
+                                <list>
+                                    <field name="name" />
+                                    <field name="commit" />
+                                    <field name="migration_script_url" widget="url" />
+                                </list>
+                            </field>
+                        </page>
+                        <page name="dependencies" string="Dependencies">
+                            <field name="dependency_ids" nolabel="1" readonly="1">
+                                <list>
+                                    <field name="module_id" />
+                                    <field name="repository_branch_id" />
+                                    <field name="version" />
+                                    <field name="license_id" optional="show" />
+                                    <field
+                                        name="development_status_id"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="global_dependency_level"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="non_std_dependency_level"
+                                        optional="show"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page name="reverse_dependencies" string="Reverse Dependencies">
+                            <field
+                                name="reverse_dependency_ids"
+                                nolabel="1"
+                                readonly="1"
+                            >
+                                <list>
+                                    <field name="module_id" />
+                                    <field name="repository_branch_id" />
+                                    <field name="version" />
+                                    <field name="license_id" optional="show" />
+                                    <field
+                                        name="development_status_id"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="global_dependency_level"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="non_std_dependency_level"
+                                        optional="show"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page name="python_dependency_ids" string="Python Dependencies">
+                            <field
+                                name="python_dependency_ids"
+                                nolabel="1"
+                                readonly="1"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_view_tree" model="ir.ui.view">
+        <field name="name">odoo.module.branch.tree</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="module_id" />
+                <field name="repository_id" optional="show" />
+                <field name="branch_id" optional="show" />
+                <field name="is_standard" optional="hide" />
+                <field name="is_enterprise" optional="hide" />
+                <field name="title" optional="show" />
+                <field name="summary" optional="hide" />
+                <field name="author_ids" widget="many2many_tags" optional="show" />
+                <field name="category_id" optional="hide" />
+                <field name="maintainer_ids" widget="many2many_tags" optional="hide" />
+                <field name="dependency_ids" optional="hide" />
+                <field name="license_id" optional="show" />
+                <field name="version" optional="hide" />
+                <field name="development_status_id" optional="hide" />
+                <field name="python_dependency_ids" optional="hide" />
+                <field name="application" optional="hide" />
+                <field name="installable" optional="hide" />
+                <field name="auto_install" optional="hide" />
+                <field name="last_scanned_commit" optional="hide" />
+                <field name="pr_url" optional="hide" widget="url" />
+                <field name="global_dependency_level" optional="hide" />
+                <field name="non_std_dependency_level" optional="hide" />
+                <field name="sloc_python" sum="Python" optional="show" />
+                <field name="sloc_xml" sum="XML" optional="show" />
+                <field name="sloc_js" sum="JS" optional="show" />
+                <field name="sloc_css" sum="CSS" optional="show" />
+            </list>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_view_tree_recursive_dependencies" model="ir.ui.view">
+        <field name="name">odoo.module.branch.tree.recursive_dependencies</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="inherit_id" ref="odoo_module_branch_view_tree" />
+        <field name="mode">primary</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list position="attributes">
+                <attribute
+                    name="default_order"
+                >global_dependency_level, non_std_dependency_level, module_name</attribute>
+            </list>
+            <field name="application" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="global_dependency_level" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="non_std_dependency_level" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_view_search" model="ir.ui.view">
+        <field name="name">odoo.module.branch.search</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="module_id" />
+                <field name="repository_id" />
+                <field name="org_id" />
+                <field name="branch_id" />
+                <field name="title" />
+                <field name="author_ids" />
+                <field name="maintainer_ids" />
+                <field name="dependency_ids" />
+                <field name="license_id" />
+                <separator />
+                <filter
+                    name="is_standard"
+                    string="Standard"
+                    domain="[('is_standard', '=', True)]"
+                />
+                <filter
+                    name="is_enterprise"
+                    string="Enterprise"
+                    domain="[('is_enterprise', '=', True)]"
+                />
+                <filter
+                    name="is_community"
+                    string="Community Contribution"
+                    domain="[('is_community', '=', True)]"
+                />
+                <separator />
+                <filter
+                    name="application"
+                    string="Application"
+                    domain="[('application', '=', True)]"
+                />
+                <filter
+                    name="installable"
+                    string="Installable"
+                    domain="[('installable', '=', True)]"
+                />
+                <filter
+                    name="auto_install"
+                    string="Auto-Install"
+                    domain="[('auto_install', '=', True)]"
+                />
+                <separator />
+                <filter
+                    name="unmerged_pr"
+                    string="Unmerged"
+                    domain="[('pr_url', '!=', False)]"
+                />
+                <filter
+                    name="with_repository"
+                    string="With Repository"
+                    domain="[('repository_branch_id', '!=', False)]"
+                />
+                <filter
+                    name="without_repository"
+                    string="Without Repository"
+                    domain="[('repository_branch_id', '=', False)]"
+                />
+                <group expand="0" name="group_by" string="Group By">
+                    <filter
+                        name="group_by_org_id"
+                        string="Organization"
+                        context="{'group_by': 'org_id'}"
+                    />
+                    <filter
+                        name="group_by_repository_id"
+                        string="Repository"
+                        context="{'group_by': 'repository_id'}"
+                    />
+                    <filter
+                        name="group_by_branch_id"
+                        string="Branch"
+                        context="{'group_by': 'branch_id'}"
+                    />
+                    <filter
+                        name="group_by_author_ids"
+                        string="Author"
+                        context="{'group_by': 'author_ids'}"
+                    />
+                    <filter
+                        name="group_by_license_id"
+                        string="License"
+                        context="{'group_by': 'license_id'}"
+                    />
+                    <filter
+                        name="group_by_development_status_id"
+                        string="Development Status"
+                        context="{'group_by': 'development_status_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_view_pivot" model="ir.ui.view">
+        <field name="name">odoo.module.branch.pivot</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="arch" type="xml">
+            <pivot string="Modules" sample="1">
+                <field name="repository_id" type="row" />
+                <field name="branch_id" type="col" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_view_graph" model="ir.ui.view">
+        <field name="name">odoo.module.branch.graph</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="arch" type="xml">
+            <graph string="Modules" type="line" sample="1" stacked="0">
+                <field name="org_id" />
+            </graph>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_action" model="ir.actions.act_window">
+        <field name="name">Modules</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.module.branch</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="odoo_module_branch_view_tree" />
+        <field name="context">{
+      'search_default_installable': 1,
+      'search_default_with_repository': 2
+      }</field>
+    </record>
+
+    <record id="odoo_module_branch_report_action" model="ir.actions.act_window">
+        <field name="name">Modules Analysis</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.module.branch</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="view_id" ref="odoo_module_branch_view_tree" />
+        <field name="context">{
+      'search_default_installable': 1,
+      'search_default_with_repository': 2,
+      'pivot_column_groupby': ['branch_id'],
+      'pivot_row_groupby': ['org_id', 'repository_id'],
+      'graph_mode': 'line',
+      'graph_stacked': 0,
+      'graph_measure': '__count__',
+      'graph_groupbys': ['branch_id', 'org_id'],
+      }</field>
+    </record>
+
+    <record
+        id="odoo_module_branch_action_recursive_dependencies"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Dependencies</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.module.branch</field>
+        <field
+            name="view_id"
+            ref="odoo_module_branch_view_tree_recursive_dependencies"
+        />
+    </record>
+
+    <menuitem
+        id="modules_odoo_repository_menu"
+        parent="data_odoo_repository_menu"
+        name="Modules"
+    />
+
+    <menuitem
+        id="odoo_module_branch_menu"
+        parent="modules_odoo_repository_menu"
+        action="odoo_module_branch_action"
+    />
+
+    <menuitem
+        id="odoo_module_branch_report_menu"
+        parent="report_odoo_repository_menu"
+        action="odoo_module_branch_report_action"
+    />
+</odoo>
