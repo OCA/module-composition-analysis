@@ -1,0 +1,11 @@
+[project]
+name = "odoo-addons-oca-module-composition-analysis"
+version = "18.0.20260204.0"
+dependencies = [
+    "odoo-addon-odoo_repository==18.0.*",
+]
+classifiers=[
+    "Programming Language :: Python",
+    "Framework :: Odoo",
+    "Framework :: Odoo :: 18.0",
+]
