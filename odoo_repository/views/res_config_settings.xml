@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
+     Copyright 2026 Sébastien Alix
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
 
@@ -93,6 +94,26 @@
                                         />
                     </div>
                   </div>
+              </div>
+            </div>
+            <div
+                            class="row mt16 o_settings_container"
+                            name="odoo_repository_oca_blacklist"
+                        >
+              <div class="o_setting_right_pane">
+                <span class="o_form_label">OCA Repository Blacklist</span>
+                <div class="text-muted">
+                  Comma-separated list of OCA repositories to skip during synchronization.
+                </div>
+                <div class="content-group">
+                  <div class="mt16">
+                    <field
+                                            name="config_odoo_repository_oca_blacklist"
+                                            colspan="2"
+                                            placeholder="OCB,OpenUpgrade"
+                                        />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
