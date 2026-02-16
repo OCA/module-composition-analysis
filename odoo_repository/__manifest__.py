@@ -1,9 +1,10 @@
 # Copyright 2023 Camptocamp SA
+# Copyright 2026 Sébastien Alix
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 {
     "name": "Odoo Repositories Data",
     "summary": "Base module to host data collected from Odoo repositories.",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",
@@ -15,9 +16,10 @@
         "data/odoo_repository_org.xml",
         "data/odoo_repository_addons_path.xml",
         "data/odoo_repository.xml",
-        "data/odoo.repository.csv",
         "data/odoo_branch.xml",
         "data/queue_job.xml",
+        "data/odoo_mca_backend.xml",
+        "data/ir_config_parameter.xml",
         "views/menu.xml",
         "views/authentication_token.xml",
         "views/ssh_key.xml",
@@ -45,11 +47,14 @@
         "base_time_window",
         # OCA/queue
         "queue_job",
+        # OCA/connector
+        "component",
     ],
     "external_dependencies": {
         "python": [
             "gitpython",
             "odoo-addons-parser",
+            "pyyaml",
             # TODO to publish
             # "odoo-repository-scanner"
         ],
