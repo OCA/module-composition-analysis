@@ -1,4 +1,5 @@
 # Copyright 2023 Camptocamp SA
+# Copyright 2026 Sébastien Alix
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import json
@@ -668,6 +669,36 @@ class OdooRepository(models.Model):
             if rec.specific:
                 rec.branch_ids.module_ids.sudo().unlink()
         return super().unlink()
+
+    @api.model
+    def cron_sync_oca_repositories(self):
+        """Create and update OCA repositories from GitHub configuration.
+
+        This method spawns a job to fetch the repository configurations from
+        OCA/repo-maintainer-conf, parse the YAML files, and synchronize the local
+        repository database by:
+        - Creating new repositories that exist in OCA config but not locally
+        - Updating existing repositories with any changes
+        - Archiving repositories that no longer exist in OCA config
+        """
+        delayable = self.delayable(
+            identity_key=identity_exact,
+            priority=1,
+        )
+        delayable._sync_oca_repositories_job()
+        delayable.delay()
+        return True
+
+    @api.model
+    def _sync_oca_repositories_job(self):
+        """Queue job method to synchronize OCA repositories.
+
+        Performs the actual synchronization of OCA repositories from GitHub.
+        """
+        mca_backend = self.env.ref("odoo_repository.mca_backend")
+        with mca_backend.work_on("odoo.repository") as work:
+            synchronizer = work.component(usage="oca.repository.synchronizer")
+            return synchronizer.run()
 
     def open_modules(self):
         self.ensure_one()

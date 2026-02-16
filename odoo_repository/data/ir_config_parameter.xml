@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Sébastien Alix
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+    <record id="config_parameter_oca_repo_blacklist" model="ir.config_parameter">
+        <field name="key">odoo_repository.oca_repo_blacklist</field>
+        <field name="value">OCB,OpenUpgrade</field>
+    </record>
+</odoo>
