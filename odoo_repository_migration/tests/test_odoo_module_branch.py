@@ -1,4 +1,5 @@
 # Copyright 2024 Camptocamp SA
+# Copyright 2026 Sébastien Alix
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from odoo.addons.odoo_repository.tests import common
@@ -22,7 +23,14 @@ class TestOdooModuleBranch(common.Common):
             last_scanned_commit="sha",
         )
         self.std_repository = self.env.ref("odoo_repository.odoo_repository_odoo_odoo")
-        self.oca_repository = self.env.ref("odoo_repository.repo_oca_server_tools")
+        oca_org = self.env.ref("odoo_repository.odoo_repository_org_oca")
+        self.oca_repository = self.env["odoo.repository"].create(
+            {
+                "org_id": oca_org.id,
+                "name": "test-repo",
+                "repo_url": "https://github.com/OCA/test-repo",
+            }
+        )
         self.gen_repository = self.env["odoo.repository"].create(
             {
                 "name": "new_repo",
