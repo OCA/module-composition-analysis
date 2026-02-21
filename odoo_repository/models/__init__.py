@@ -10,6 +10,7 @@ from . import odoo_module_dev_status
 from . import odoo_python_dependency
 from . import odoo_repository_org
 from . import odoo_repository_addons_path
+from . import odoo_mca_backend
 from . import odoo_repository
 from . import odoo_repository_branch
 from . import odoo_module_branch

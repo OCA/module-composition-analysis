@@ -1,4 +1,5 @@
 # Copyright 2024 Camptocamp SA
+# Copyright 2026 Sébastien Alix
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from odoo.exceptions import ValidationError

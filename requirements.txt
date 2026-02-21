@@ -2,3 +2,4 @@
 gitpython
 oca-port
 odoo-addons-parser
+pyyaml
