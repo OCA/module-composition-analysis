@@ -11,7 +11,7 @@ class TestRepositoryScanner(Common):
         kwargs = {
             "org": self.org.name,
             "name": self.repo_name,
-            "clone_url": self.repo_upstream_path,
+            "clone_url": str(self.repo_upstream_path),
             "version": self.branch.name,
             "branch": self.branch.name,
             "addons_paths_data": [
