@@ -1,4 +1,5 @@
 # Copyright 2024 Camptocamp SA
+# Copyright 2026 Sébastien Alix
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import os
@@ -8,16 +9,16 @@ import tempfile
 from unittest.mock import patch
 
 import git
-from oca_port.tests.common import CommonCase
 
 from odoo.tests.common import TransactionCase
 
+from .odoo_repo_mixin import OdooRepoMixin
 
-class Common(TransactionCase, CommonCase):
+
+class Common(TransactionCase, OdooRepoMixin):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        CommonCase.setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.repositories_path = tempfile.mkdtemp()
         cls.env["ir.config_parameter"].set_param(
@@ -27,9 +28,6 @@ class Common(TransactionCase, CommonCase):
 
     def setUp(self):
         super().setUp()
-        # Leverage the existing test class from 'oca_port' to bootstrap
-        # temporary git repositories to run tests
-        CommonCase.setUp(self)
         self.repo_name = pathlib.Path(self.repo_upstream_path).parts[-1]
         self.org = self.env["odoo.repository.org"].create({"name": self.fork_org})
         self.odoo_repository = self.env["odoo.repository"].create(
@@ -85,13 +83,11 @@ class Common(TransactionCase, CommonCase):
         os.system("git config --global user.name 'test'")
 
     def _patch_github_class(self):
-        res = super()._patch_github_class()
-        # Patch helper method part of 'odoo_repository' module as well
-        self.patcher2 = patch("odoo.addons.odoo_repository.utils.github.request")
-        github_request = self.patcher2.start()
+        # Patch helper method part of 'odoo_repository' module
+        self.patcher = patch("odoo.addons.odoo_repository.utils.github.request")
+        github_request = self.patcher.start()
         github_request.return_value = {}
-        self.addCleanup(self.patcher2.stop)
-        return res
+        self.addCleanup(self.patcher.stop)
 
     def _update_module_version_on_branch(self, branch, version):
         """Change module version on a given branch, and commit the change."""

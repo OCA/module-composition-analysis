@@ -1,4 +1,5 @@
 # Copyright 2024 Camptocamp SA
+# Copyright 2026 Sébastien Alix
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from odoo import fields
@@ -31,7 +32,7 @@ class TestOdooRepositoryScan(Common):
         self.assertEqual(module_branch.category_id.name, "Test Module")
         self.assertItemsEqual(
             module_branch.author_ids.mapped("name"),
-            ["Odoo Community Association (OCA)", "Camptocamp"],
+            ["Odoo Community Association (OCA)"],
         )
         self.assertFalse(module_branch.specific)
         self.assertEqual(module_branch.dependency_ids.module_name, "base")
@@ -233,7 +234,7 @@ class TestOdooRepositoryScan(Common):
         self.assertEqual(module_branch.category_id.name, "Test Module")
         self.assertItemsEqual(
             module_branch.author_ids.mapped("name"),
-            ["Odoo Community Association (OCA)", "Camptocamp"],
+            ["Odoo Community Association (OCA)"],
         )
         self.assertFalse(module_branch.specific)
         # No dependencies
