@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Sébastien Alix
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+    <record id="mca_backend" model="odoo.mca.backend">
+        <field name="name">MCA</field>
+    </record>
+</odoo>

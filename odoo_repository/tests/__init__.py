@@ -4,3 +4,4 @@ from . import test_repository_scanner
 from . import test_odoo_repository_scan
 from . import test_sync_node
 from . import test_odoo_module_branch
+from . import test_oca_repository_synchronizer
