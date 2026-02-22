@@ -191,6 +191,19 @@ msgid "Code analysis"
 msgstr ""
 
 #. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid ""
+"Comma-separated list of OCA repositories to skip during synchronization."
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_res_config_settings__config_odoo_repository_oca_blacklist
+msgid ""
+"Comma-separated list of OCA repositories to skip during synchronization. "
+"Example: OCB,OpenUpgrade"
+msgstr ""
+
+#. module: odoo_repository
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__commit
 msgid "Commit"
 msgstr ""
@@ -237,6 +250,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__create_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__create_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__create_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_mca_backend__create_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__create_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__create_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__create_uid
@@ -257,6 +271,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__create_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__create_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__create_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_mca_backend__create_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__create_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__create_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__create_date
@@ -286,8 +301,7 @@ msgstr ""
 #: model:ir.model.fields,help:odoo_repository.field_res_company__config_odoo_repository_default_token_id
 #: model:ir.model.fields,help:odoo_repository.field_res_config_settings__config_odoo_repository_default_token_id
 msgid ""
-"Default token used to clone repositories and authenticate on API like "
-"GitHub."
+"Default token used to clone repositories and authenticate on API like GitHub."
 msgstr ""
 
 #. module: odoo_repository
@@ -330,6 +344,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__display_name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__display_name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__display_name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_mca_backend__display_name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__display_name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__display_name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__display_name
@@ -399,8 +414,8 @@ msgstr ""
 #: model:ir.model.fields,help:odoo_repository.field_res_config_settings__config_odoo_repository_workaround_fs_errors
 msgid ""
 "Fix file system permissions when cloning repositories. Errors could be "
-"triggered on some file systems when git tries to execute 'chown' commands on"
-" its internal configuration files. This option will workaround this issue."
+"triggered on some file systems when git tries to execute 'chown' commands on "
+"its internal configuration files. This option will workaround this issue."
 msgstr ""
 
 #. module: odoo_repository
@@ -433,8 +448,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/odoo_repository/models/odoo_module_branch.py:0
 msgid ""
-"Generic module %(generic_mod)s cannot depend on specific module(s): "
-"%(specific_mods)s"
+"Generic module %(generic_mod)s cannot depend on specific module(s): %"
+"(specific_mods)s"
 msgstr ""
 
 #. module: odoo_repository
@@ -482,6 +497,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__id
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__id
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__id
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_mca_backend__id
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__id
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__id
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__id
@@ -547,6 +563,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__write_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__write_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__write_uid
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_mca_backend__write_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__write_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__write_uid
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__write_uid
@@ -567,6 +584,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__write_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__write_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__write_date
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_mca_backend__write_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__write_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__write_date
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__write_date
@@ -690,6 +708,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_author__name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_license__name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_maintainer__name
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_mca_backend__name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module__name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__name
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_category__name
@@ -710,6 +729,16 @@ msgstr ""
 #. module: odoo_repository
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__non_std_dependency_level
 msgid "Non-Std Dep. Level"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_res_config_settings__config_odoo_repository_oca_blacklist
+msgid "OCA Repository Blacklist"
+msgstr ""
+
+#. module: odoo_repository
+#: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
+msgid "OCB,OpenUpgrade"
 msgstr ""
 
 #. module: odoo_repository
@@ -737,6 +766,11 @@ msgstr ""
 #. module: odoo_repository
 #: model:ir.actions.server,name:odoo_repository.cron_scanner_ir_actions_server
 msgid "Odoo MCA - Scanner"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_mca_backend
+msgid "Odoo MCA Backend"
 msgstr ""
 
 #. module: odoo_repository
@@ -792,6 +826,11 @@ msgstr ""
 #. module: odoo_repository
 #: model:ir.model,name:odoo_repository.model_odoo_python_dependency
 msgid "Odoo Python Dependency"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.actions.server,name:odoo_repository.cron_sync_oca_repositories_ir_actions_server
+msgid "Odoo Repositories - Sync OCA repositories"
 msgstr ""
 
 #. module: odoo_repository
