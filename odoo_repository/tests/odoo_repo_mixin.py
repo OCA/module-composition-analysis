@@ -3,6 +3,7 @@
 
 import io
 import os
+import shutil
 import tempfile
 import threading
 import time
@@ -168,8 +169,9 @@ class OdooRepoMixin(unittest.TestCase):
         # We do not really care about the remote URL here, re-use origin one
         repo.create_remote(cls.fork_org, repo.remotes.origin.url)
 
-    # def tearDown(self):
-    #     super().tearDown()
-    #     # Clean up the Git repository
-    #     shutil.rmtree(self.repo_upstream_path)
-    #     shutil.rmtree(self.repo_path)
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        # Clean up the Git repository
+        shutil.rmtree(cls.repo_upstream_path)
+        shutil.rmtree(cls.repo_path)

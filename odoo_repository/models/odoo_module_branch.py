@@ -208,7 +208,7 @@ class OdooModuleBranch(models.Model):
                 CREATE UNIQUE INDEX IF NOT EXISTS odoo_module_branch_uniq_null
                 ON odoo_module_branch (module_id, branch_id)
                 WHERE repository_id IS NULL;
-            """
+            """,
             # PostgreSQL >= 15 (with NULLS NOT DISTINCT)
             # """
             #     CREATE UNIQUE INDEX odoo_module_branch_uniq
@@ -296,7 +296,7 @@ class OdooModuleBranch(models.Model):
                 else 0
             )
 
-    def _get_recursive_dependencies(self, domain=None):
+    def _get_recursive_dependencies(self, domain=None, _visited=None):
         """Return all dependencies recursively.
 
         A domain can be applied to restrict the modules to return, e.g:
@@ -304,13 +304,22 @@ class OdooModuleBranch(models.Model):
         >>> mod._get_recursive_dependencies([("org_id", "=", "OCA")])
 
         """
+        # NOTE: Circular dependencies are allowed
         if not domain:
             domain = []
-        dependencies = self.dependency_ids.filtered_domain(domain)
+        if _visited is None:
+            _visited = set()
+        if self.id in _visited:
+            return self.browse()
+        _visited.add(self.id)
+        # Apply domain and exclude self
+        dependencies = (self.dependency_ids - self).filtered_domain(domain)
         dep_ids = set(dependencies.ids)
         for dep in dependencies:
             dep_ids |= set(
-                dep._get_recursive_dependencies().filtered_domain(domain).ids
+                dep._get_recursive_dependencies(domain, _visited)
+                .filtered_domain(domain)
+                .ids
             )
         return self.browse(dep_ids)
 
