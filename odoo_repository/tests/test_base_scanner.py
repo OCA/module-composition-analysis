@@ -13,7 +13,7 @@ class TestBaseScanner(Common):
         kwargs = {
             "org": self.fork_org,
             "name": self.repo_name,
-            "clone_url": self.repo_upstream_path,
+            "clone_url": str(self.repo_upstream_path),
             "branches": [
                 self.branch1_name,
                 self.branch2_name,
