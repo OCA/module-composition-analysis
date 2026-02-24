@@ -294,7 +294,7 @@ class OdooModuleBranch(models.Model):
                 (non_std_max_parent_level + 1) if not rec.is_standard else 0
             )
 
-    def _get_recursive_dependencies(self, domain=None):
+    def _get_recursive_dependencies(self, domain=None, _visited=None):
         """Return all dependencies recursively.
 
         A domain can be applied to restrict the modules to return, e.g:
@@ -302,13 +302,22 @@ class OdooModuleBranch(models.Model):
         >>> mod._get_recursive_dependencies([("org_id", "=", "OCA")])
 
         """
+        # NOTE: Circular dependencies are allowed
         if not domain:
             domain = []
-        dependencies = self.dependency_ids.filtered_domain(domain)
+        if _visited is None:
+            _visited = set()
+        if self.id in _visited:
+            return self.browse()
+        _visited.add(self.id)
+        # Apply domain and exclude self
+        dependencies = (self.dependency_ids - self).filtered_domain(domain)
         dep_ids = set(dependencies.ids)
         for dep in dependencies:
             dep_ids |= set(
-                dep._get_recursive_dependencies().filtered_domain(domain).ids
+                dep._get_recursive_dependencies(domain, _visited)
+                .filtered_domain(domain)
+                .ids
             )
         return self.browse(dep_ids)
 
