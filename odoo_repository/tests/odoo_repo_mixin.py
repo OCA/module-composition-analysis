@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import io
+import os
 import shutil
 import tempfile
 import threading
@@ -29,34 +30,43 @@ class OdooRepoMixin(unittest.TestCase):
         cls.target3 = "origin/18.0"
         cls.addon = "my_module"
         cls.target_addon = "my_module_renamed"
-
-    def setUp(self):
-        super().setUp()
         # Create a temporary Git repository
-        self.repo_upstream_path = self._get_upstream_repository_path()
-        self.addon_path = Path(self.repo_upstream_path) / self.addon
-        self.manifest_path = self.addon_path / "__manifest__.py"
+        cls._apply_git_config()
+        cls.repo_upstream_path = cls._get_upstream_repository_path()
+        cls.addon_path = Path(cls.repo_upstream_path) / cls.addon
+        cls.manifest_path = cls.addon_path / "__manifest__.py"
         # By cloning the first repository this will set an 'origin' remote
-        self.repo_path = self._clone_tmp_git_repository(self.repo_upstream_path)
-        self._add_fork_remote(self.repo_path)
+        cls.repo_path = cls._clone_tmp_git_repository(cls.repo_upstream_path)
+        cls._add_fork_remote(cls.repo_path)
 
-    def _get_upstream_repository_path(self) -> Path:
+    @classmethod
+    def _apply_git_config(cls):
+        """Configure git (~/.gitconfig) if no config file exists."""
+        git_cfg = Path(os.path.expanduser("~/.gitconfig"))
+        if git_cfg.exists():
+            return
+        os.system("git config --global user.email 'test@example.com'")
+        os.system("git config --global user.name 'test'")
+
+    @classmethod
+    def _get_upstream_repository_path(cls) -> Path:
         """Returns the path of upstream repository.
 
         Generate the upstream git repository or re-use the one put in cache if any.
         """
         if hasattr(cache, "archive_data") and cache.archive_data:
             # Unarchive the repository from memory
-            repo_path = self._unarchive_upstream_repository(cache.archive_data)
+            repo_path = cls._unarchive_upstream_repository(cache.archive_data)
         else:
             # Prepare and archive the repository in memory
-            repo_path = self._create_tmp_git_repository()
-            addon_path = repo_path / self.addon
-            self._fill_git_repository(repo_path, addon_path)
-            cache.archive_data = self._archive_upstream_repository(repo_path)
+            repo_path = cls._create_tmp_git_repository()
+            addon_path = repo_path / cls.addon
+            cls._fill_git_repository(repo_path, addon_path)
+            cache.archive_data = cls._archive_upstream_repository(repo_path)
         return repo_path
 
-    def _archive_upstream_repository(self, repo_path: Path) -> bytes:
+    @classmethod
+    def _archive_upstream_repository(cls, repo_path: Path) -> bytes:
         """Archive the repository located at `repo_path`.
 
         Returns binary value of the archive.
@@ -70,7 +80,8 @@ class OdooRepoMixin(unittest.TestCase):
                     zipf.write(file_path, arcname)
         return zip_buffer.getvalue()
 
-    def _unarchive_upstream_repository(self, archive_data: bytes) -> Path:
+    @classmethod
+    def _unarchive_upstream_repository(cls, archive_data: bytes) -> Path:
         """Unarchive the repository contained in `archive_data`.
 
         Returns path of repository.
@@ -83,28 +94,31 @@ class OdooRepoMixin(unittest.TestCase):
             if path.is_dir() and ".git" in path.name:
                 return path.parent
 
-    def _create_tmp_git_repository(self) -> Path:
+    @classmethod
+    def _create_tmp_git_repository(cls) -> Path:
         """Create a temporary Git repository to run tests."""
         repo_path = tempfile.mkdtemp()
         git.Repo.init(repo_path)
         return Path(repo_path)
 
-    def _clone_tmp_git_repository(self, upstream_path: Path) -> Path:
+    @classmethod
+    def _clone_tmp_git_repository(cls, upstream_path: Path) -> Path:
         repo_path = tempfile.mkdtemp()
         git.Repo.clone_from(upstream_path, repo_path)
         return Path(repo_path)
 
-    def _fill_git_repository(self, repo_path: Path, addon_path: Path):
+    @classmethod
+    def _fill_git_repository(cls, repo_path: Path, addon_path: Path):
         """Create branches with some content in the Git repository."""
         repo = git.Repo(repo_path)
         # Commit a file in '15.0'
-        branch1 = self.source1.split("/")[1]
+        branch1 = cls.source1.split("/")[1]
         repo.git.checkout("--orphan", branch1)
-        self._create_module(addon_path)
+        cls._create_module(addon_path)
         repo.index.add(addon_path)
-        commit = repo.index.commit(f"[ADD] {self.addon}")
+        commit = repo.index.commit(f"[ADD] {cls.addon}")
         # Port the commit from 15.0 to 16.0
-        branch2 = self.source2.split("/")[1]
+        branch2 = cls.source2.split("/")[1]
         repo.git.checkout("--orphan", branch2)
         repo.git.reset("--hard")
         # Some git operations do not appear to be atomic, so a delay is added
@@ -112,21 +126,22 @@ class OdooRepoMixin(unittest.TestCase):
         time.sleep(1)
         repo.git.cherry_pick(commit.hexsha)
         # Create an empty branch 17.0
-        branch3 = self.target2.split("/")[1]
+        branch3 = cls.target2.split("/")[1]
         repo.git.checkout("--orphan", branch3)
         repo.git.reset("--hard")
         repo.git.commit("-m", "Init", "--allow-empty")
         # Port the commit from 15.0 to 18.0
-        branch4 = self.target3.split("/")[1]
+        branch4 = cls.target3.split("/")[1]
         repo.git.checkout("--orphan", branch4)
         repo.git.reset("--hard")
         time.sleep(1)
         repo.git.cherry_pick(commit.hexsha)
         # Rename the module on 18.0
-        repo.git.mv(self.addon, self.target_addon)
-        repo.git.commit("-m", f"Rename {self.addon} to {self.target_addon}")
+        repo.git.mv(cls.addon, cls.target_addon)
+        repo.git.commit("-m", f"Rename {cls.addon} to {cls.target_addon}")
 
-    def _create_module(self, module_path: Path):
+    @classmethod
+    def _create_module(cls, module_path: Path):
         manifest_lines = [
             "# Copyright 2026 Sébastien Alix\n",
             "# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)\n",
@@ -148,13 +163,15 @@ class OdooRepoMixin(unittest.TestCase):
         with open(manifest_path, "w") as manifest:
             manifest.writelines(manifest_lines)
 
-    def _add_fork_remote(self, repo_path: Path):
+    @classmethod
+    def _add_fork_remote(cls, repo_path: Path):
         repo = git.Repo(repo_path)
         # We do not really care about the remote URL here, re-use origin one
-        repo.create_remote(self.fork_org, repo.remotes.origin.url)
+        repo.create_remote(cls.fork_org, repo.remotes.origin.url)
 
-    def tearDown(self):
-        super().tearDown()
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
         # Clean up the Git repository
-        shutil.rmtree(self.repo_upstream_path)
-        shutil.rmtree(self.repo_path)
+        shutil.rmtree(cls.repo_upstream_path)
+        shutil.rmtree(cls.repo_path)
