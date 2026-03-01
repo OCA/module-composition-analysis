@@ -4,6 +4,7 @@
 
 import pathlib
 import re
+import shutil
 import tempfile
 from unittest.mock import patch
 
@@ -24,7 +25,7 @@ class Common(TransactionCase, OdooRepoMixin):
             "odoo_repository_storage_path", cls.repositories_path
         )
         # org and repository
-        cls.repo_name = pathlib.Path(cls.repo_upstream_path).parts[-1]
+        cls.repo_name = cls.repo_upstream_path.parts[-1]
         cls.org = cls.env["odoo.repository.org"].create({"name": cls.fork_org})
         cls.odoo_repository = cls.env["odoo.repository"].create(
             {
@@ -149,3 +150,14 @@ class Common(TransactionCase, OdooRepoMixin):
         }
         vals.update(values)
         return cls.env["odoo.module.branch"].create(vals)
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(cls.repositories_path)
+
+    def tearDown(self):
+        super().tearDown()
+        repositories_path = pathlib.Path(self.repositories_path)
+        for sub_path in repositories_path.iterdir():
+            shutil.rmtree(sub_path)
