@@ -3,9 +3,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import logging
-import os
 import pathlib
 import re
+import shutil
 import tempfile
 from unittest.mock import patch
 
@@ -28,36 +28,36 @@ class Common(TransactionCase, OdooRepoMixin):
         cls.env["ir.config_parameter"].set_param(
             "odoo_repository_storage_path", cls.repositories_path
         )
-        cls._apply_git_config()
-        cls._handle_cleanup()
-
-    def setUp(self):
-        super().setUp()
-        self.repo_name = pathlib.Path(self.repo_upstream_path).parts[-1]
-        self.org = self.env["odoo.repository.org"].create({"name": self.fork_org})
-        self.odoo_repository = self.env["odoo.repository"].create(
+        # org and repository
+        cls.repo_name = cls.repo_upstream_path.parts[-1]
+        cls.org = cls.env["odoo.repository.org"].create({"name": cls.fork_org})
+        cls.odoo_repository = cls.env["odoo.repository"].create(
             {
-                "org_id": self.org.id,
-                "name": self.repo_name,
-                "repo_url": self.repo_upstream_path,
-                "clone_url": self.repo_upstream_path,
+                "org_id": cls.org.id,
+                "name": cls.repo_name,
+                "repo_url": cls.repo_upstream_path,
+                "clone_url": cls.repo_upstream_path,
                 "repo_type": "github",
             }
         )
         # branch1
-        self.branch1_name = self.source1.split("/")[1]
-        self.branch = (
-            self.env["odoo.branch"]
+        cls.branch1_name = cls.source1.split("/")[1]
+        cls.branch = (
+            cls.env["odoo.branch"]
             .with_context(active_test=False)
-            .search([("name", "=", self.branch1_name)])
+            .search([("name", "=", cls.branch1_name)])
         )
-        if not self.branch:
-            self.branch = self.env["odoo.branch"].create(
+        if not cls.branch:
+            cls.branch = cls.env["odoo.branch"].create(
                 {
-                    "name": self.branch1_name,
+                    "name": cls.branch1_name,
                 }
             )
-        self.branch.active = True
+        cls.branch.active = True
+        cls._handle_cleanup()
+
+    def setUp(self):
+        super().setUp()
         # branch2
         self.branch2_name = self.source2.split("/")[1]
         self.branch2 = (
@@ -77,15 +77,6 @@ class Common(TransactionCase, OdooRepoMixin):
         # technical module
         self.module_name = self.addon
         self.module_branch_model = self.env["odoo.module.branch"]
-
-    @classmethod
-    def _apply_git_config(cls):
-        """Configure git (~/.gitconfig) if no config file exists."""
-        git_cfg = pathlib.Path(os.path.expanduser("~/.gitconfig"))
-        if git_cfg.exists():
-            return
-        os.system("git config --global user.email 'test@example.com'")
-        os.system("git config --global user.name 'test'")
 
     def _patch_github_class(self):
         # Patch helper method part of 'odoo_repository' module
@@ -145,24 +136,27 @@ class Common(TransactionCase, OdooRepoMixin):
             branch_ids=[branch_id], force=force
         )
 
-    def _create_odoo_module(self, name):
-        return self.env["odoo.module"].create({"name": name})
+    @classmethod
+    def _create_odoo_module(cls, name):
+        return cls.env["odoo.module"].create({"name": name})
 
-    def _create_odoo_repository_branch(self, repo, branch, **values):
+    @classmethod
+    def _create_odoo_repository_branch(cls, repo, branch, **values):
         vals = {
             "repository_id": repo.id,
             "branch_id": branch.id,
         }
         vals.update(values)
-        return self.env["odoo.repository.branch"].create(vals)
+        return cls.env["odoo.repository.branch"].create(vals)
 
-    def _create_odoo_module_branch(self, module, branch, **values):
+    @classmethod
+    def _create_odoo_module_branch(cls, module, branch, **values):
         vals = {
             "module_id": module.id,
             "branch_id": branch.id,
         }
         vals.update(values)
-        return self.env["odoo.module.branch"].create(vals)
+        return cls.env["odoo.module.branch"].create(vals)
 
     @classmethod
     def _handle_cleanup(cls):
@@ -187,3 +181,14 @@ class Common(TransactionCase, OdooRepoMixin):
             psutil.wait_procs(children, timeout=10)
 
         cls.addClassCleanup(kill_remaining_git_processes)
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(cls.repositories_path)
+
+    def tearDown(self):
+        super().tearDown()
+        repositories_path = pathlib.Path(self.repositories_path)
+        for sub_path in repositories_path.iterdir():
+            shutil.rmtree(sub_path)
