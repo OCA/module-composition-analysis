@@ -35,9 +35,6 @@ class OdooRepoMixin(unittest.TestCase):
         cls.repo_upstream_path = cls._get_upstream_repository_path()
         cls.addon_path = Path(cls.repo_upstream_path) / cls.addon
         cls.manifest_path = cls.addon_path / "__manifest__.py"
-        # By cloning the first repository this will set an 'origin' remote
-        cls.repo_path = cls._clone_tmp_git_repository(cls.repo_upstream_path)
-        cls._add_fork_remote(cls.repo_path)
 
     @classmethod
     def _apply_git_config(cls):
@@ -102,12 +99,6 @@ class OdooRepoMixin(unittest.TestCase):
         return Path(repo_path)
 
     @classmethod
-    def _clone_tmp_git_repository(cls, upstream_path: Path) -> Path:
-        repo_path = tempfile.mkdtemp()
-        git.Repo.clone_from(upstream_path, repo_path)
-        return Path(repo_path)
-
-    @classmethod
     def _fill_git_repository(cls, repo_path: Path, addon_path: Path):
         """Create branches with some content in the Git repository."""
         repo = git.Repo(repo_path)
@@ -164,14 +155,7 @@ class OdooRepoMixin(unittest.TestCase):
             manifest.writelines(manifest_lines)
 
     @classmethod
-    def _add_fork_remote(cls, repo_path: Path):
-        repo = git.Repo(repo_path)
-        # We do not really care about the remote URL here, re-use origin one
-        repo.create_remote(cls.fork_org, repo.remotes.origin.url)
-
-    @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        # Clean up the Git repository
+        # Clean up upstream Git repository
         shutil.rmtree(cls.repo_upstream_path)
-        shutil.rmtree(cls.repo_path)
