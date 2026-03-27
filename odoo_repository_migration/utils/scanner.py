@@ -95,6 +95,4 @@ class MigrationScannerOdooEnv(MigrationScanner):
         res = self.env["odoo.module.branch.migration"].push_scanned_data(
             module_branch_id, data
         )
-        # Commit after each scan
-        self.env.cr.commit()  # pylint: disable=invalid-commit
         return res
