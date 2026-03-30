@@ -81,7 +81,9 @@ class MigrationScannerOdooEnv(MigrationScanner):
         migration = self.env["odoo.module.branch.migration"].search(args)
         if migration:
             data = {
-                "last_source_scanned_commit": migration.module_branch_id.last_scanned_commit,
+                "last_source_scanned_commit": (
+                    migration.module_branch_id.last_scanned_commit
+                ),
                 "last_target_scanned_commit": (
                     migration.target_module_branch_id.last_scanned_commit
                 ),

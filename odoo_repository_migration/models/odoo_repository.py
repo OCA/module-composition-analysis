@@ -82,10 +82,10 @@ class OdooRepository(models.Model):
             migration_paths_param = {}
             for migration_path in migration_paths:
                 source_rb = self.branch_ids.filtered(
-                    lambda rb: rb.branch_id == migration_path.source_branch_id
+                    lambda rb, mp=migration_path: rb.branch_id == mp.source_branch_id
                 )
                 target_rb = self.branch_ids.filtered(
-                    lambda rb: rb.branch_id == migration_path.target_branch_id
+                    lambda rb, mp=migration_path: rb.branch_id == mp.target_branch_id
                 )
                 # Need the two Odoo versions of the migration path available
                 # in the scanned repository
