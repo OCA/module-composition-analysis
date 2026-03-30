@@ -14,7 +14,7 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-arrow-up"
-                    attrs="{'invisible': [('next_odoo_version_module_branch_id', '=', False)]}"
+                    invisible="not next_odoo_version_module_branch_id"
                 >
                     <span>Next Versions</span>
                 </button>
@@ -22,12 +22,12 @@
             <notebook position="inside">
                 <page name="migrations" string="Migrations">
                     <field name="migration_ids" nolabel="1">
-                        <tree>
+                        <list>
                             <field name="migration_path_id" />
                             <field name="state" />
                             <field name="pr_url" widget="url" />
                             <field name="migration_scan" optional="hide" />
-                        </tree>
+                        </list>
                     </field>
                 </page>
             </notebook>

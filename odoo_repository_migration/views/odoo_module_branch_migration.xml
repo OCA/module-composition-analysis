@@ -18,11 +18,11 @@
                             <field name="module_branch_id" />
                             <field
                                 name="replaced_by_module_id"
-                                attrs="{'invisible': [('replaced_by_module_id', '=', False)]}"
+                                invisible="not replaced_by_module_id"
                             />
                             <field
                                 name="renamed_to_module_id"
-                                attrs="{'invisible': [('renamed_to_module_id', '=', False)]}"
+                                invisible="not renamed_to_module_id"
                             />
                             <field name="target_module_branch_id" />
                         </group>
@@ -43,10 +43,10 @@
     </record>
 
     <record id="odoo_module_branch_migration_view_tree" model="ir.ui.view">
-        <field name="name">odoo.module.branch.migration.tree</field>
+        <field name="name">odoo.module.branch.migration.list</field>
         <field name="model">odoo.module.branch.migration</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="module_branch_id" />
                 <field name="migration_path_id" optional="hide" />
                 <field name="target_module_branch_id" optional="hide" />
@@ -54,7 +54,7 @@
                 <field name="pr_url" widget="url" />
                 <field name="migration_scan" optional="hide" />
                 <field name="results_text" optional="hide" />
-            </tree>
+            </list>
         </field>
     </record>
 

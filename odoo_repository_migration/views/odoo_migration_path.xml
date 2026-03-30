@@ -28,13 +28,13 @@
     </record>
 
     <record id="odoo_migration_path_view_tree" model="ir.ui.view">
-        <field name="name">odoo.migration.path.tree</field>
+        <field name="name">odoo.migration.path.list</field>
         <field name="model">odoo.migration.path</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="source_branch_id" />
                 <field name="target_branch_id" />
-            </tree>
+            </list>
         </field>
     </record>
 

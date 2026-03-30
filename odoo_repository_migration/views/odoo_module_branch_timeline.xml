@@ -15,7 +15,7 @@
                         <field name="next_module_id" />
                         <field
                             name="next_module_branch_id"
-                            attrs="{'invisible': [('next_module_branch_id', '=', False)]}"
+                            invisible="not next_module_branch_id"
                         />
                     </group>
                     <group name="note" string="Notes">
@@ -27,15 +27,15 @@
     </record>
 
     <record id="odoo_module_branch_timeline_view_tree" model="ir.ui.view">
-        <field name="name">odoo.module.branch.timeline.tree</field>
+        <field name="name">odoo.module.branch.timeline.list</field>
         <field name="model">odoo.module.branch.timeline</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="odoo_version_id" />
                 <field name="module_branch_id" />
                 <field name="state" />
                 <field name="next_module_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
