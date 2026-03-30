@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import io
-import os
 import shutil
 import tempfile
 import threading
@@ -31,19 +30,9 @@ class OdooRepoMixin(unittest.TestCase):
         cls.addon = "my_module"
         cls.target_addon = "my_module_renamed"
         # Create a temporary Git repository
-        cls._apply_git_config()
         cls.repo_upstream_path = cls._get_upstream_repository_path()
         cls.addon_path = Path(cls.repo_upstream_path) / cls.addon
         cls.manifest_path = cls.addon_path / "__manifest__.py"
-
-    @classmethod
-    def _apply_git_config(cls):
-        """Configure git (~/.gitconfig) if no config file exists."""
-        git_cfg = Path(os.path.expanduser("~/.gitconfig"))
-        if git_cfg.exists():
-            return
-        os.system("git config --global user.email 'test@example.com'")
-        os.system("git config --global user.name 'test'")
 
     @classmethod
     def _get_upstream_repository_path(cls) -> Path:
@@ -95,7 +84,9 @@ class OdooRepoMixin(unittest.TestCase):
     def _create_tmp_git_repository(cls) -> Path:
         """Create a temporary Git repository to run tests."""
         repo_path = tempfile.mkdtemp()
-        git.Repo.init(repo_path)
+        repo = git.Repo.init(repo_path)
+        repo.config_writer().set_value("user", "name", "test").release()
+        repo.config_writer().set_value("user", "email", "test@example.com").release()
         return Path(repo_path)
 
     @classmethod
