@@ -25,7 +25,10 @@ class OdooModuleBranch(models.Model):
     migration_scan = fields.Boolean(
         compute="_compute_migration_scan",
         store=True,
-        help="Technical field telling if this module is elligible for a migration scan.",
+        help=(
+            "Technical field telling if this module is elligible "
+            "for a migration scan."
+        ),
     )
 
     @api.depends("branch_id.next_id", "timeline_ids")

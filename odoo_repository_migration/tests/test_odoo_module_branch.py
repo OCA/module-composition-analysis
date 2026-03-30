@@ -183,7 +183,8 @@ class TestOdooModuleBranch(common.Common):
         self.assertTrue(self.module_branch.migration_ids.migration_scan)
         self.assertTrue(self.module_branch.migration_scan)
         # Simulate the migration scan.
-        # The source module is fully ported and doesn't need a migration scan afterwards.
+        # The source module is fully ported and doesn't need a migration
+        # scan afterwards.
         self._simulate_migration_scan("target_commit2", report={"results": {}})
         self.assertEqual(self.module_branch.migration_ids.state, "fully_ported")
         self.assertFalse(self.module_branch.migration_ids.migration_scan)
