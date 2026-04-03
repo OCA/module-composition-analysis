@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_module_branch_view_form" model="ir.ui.view">
+        <field name="name">odoo.module.branch.form.inherit</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <field name="next_odoo_version_module_branch_id" invisible="1" />
+                <button
+                    name="open_next_module_branches"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-arrow-up"
+                    invisible="not next_odoo_version_module_branch_id"
+                >
+                    <span>Next Versions</span>
+                </button>
+            </div>
+            <notebook position="inside">
+                <page name="migrations" string="Migrations">
+                    <field name="migration_ids" nolabel="1">
+                        <list>
+                            <field name="migration_path_id" />
+                            <field name="state" />
+                            <field name="pr_url" widget="url" />
+                            <field name="migration_scan" optional="hide" />
+                        </list>
+                    </field>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_view_search" model="ir.ui.view">
+        <field name="name">odoo.module.branch.search.inherit</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
+        <field name="arch" type="xml">
+            <filter name="without_repository" position="after">
+                <filter
+                    name="migrate"
+                    string="To Migrate"
+                    domain="[('migration_ids.state', '=', 'migrate')]"
+                />
+                <filter
+                    name="ports_commits"
+                    string="Commits to Port"
+                    domain="[('migration_ids.state', '=', 'port_commits')]"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>
