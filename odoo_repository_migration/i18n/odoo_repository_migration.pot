@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -101,13 +101,6 @@ msgid "Info"
 msgstr ""
 
 #. module: odoo_repository_migration
-#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path____last_update
-#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration____last_update
-#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__last_source_scanned_commit
 msgid "Last Source Scanned Commit"
 msgstr ""
@@ -151,7 +144,6 @@ msgstr ""
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__migration_scan
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__migration_scan
-#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__migration_scan
 msgid "Migration Scan"
 msgstr ""
 
@@ -174,7 +166,6 @@ msgstr ""
 #. module: odoo_repository_migration
 #: model:ir.actions.act_window,name:odoo_repository_migration.odoo_module_branch_migration_action
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__migration_ids
-#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__migration_ids
 #: model:ir.ui.menu,name:odoo_repository_migration.odoo_module_branch_migration_menu
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_view_form
 msgid "Migrations"
@@ -243,14 +234,12 @@ msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__next_odoo_version_module_branch_id
-#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__next_odoo_version_module_branch_id
 msgid "Next Odoo Version Module Branch"
 msgstr ""
 
 #. module: odoo_repository_migration
 #. odoo-python
 #: code:addons/odoo_repository_migration/models/odoo_module_branch.py:0
-#, python-format
 msgid "Next versions"
 msgstr ""
 
@@ -419,7 +408,6 @@ msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch__migration_scan
-#: model:ir.model.fields,help:odoo_repository_migration.field_odoo_project_module__migration_scan
 msgid ""
 "Technical field telling if this module is elligible for a migration scan."
 msgstr ""
@@ -446,7 +434,6 @@ msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__timeline_ids
-#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__timeline_ids
 msgid "Timeline"
 msgstr ""
 
