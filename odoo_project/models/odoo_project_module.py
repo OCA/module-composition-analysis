@@ -93,7 +93,7 @@ class OdooProjectModule(models.Model):
                 continue
             installed_version = rec.installed_version_id
             versions_with_mig_script = rec.version_ids.filtered(
-                lambda v: (
+                lambda v, installed_version=installed_version: (
                     v.sequence > installed_version.sequence and v.has_migration_script
                 )
             )
@@ -105,7 +105,9 @@ class OdooProjectModule(models.Model):
             installed_project_modules = rec.odoo_project_id.project_module_ids
             installed_modules = installed_project_modules.module_branch_id
             installed_reverse_dependencies = rec.reverse_dependency_ids.filtered(
-                lambda dep: dep in installed_modules
+                lambda dep, installed_modules=installed_modules: (
+                    dep in installed_modules
+                )
             )
             # Installed rev. deps. are 'odoo.project.module' records
             rec.installed_reverse_dependency_ids = (

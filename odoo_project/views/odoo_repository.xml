@@ -13,7 +13,7 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-puzzle-piece"
-                    attrs="{'invisible': [('project_count', '=', 0)]}"
+                    invisible="project_count == 0"
                 >
                     <field name="project_count" widget="statinfo" string="Projects" />
                 </button>
