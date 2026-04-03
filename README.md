@@ -21,6 +21,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
+[odoo_project](odoo_project/) | 18.0.1.0.0 |  | Analyze your Odoo projects code bases.
 [odoo_repository](odoo_repository/) | 18.0.1.1.3 |  | Base module to host data collected from Odoo repositories.
 [odoo_repository_migration](odoo_repository_migration/) | 18.0.1.0.0 |  | Collect modules migration data for Odoo Repositories.
 

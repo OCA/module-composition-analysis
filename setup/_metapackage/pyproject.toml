@@ -1,7 +1,8 @@
 [project]
 name = "odoo-addons-oca-module-composition-analysis"
-version = "18.0.20260403.0"
+version = "18.0.20260403.1"
 dependencies = [
+    "odoo-addon-odoo_project==18.0.*",
     "odoo-addon-odoo_repository==18.0.*",
     "odoo-addon-odoo_repository_migration==18.0.*",
 ]
