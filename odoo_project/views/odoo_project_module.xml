@@ -21,7 +21,7 @@
             <field name="reverse_dependency_ids" position="before">
                 <separator string="Installed reverse dependencies" />
                 <field name="installed_reverse_dependency_ids" nolabel="1">
-                    <tree decoration-warning="to_upgrade" decoration_danger="pr_url">
+                    <list decoration-warning="to_upgrade" decoration_danger="pr_url">
                         <field name="module_id" />
                         <field name="repository_branch_id" />
                         <field name="installed_version" />
@@ -33,11 +33,11 @@
                         <field name="pr_url" optional="show" />
                         <field name="global_dependency_level" optional="show" />
                         <field name="non_std_dependency_level" optional="show" />
-                    </tree>
+                    </list>
                 </field>
                 <separator string="Not installed reverse dependencies" />
                 <field name="not_installed_reverse_dependency_ids" nolabel="1">
-                    <tree>
+                    <list>
                         <field name="module_id" />
                         <field name="repository_branch_id" />
                         <field name="version" />
@@ -45,7 +45,7 @@
                         <field name="development_status_id" optional="show" />
                         <field name="global_dependency_level" optional="show" />
                         <field name="non_std_dependency_level" optional="show" />
-                    </tree>
+                    </list>
                 </field>
             </field>
             <field name="reverse_dependency_ids" position="attributes">
@@ -55,15 +55,15 @@
     </record>
 
     <record id="odoo_project_module_view_tree" model="ir.ui.view">
-        <field name="name">odoo.project.module.tree.inherit</field>
+        <field name="name">odoo.project.module.list.inherit</field>
         <field name="model">odoo.project.module</field>
         <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_tree" />
         <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <tree position="attributes">
+            <list position="attributes">
                 <attribute name="decoration-warning">to_upgrade</attribute>
                 <attribute name="decoration-danger">pr_url</attribute>
-            </tree>
+            </list>
             <field name="module_id" position="before">
                 <field name="odoo_project_id" string="Installed in" />
             </field>
@@ -91,17 +91,17 @@
         id="odoo_project_module_view_tree_recursive_dependencies"
         model="ir.ui.view"
     >
-        <field name="name">odoo.project.module.tree.recursive_dependencies</field>
+        <field name="name">odoo.project.module.list.recursive_dependencies</field>
         <field name="model">odoo.project.module</field>
         <field name="inherit_id" ref="odoo_project_module_view_tree" />
         <field name="mode">primary</field>
         <field name="priority">100</field>
         <field name="arch" type="xml">
-            <tree position="attributes">
+            <list position="attributes">
                 <attribute
                     name="default_order"
                 >global_dependency_level, non_std_dependency_level, module_name</attribute>
-            </tree>
+            </list>
             <field name="odoo_project_id" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
@@ -161,7 +161,7 @@
         <field name="name">Installed Modules</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">odoo.project.module</field>
-        <field name="view_mode">tree,form,pivot</field>
+        <field name="view_mode">list,form,pivot</field>
         <field name="view_id" ref="odoo_project_module_view_tree" />
     </record>
 
@@ -179,7 +179,7 @@
         <field name="name">Installed Modules</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">odoo.project.module</field>
-        <field name="view_mode">tree,form,pivot</field>
+        <field name="view_mode">list,form,pivot</field>
         <field name="view_id" ref="odoo_project_module_view_tree" />
     </record>
 

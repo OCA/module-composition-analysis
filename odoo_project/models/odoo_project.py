@@ -98,7 +98,7 @@ class OdooProject(models.Model):
             if not rec.repository_id or not rec.odoo_version_id:
                 continue
             rec.repository_branch_id = rec.repository_id.branch_ids.filtered(
-                lambda rb: rb.branch_id == rec.odoo_version_id
+                lambda rb, rec=rec: rb.branch_id == rec.odoo_version_id
             )
 
     @api.depends("project_module_ids.module_id")
