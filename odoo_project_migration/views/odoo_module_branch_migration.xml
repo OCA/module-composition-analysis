@@ -17,7 +17,7 @@
     </record>
 
     <record id="odoo_module_branch_migration_view_tree" model="ir.ui.view">
-        <field name="name">odoo.module.branch.migration.tree.inherit</field>
+        <field name="name">odoo.module.branch.migration.list.inherit</field>
         <field name="model">odoo.module.branch.migration</field>
         <field
             name="inherit_id"
