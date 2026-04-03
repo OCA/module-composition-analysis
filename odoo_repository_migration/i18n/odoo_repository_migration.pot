@@ -144,6 +144,7 @@ msgstr ""
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__migration_scan
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__migration_scan
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__migration_scan
 msgid "Migration Scan"
 msgstr ""
 
@@ -166,6 +167,7 @@ msgstr ""
 #. module: odoo_repository_migration
 #: model:ir.actions.act_window,name:odoo_repository_migration.odoo_module_branch_migration_action
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__migration_ids
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__migration_ids
 #: model:ir.ui.menu,name:odoo_repository_migration.odoo_module_branch_migration_menu
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_view_form
 msgid "Migrations"
@@ -234,6 +236,7 @@ msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__next_odoo_version_module_branch_id
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__next_odoo_version_module_branch_id
 msgid "Next Odoo Version Module Branch"
 msgstr ""
 
@@ -408,6 +411,7 @@ msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch__migration_scan
+#: model:ir.model.fields,help:odoo_repository_migration.field_odoo_project_module__migration_scan
 msgid ""
 "Technical field telling if this module is elligible for a migration scan."
 msgstr ""
@@ -434,6 +438,7 @@ msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__timeline_ids
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__timeline_ids
 msgid "Timeline"
 msgstr ""
 
