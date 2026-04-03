@@ -20,7 +20,7 @@
                     type="object"
                     string="Export migration report"
                     class="btn-secondary"
-                    attrs="{'invisible': [('module_migration_ids', '=', [])]}"
+                    invisible="not module_migration_ids"
                 />
             </header>
             <div name="button_box">

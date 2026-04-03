@@ -28,14 +28,14 @@
                             string="Migration scripts to consider"
                         >
                             <field name="migration_script_ids" nolabel="1" colspan="2">
-                                <tree>
+                                <list>
                                     <field name="name" />
                                     <field
                                         name="migration_script_url"
                                         widget="url"
                                         string="URL"
                                     />
-                                </tree>
+                                </list>
                             </field>
                         </group>
                     </group>
@@ -45,10 +45,10 @@
     </record>
 
     <record id="odoo_project_module_migration_view_tree" model="ir.ui.view">
-        <field name="name">odoo.project.module.migration.tree</field>
+        <field name="name">odoo.project.module.migration.list</field>
         <field name="model">odoo.project.module.migration</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="migration_path_id" optional="hide" />
                 <field name="org_id" optional="show" />
                 <field name="repository_id" optional="show" />
@@ -70,7 +70,7 @@
                     widget="many2many_tags"
                     optional="show"
                 />
-            </tree>
+            </list>
         </field>
     </record>
 
