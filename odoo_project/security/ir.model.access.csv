@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_odoo_project_user,odoo_project_user,model_odoo_project,odoo_repository.group_odoo_repository_user,1,1,1,0
+access_odoo_project_manager,odoo_project_manager,model_odoo_project,odoo_repository.group_odoo_repository_manager,1,1,1,1
+access_odoo_project_module_user,odoo_project_module_user,model_odoo_project_module,odoo_repository.group_odoo_repository_user,1,0,0,0
+access_odoo_project_import_modules_user,odoo_project_import_modules_user,model_odoo_project_import_modules,odoo_repository.group_odoo_repository_user,1,1,1,1
