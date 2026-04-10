@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -263,13 +263,6 @@ msgid "JavaScript source lines of code"
 msgstr ""
 
 #. module: odoo_project_migration
-#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report____last_update
-#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data____last_update
-#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: odoo_project_migration
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__last_scanned_commit
 msgid "Last Scanned Commit"
 msgstr ""
@@ -308,7 +301,6 @@ msgstr ""
 #: code:addons/odoo_project_migration/models/odoo_project.py:0
 #: code:addons/odoo_project_migration/wizards/generate_migration_data.py:0
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__module_migration_id
-#, python-format
 msgid "Migration"
 msgstr ""
 
