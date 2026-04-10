@@ -22,12 +22,12 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[odoo_project](odoo_project/) | 16.0.1.0.1 |  | Analyze your Odoo projects code bases.
+[odoo_project](odoo_project/) | 16.0.1.0.2 |  | Analyze your Odoo projects code bases.
 [odoo_project_changelog](odoo_project_changelog/) | 16.0.1.0.1 |  | Generate Changelogs from repositories for installed modules.
 [odoo_project_migration](odoo_project_migration/) | 16.0.1.1.1 |  | Analyze your Odoo project migrations.
 [odoo_project_stat](odoo_project_stat/) | 16.0.1.0.1 |  | Get some stats about your Odoo Projects.
-[odoo_repository](odoo_repository/) | 16.0.1.5.4 |  | Base module to host data collected from Odoo repositories.
-[odoo_repository_migration](odoo_repository_migration/) | 16.0.1.3.3 |  | Collect modules migration data for Odoo Repositories.
+[odoo_repository](odoo_repository/) | 16.0.1.5.5 |  | Base module to host data collected from Odoo repositories.
+[odoo_repository_migration](odoo_repository_migration/) | 16.0.1.3.4 |  | Collect modules migration data for Odoo Repositories.
 
 [//]: # (end addons)
 
