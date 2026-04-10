@@ -50,28 +50,25 @@ class Common(TransactionCase, OdooRepoMixin):
                 }
             )
         cls.branch.active = True
-
-    def setUp(self):
-        super().setUp()
         # branch2
-        self.branch2_name = self.source2.split("/")[1]
-        self.branch2 = (
-            self.env["odoo.branch"]
+        cls.branch2_name = cls.source2.split("/")[1]
+        cls.branch2 = (
+            cls.env["odoo.branch"]
             .with_context(active_test=False)
-            .search([("name", "=", self.branch2_name)])
+            .search([("name", "=", cls.branch2_name)])
         )
-        if not self.branch2:
-            self.branch2 = self.env["odoo.branch"].create(
+        if not cls.branch2:
+            cls.branch2 = cls.env["odoo.branch"].create(
                 {
-                    "name": self.branch2_name,
+                    "name": cls.branch2_name,
                 }
             )
-        self.branch2.active = True
+        cls.branch2.active = True
         # branch3
-        self.branch3_name = self.target2.split("/")[1]
+        cls.branch3_name = cls.target2.split("/")[1]
         # technical module
-        self.module_name = self.addon
-        self.module_branch_model = self.env["odoo.module.branch"]
+        cls.module_name = cls.addon
+        cls.module_branch_model = cls.env["odoo.module.branch"]
 
     def _patch_github_class(self):
         # Patch helper method part of 'odoo_repository' module
