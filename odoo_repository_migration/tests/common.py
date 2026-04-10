@@ -43,6 +43,7 @@ class MigrationCommon(common.Common):
         )
         cls.gen_repository.addons_path_ids = cls.odoo_repository.addons_path_ids
 
+    @classmethod
     def _simulate_migration_scan(cls, target_commit, report=None):
         """Helper method that pushes scanned migration data."""
         data = {
