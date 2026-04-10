@@ -2,64 +2,10 @@
 # Copyright 2026 Sébastien Alix
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from odoo.addons.odoo_repository.tests import common
+from .common import MigrationCommon
 
 
-class TestOdooModuleBranch(common.Common):
-    def setUp(self):
-        super().setUp()
-        self.module = self._create_odoo_module("my_module")
-        self.repo_branch = self._create_odoo_repository_branch(
-            self.odoo_repository, self.branch
-        )
-        self.repo_branch2 = self._create_odoo_repository_branch(
-            self.odoo_repository, self.branch2
-        )
-        self.module_branch = self._create_odoo_module_branch(
-            self.module,
-            self.branch,
-            specific=False,
-            repository_branch_id=self.repo_branch.id,
-            last_scanned_commit="sha",
-        )
-        self.std_repository = self.env.ref("odoo_repository.odoo_repository_odoo_odoo")
-        oca_org = self.env.ref("odoo_repository.odoo_repository_org_oca")
-        self.oca_repository = self.env["odoo.repository"].create(
-            {
-                "org_id": oca_org.id,
-                "name": "test-repo",
-                "repo_url": "https://github.com/OCA/test-repo",
-            }
-        )
-        self.gen_repository = self.env["odoo.repository"].create(
-            {
-                "name": "new_repo",
-                "org_id": self.odoo_repository.org_id.id,
-                "repo_url": "http://example.net/new_repo",
-                "specific": False,
-                "to_scan": False,
-            }
-        )
-        self.gen_repository.addons_path_ids = self.odoo_repository.addons_path_ids
-
-    def _simulate_migration_scan(self, target_commit, report=None):
-        """Helper method that pushes scanned migration data."""
-        data = {
-            "module": self.module_branch.module_name,
-            "source_version": self.branch.name,
-            "source_branch": self.branch.name,
-            "target_version": self.branch2.name,
-            "target_branch": self.branch2.name,
-            "source_commit": self.module_branch.last_scanned_commit,
-            "target_commit": target_commit,
-        }
-        if report is not None:
-            data["report"] = report
-        return self.env["odoo.module.branch.migration"].push_scanned_data(
-            self.module_branch.id,
-            data,
-        )
-
+class TestOdooModuleBranch(MigrationCommon):
     def test_migration_scan_removed(self):
         self.module_branch.removed = True
         self.assertFalse(self.module_branch.migration_scan)
