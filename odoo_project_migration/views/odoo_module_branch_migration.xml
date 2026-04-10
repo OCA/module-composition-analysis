@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_module_branch_migration_view_form" model="ir.ui.view">
+        <field name="name">odoo.module.branch.migration.form.inherit</field>
+        <field name="model">odoo.module.branch.migration</field>
+        <field
+            name="inherit_id"
+            ref="odoo_repository_migration.odoo_module_branch_migration_view_form"
+        />
+        <field name="arch" type="xml">
+            <group name="info" position="inside">
+                <field name="odoo_project_ids" widget="many2many_tags" />
+            </group>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_migration_view_tree" model="ir.ui.view">
+        <field name="name">odoo.module.branch.migration.list.inherit</field>
+        <field name="model">odoo.module.branch.migration</field>
+        <field
+            name="inherit_id"
+            ref="odoo_repository_migration.odoo_module_branch_migration_view_tree"
+        />
+        <field name="arch" type="xml">
+            <field name="migration_scan" position="after">
+                <field
+                    name="odoo_project_ids"
+                    widget="many2many_tags"
+                    optional="show"
+                />
+            </field>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_migration_view_search" model="ir.ui.view">
+        <field name="name">odoo.module.branch.migration.search.inherit</field>
+        <field name="model">odoo.module.branch.migration</field>
+        <field
+            name="inherit_id"
+            ref="odoo_repository_migration.odoo_module_branch_migration_view_search"
+        />
+        <field name="arch" type="xml">
+            <field name="migration_path_id" position="after">
+                <field name="odoo_project_ids" />
+            </field>
+            <filter name="port_commits" position="after">
+                <separator />
+                <filter
+                    name="installed_in_projects"
+                    string="Installed in projects"
+                    domain="[('odoo_project_ids', '!=', False)]"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>
