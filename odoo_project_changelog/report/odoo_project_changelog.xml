@@ -9,18 +9,16 @@
                     <t t-set="company" t-value="o" />
                     <div class="page">
                         <h1 class="mt-4">
-              <span t-field="o.name" /> - CHANGELOG
-            </h1>
+                            <span t-field="o.name" /> - CHANGELOG </h1>
                         <t
                             t-foreach="o.used_repository_ids.filtered('active')"
                             t-as="repo"
                         >
                             <t t-set="report_data" t-value="repo._get_report_data()" />
                             <h2 class="mt-4">
-                <span t-field="repo.repository_branch_id.display_name" /> (<t
-                                t-esc="report_data['count']"
-                            /> modules)
-              </h2>
+                                <span
+                                t-field="repo.repository_branch_id.display_name"
+                            /> (<t t-esc="report_data['count']" /> modules) </h2>
                             <div style="padding-left: 2em;">
                                 <p>From <code t-field="repo.deployed_commit" /> to <code
                                     t-esc="repo.target_commit or 'latest'"
@@ -45,7 +43,9 @@
                                     <t t-foreach="changelog_data" t-as="module">
                                         <details>
                                             <summary>
-                        <strong><span t-field="module.module_name" /> (<span
+                                                <strong><span
+                                                t-field="module.module_name"
+                                            /> (<span
                                                 t-field="module.title"
                                             />)</strong> - <t
                                                 t-esc="len(changelog_data[module])"
@@ -53,7 +53,7 @@
                                                 t-esc="'s'"
                                                 t-if="len(changelog_data[module]) > 1"
                                             />
-                      </summary>
+                                            </summary>
                                             <t
                                                 t-set="changelog"
                                                 t-value="changelog_data[module]"
