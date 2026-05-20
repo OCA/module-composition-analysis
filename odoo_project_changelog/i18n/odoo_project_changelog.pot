@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -22,7 +22,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.odoo_project_view_form
 msgid ""
 "<span class=\"fa fa-arrow-right ml8 mr8\" title=\"Arrow Right\" "
-"attrs=\"{'invisible': [('changelog_state', '!=', 'done')]}\"/>"
+"invisible=\"changelog_state != 'done'\"/>"
 msgstr ""
 
 #. module: odoo_project_changelog
@@ -112,11 +112,6 @@ msgstr ""
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__active
 msgid "Include"
-msgstr ""
-
-#. module: odoo_project_changelog
-#: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository____last_update
-msgid "Last Modified on"
 msgstr ""
 
 #. module: odoo_project_changelog
