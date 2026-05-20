@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_project_view_form" model="ir.ui.view">
+        <field name="name">odoo.project.form.inherit</field>
+        <field name="model">odoo.project</field>
+        <field name="inherit_id" ref="odoo_project.odoo_project_view_form" />
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Changelog" name="changelog">
+                    <div
+                        class="align-items-center"
+                        colspan="2"
+                        invisible="not changelog_enabled_repository_ids"
+                    >
+                        <button
+                            name="action_generate_changelog"
+                            type="object"
+                            string="Generate&#160;CHANGELOG"
+                            icon="fa-gear"
+                            class="btn-primary"
+                            invisible="changelog_state == 'in_progress'"
+                        />
+                        <span
+                            class="fa fa-arrow-right ml8 mr8"
+                            title="Arrow Right"
+                            invisible="changelog_state != 'done'"
+                        />
+                        <button
+                            name="exists"
+                            type="object"
+                            string="Refresh"
+                            icon="fa-refresh"
+                            invisible="changelog_state != 'in_progress'"
+                        />
+                        <button
+                            name="action_open_changelog"
+                            type="object"
+                            string="Open&#160;CHANGELOG"
+                            icon="fa-book"
+                            class="btn-primary"
+                            invisible="changelog_state != 'done'"
+                        />
+                    </div>
+                    <group name="repositories" string="Repositories">
+                        <field name="used_repository_ids" nolabel="1" colspan="2">
+                            <list editable="bottom">
+                                <field
+                                    name="repository_branch_id"
+                                    domain="[('branch_id', '=', parent.odoo_version_id)]"
+                                />
+                                <field name="deployed_commit" required="1" />
+                                <field name="target_commit" string="To compare with" />
+                                <field name="active" />
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
