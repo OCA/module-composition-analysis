@@ -16,7 +16,10 @@ class TestOdooProjectGenerateMigrationData(ProjectMigrationCommon):
         )
         # Retrieve migration data for `cls.module_branch`
         cls._simulate_migration_scan(
-            "target_commit1", report={"process": "migrate", "results": {}}
+            "target_commit1",
+            source=cls.branch,
+            target=cls.branch2,
+            report={"process": "migrate", "results": {}},
         )
         # And import/install this module in our project
         cls._run_import_modules(cls.project, cls.module_branch.module_name)
