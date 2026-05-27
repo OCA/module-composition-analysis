@@ -84,7 +84,10 @@ class TestOdooModuleBranch(MigrationCommon):
         # Once we collected migration data for the expected branch+commit
         # the module doesn't require a migration scan anymore
         self._simulate_migration_scan(
-            "target_commit1", report={"process": "migrate", "results": {}}
+            "target_commit1",
+            source=self.branch,
+            target=self.branch2,
+            report={"process": "migrate", "results": {}},
         )
         self.assertTrue(self.module_branch.migration_ids)
         self.assertFalse(self.module_branch.migration_scan)
@@ -113,7 +116,10 @@ class TestOdooModuleBranch(MigrationCommon):
         self.assertFalse(self.module_branch.migration_ids)
         self.assertTrue(self.module_branch.migration_scan)
         self._simulate_migration_scan(
-            "target_commit1", report={"process": "migrate", "results": {}}
+            "target_commit1",
+            source=self.branch,
+            target=self.branch2,
+            report={"process": "migrate", "results": {}},
         )
         self.assertTrue(self.module_branch.migration_ids)
         self.assertFalse(self.module_branch.migration_ids.migration_scan)
@@ -141,6 +147,8 @@ class TestOdooModuleBranch(MigrationCommon):
         # The source module doesn't need a migration scan anymore.
         self._simulate_migration_scan(
             "target_commit1",
+            source=self.branch,
+            target=self.branch2,
             report={
                 "process": "migrate",
                 "results": {"existing_pr": {"url": target_module_branch.pr_url}},
@@ -171,7 +179,12 @@ class TestOdooModuleBranch(MigrationCommon):
         # Simulate the migration scan.
         # The source module is fully ported and doesn't need a migration
         # scan afterwards.
-        self._simulate_migration_scan("target_commit2", report={"results": {}})
+        self._simulate_migration_scan(
+            "target_commit2",
+            source=self.branch,
+            target=self.branch2,
+            report={"results": {}},
+        )
         self.assertEqual(self.module_branch.migration_ids.state, "fully_ported")
         self.assertFalse(self.module_branch.migration_ids.migration_scan)
         self.assertFalse(self.module_branch.migration_scan)
@@ -187,7 +200,10 @@ class TestOdooModuleBranch(MigrationCommon):
             }
         )
         self._simulate_migration_scan(
-            "target_commit1", report={"process": "migrate", "results": {}}
+            "target_commit1",
+            source=self.branch,
+            target=self.branch2,
+            report={"process": "migrate", "results": {}},
         )
         self.assertTrue(self.module_branch.migration_ids)
         mig = self.module_branch.migration_ids
@@ -224,7 +240,10 @@ class TestOdooModuleBranch(MigrationCommon):
             }
         )
         self._simulate_migration_scan(
-            "target_commit1", report={"process": "migrate", "results": {}}
+            "target_commit1",
+            source=self.branch,
+            target=self.branch2,
+            report={"process": "migrate", "results": {}},
         )
         self.assertTrue(self.module_branch.migration_ids)
         mig = self.module_branch.migration_ids
@@ -261,7 +280,10 @@ class TestOdooModuleBranch(MigrationCommon):
             }
         )
         self._simulate_migration_scan(
-            "target_commit1", report={"process": "migrate", "results": {}}
+            "target_commit1",
+            source=self.branch,
+            target=self.branch2,
+            report={"process": "migrate", "results": {}},
         )
         self.assertTrue(self.module_branch.migration_ids)
         mig = self.module_branch.migration_ids
@@ -310,7 +332,10 @@ class TestOdooModuleBranch(MigrationCommon):
             }
         )
         self._simulate_migration_scan(
-            "target_commit1", report={"process": "migrate", "results": {}}
+            "target_commit1",
+            source=self.branch,
+            target=next_branch,
+            report={"process": "migrate", "results": {}},
         )
         # Module has been renamed starting from 16.0
         self.module_branch.timeline_ids.create(
@@ -365,7 +390,10 @@ class TestOdooModuleBranch(MigrationCommon):
             }
         )
         self._simulate_migration_scan(
-            "target_commit1", report={"process": "migrate", "results": {}}
+            "target_commit1",
+            source=self.branch,
+            target=next_branch,
+            report={"process": "migrate", "results": {}},
         )
         # New module is replacing current one starting from 16.0
         self.module_branch.timeline_ids.create(
