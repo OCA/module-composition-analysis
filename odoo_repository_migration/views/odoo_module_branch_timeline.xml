@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2025 Camptocamp SA
+     Copyright 2026  Akretion (https://www.akretion.com).
+     @author Sébastien Alix <sebastien.alix@akretion.com>
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="odoo_module_branch_timeline_view_form" model="ir.ui.view">
@@ -7,10 +9,55 @@
         <field name="model">odoo.module.branch.timeline</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button
+                        string="Restore"
+                        name="toggle_active"
+                        type="object"
+                        invisible="active"
+                        data-hotkey="x"
+                    />
+                    <button
+                        name="action_scan"
+                        type="object"
+                        string="Scan"
+                        class="btn-primary"
+                        groups="odoo_repository.group_odoo_repository_manager"
+                        invisible="not migration_scan"
+                    />
+                </header>
                 <sheet>
-                    <group>
-                        <field name="odoo_version_id" />
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="open_migrations"
+                            string="Migrations"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-list"
+                            invisible="not migration_ids"
+                        />
+                    </div>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        invisible="module_branch_id == last_known_module_branch_id"
+                        name="last_known_module_alert"
+                    >
+                        The selected module version is not the last one available.
+                        Recording such timeline will ignore all newest versions when computing related migration data.
+                    </div>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        invisible="not migration_scan"
+                        name="migration_scan_alert"
+                    >
+                        A scan of related modules is required to update relevant migration data.  Wait for the next scheduled scan, or trigger one manually.
+                    </div>
+                    <group name="info" string="Info">
                         <field name="module_branch_id" />
+                        <field name="last_known_module_branch_id" />
+                        <field name="odoo_version_id" />
                         <field name="state" />
                         <field name="next_module_id" />
                         <field
@@ -60,6 +107,12 @@
                     name="replaced"
                     string="Replaced"
                     domain="[('state', '=', 'replaced')]"
+                />
+                <separator />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
                 />
                 <group expand="0" string="Group By">
                     <filter

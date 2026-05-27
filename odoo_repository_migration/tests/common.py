@@ -16,6 +16,9 @@ class MigrationCommon(common.Common):
         cls.repo_branch2 = cls._create_odoo_repository_branch(
             cls.odoo_repository, cls.branch2
         )
+        cls.repo_branch3 = cls._create_odoo_repository_branch(
+            cls.odoo_repository, cls.branch3
+        )
         cls.module_branch = cls._create_odoo_module_branch(
             cls.module,
             cls.branch,
