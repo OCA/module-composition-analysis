@@ -31,7 +31,11 @@ class OdooBranch(models.Model):
     sequence = fields.Integer()
     next_id = fields.Many2one(
         comodel_name="odoo.branch",
-        compute="_compute_next_id",
+        compute="_compute_next_and_previous",
+    )
+    previous_id = fields.Many2one(
+        comodel_name="odoo.branch",
+        compute="_compute_next_and_previous",
     )
 
     _sql_constraints = [
@@ -47,11 +51,16 @@ class OdooBranch(models.Model):
                 raise ValidationError(_("Version must match the pattern 'x.y'."))
 
     @api.depends("sequence")
-    def _compute_next_id(self):
+    def _compute_next_and_previous(self):
         for rec in self:
             rec.next_id = self.search(
                 [("sequence", ">", rec.sequence)],
                 order="sequence",
+                limit=1,
+            )
+            rec.previous_id = self.search(
+                [("sequence", "<", rec.sequence)],
+                order="sequence DESC",
                 limit=1,
             )
 
