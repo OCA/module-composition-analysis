@@ -6,6 +6,46 @@ from .common import MigrationCommon
 
 
 class TestOdooModuleBranch(MigrationCommon):
+    def test_next_odoo_version_module_branch_id(self):
+        """Test next_odoo_version_module_branch_id computed field."""
+        # Create next branch module
+        next_module_branch = self._create_odoo_module_branch(
+            self.module,
+            self.branch2,
+            specific=False,
+            repository_branch_id=self.repo_branch2.id,
+            last_scanned_commit="sha",
+        )
+        # Test next_odoo_version_module_branch_id
+        self.assertEqual(
+            self.module_branch.next_odoo_version_module_branch_id, next_module_branch
+        )
+
+    def test_next_odoo_version_module_branch_id_with_renamed_module(self):
+        """Test next_odoo_version_module_branch_id with renamed module."""
+        # Create a new module name for the renamed module
+        next_module = self.module.copy({"name": "next_module"})
+        # Create next branch module with new name
+        next_module_branch = self._create_odoo_module_branch(
+            next_module,
+            self.branch2,
+            specific=False,
+            repository_branch_id=self.repo_branch2.id,
+            last_scanned_commit="sha",
+        )
+        # Add timeline entry for renaming
+        self.module_branch.timeline_ids.create(
+            {
+                "module_branch_id": self.module_branch.id,
+                "state": "renamed",
+                "next_module_id": next_module.id,
+            }
+        )
+        # Test next_odoo_version_module_branch_id follows renaming
+        self.assertEqual(
+            self.module_branch.next_odoo_version_module_branch_id, next_module_branch
+        )
+
     def test_migration_scan_removed(self):
         self.module_branch.removed = True
         self.assertFalse(self.module_branch.migration_scan)
