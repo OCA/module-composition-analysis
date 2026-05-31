@@ -190,6 +190,15 @@ class OdooRepository(models.Model):
             migration_path.target_branch_id
         )
         if replaced_by_module:
+            # Ensure a migration record exists before returning
+            values = {
+                "module_branch_id": module_branch_id,
+                "migration_path_id": migration_path_id,
+                "last_source_scanned_commit": module.last_scanned_commit,
+            }
+            self.env["odoo.module.branch.migration"]._create_or_update(
+                module_branch_id, migration_path, values
+            )
             return (
                 f"{module.name} is now replaced by "
                 f"{replaced_by_module.name}, no need to collect "
