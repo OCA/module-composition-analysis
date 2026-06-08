@@ -24,6 +24,14 @@
                             />
                             <field name="module_id" />
                             <field name="source_module_branch_id" />
+                            <field
+                                name="replaced_by_module_id"
+                                invisible="not replaced_by_module_id"
+                            />
+                            <field
+                                name="renamed_to_module_id"
+                                invisible="not renamed_to_module_id"
+                            />
                             <field name="target_module_branch_id" />
                             <field name="module_migration_id" />
                             <field name="state" />
