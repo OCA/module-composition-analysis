@@ -208,3 +208,20 @@ class OdooModuleBranch(models.Model):
         action["name"] = _("Next versions")
         action["domain"] = [("id", "in", self._get_next_module_branches().ids)]
         return action
+
+    def _get_related_timelines(self):
+        """Return timelines related to current module.
+
+        A module A could be renamed to a module B in version X, then renamed
+        again to C in version X+1, etc.
+        When calling this method on any module, all related timelines are returned.
+        """
+        self.ensure_one()
+        timeline = self.env["odoo.module.branch.timeline"].search(
+            [
+                "|",
+                ("module_branch_id.module_id", "=", self.module_id.id),
+                ("next_module_id", "=", self.module_id.id),
+            ]
+        )
+        return timeline._get_related_timelines() if timeline else timeline

@@ -68,3 +68,13 @@ class MigrationCommon(common.Common):
             module_branch.id,
             data,
         )
+
+    @classmethod
+    def _create_timeline(cls, module_branch, next_module, state):
+        return cls.env["odoo.module.branch.timeline"].create(
+            {
+                "module_branch_id": module_branch.id,
+                "state": state,
+                "next_module_id": next_module.id,
+            }
+        )
