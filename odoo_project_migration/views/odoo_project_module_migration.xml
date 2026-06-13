@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
+     Copyright 2026  Akretion (https://www.akretion.com).
+     @author Sébastien Alix <sebastien.alix@akretion.com>
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="odoo_project_module_migration_view_form" model="ir.ui.view">
@@ -8,6 +10,11 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" />
+                        </h1>
+                    </div>
                     <group>
                         <group string="Info">
                             <field name="odoo_project_id" />
@@ -17,6 +24,14 @@
                             />
                             <field name="module_id" />
                             <field name="source_module_branch_id" />
+                            <field
+                                name="replaced_by_module_id"
+                                invisible="not replaced_by_module_id"
+                            />
+                            <field
+                                name="renamed_to_module_id"
+                                invisible="not renamed_to_module_id"
+                            />
                             <field name="target_module_branch_id" />
                             <field name="module_migration_id" />
                             <field name="state" />

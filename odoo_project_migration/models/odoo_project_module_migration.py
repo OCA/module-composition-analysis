@@ -84,6 +84,20 @@ class OdooProjectModuleMigration(models.Model):
         ),
         compute="_compute_migration_script_ids",
     )
+    renamed_to_module_id = fields.Many2one(
+        comodel_name="odoo.module",
+        compute="_compute_renamed_to_module_id",
+        string="Renamed to",
+        store=True,
+        index=True,
+    )
+    replaced_by_module_id = fields.Many2one(
+        comodel_name="odoo.module",
+        compute="_compute_replaced_by_module_id",
+        string="Replaced by",
+        store=True,
+        index=True,
+    )
     state = fields.Selection(
         # Same as in 'odoo.module.branch.migration' but set a state even for
         # modules with no migration data, could be Odoo S.A. std modules
@@ -124,16 +138,16 @@ class OdooProjectModuleMigration(models.Model):
     @api.depends(
         "source_module_branch_id",
         "migration_path_id",
-        "module_migration_id.replaced_by_module_id",
-        "module_migration_id.renamed_to_module_id",
+        "replaced_by_module_id",
+        "renamed_to_module_id",
     )
     def _compute_target_module_branch_id(self):
         module_branch_model = self.env["odoo.module.branch"]
         for rec in self:
             # Look for the right module technical name
             module = (
-                rec.module_migration_id.replaced_by_module_id
-                or rec.module_migration_id.renamed_to_module_id
+                rec.replaced_by_module_id
+                or rec.renamed_to_module_id
                 or rec.source_module_branch_id.module_id
             )
             rec.target_module_branch_id = module_branch_model._find(
@@ -145,9 +159,6 @@ class OdooProjectModuleMigration(models.Model):
 
     # NOTE: 'migration_scan' is here to re-trigger the computation
     # each time the source module has its state updated regarding migration.
-    # FIXME: this could trigger too much computations on irrelevant records
-    # (one not related to the updated migration path), we should switch to
-    # component events to handle such cases.
     @api.depends("migration_path_id", "source_module_branch_id.migration_scan")
     def _compute_module_migration_id(self):
         migration_model = self.env["odoo.module.branch.migration"]
@@ -186,10 +197,41 @@ class OdooProjectModuleMigration(models.Model):
             ).sorted(key=lambda v: (v.branch_sequence, v.sequence))
             rec.migration_script_ids = current_release_versions | new_release_versions
 
-    @api.depends("module_migration_id.state")
+    # NOTE: _renamed_to_module_in_target_version relies also on timelines, and
+    # this computed field will be recomputed automatically on timeline updates.
+    @api.depends("migration_path_id")
+    def _compute_renamed_to_module_id(self):
+        for rec in self:
+            rec.renamed_to_module_id = (
+                rec.source_module_branch_id._renamed_to_module_in_target_version(
+                    rec.migration_path_id.target_branch_id
+                )
+            )
+
+    # NOTE: _replaced_by_module_in_target_version relies also on timelines, and
+    # this computed field will be recomputed automatically on timeline updates.
+    @api.depends("migration_path_id")
+    def _compute_replaced_by_module_id(self):
+        for rec in self:
+            rec.replaced_by_module_id = (
+                rec.source_module_branch_id._replaced_by_module_in_target_version(
+                    rec.migration_path_id.target_branch_id
+                )
+            )
+
+    @api.depends(
+        "module_migration_id.state",
+        "replaced_by_module_id",
+        "source_module_branch_id.is_standard",
+        "target_module_branch_id.repository_branch_id",
+    )
     def _compute_state(self):
         for rec in self:
             rec.state = rec.module_migration_id.state
+            if rec.replaced_by_module_id:
+                # Module replaced by another one
+                rec.state = "replaced"
+                continue
             if not rec.module_migration_id:
                 # Default state (used by project specific modules)
                 rec.state = "migrate"
@@ -198,6 +240,15 @@ class OdooProjectModuleMigration(models.Model):
                     rec.state = (
                         "available" if rec.target_module_branch_id else "removed"
                     )
-                elif rec.target_module_branch_id:
+                elif rec.target_module_branch_id.repository_branch_id:
                     # repo with collect_migration_data = False
                     rec.state = "available"
+
+    def force_update(self):
+        """Ensure the project migration data are updated."""
+        self_sudo = self.sudo()
+        self_sudo._compute_module_migration_id()
+        self_sudo._compute_replaced_by_module_id()
+        self_sudo._compute_renamed_to_module_id()
+        self_sudo._compute_target_module_branch_id()
+        self_sudo._compute_state()

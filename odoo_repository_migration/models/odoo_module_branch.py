@@ -1,4 +1,6 @@
 # Copyright 2023 Camptocamp SA
+# Copyright 2026  Akretion (https://www.akretion.com).
+# @author Sébastien Alix <sebastien.alix@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from odoo import _, api, fields, models
@@ -69,13 +71,18 @@ class OdooModuleBranch(models.Model):
         We give the priority to last modules while checking them.
         """
         self.ensure_one()
-        modules = self._get_next_versions(target_branch)
-        for module in modules.sorted(
-            key=lambda mod: mod.branch_id.sequence, reverse=True
-        ):
-            if module.timeline_ids.state == "replaced":
-                return module.timeline_ids.next_module_id
-        return self.env["odoo.module"]
+        replaced_by = self.env["odoo.module"]
+        next_ = self
+        while next_ and next_.branch_sequence < target_branch.sequence:
+            timeline = next_.timeline_ids
+            if timeline.state == "replaced":
+                replaced_by = timeline.next_module_id
+            next_ = next_.next_odoo_version_module_branch_id
+            # If a module has been renamed after been replaced, the module to
+            # return has to be the renamed one
+            if next_ and replaced_by:
+                replaced_by = next_.module_id
+        return replaced_by
 
     def _renamed_to_module_in_target_version(self, target_branch):
         """Return the new module technical name in last module versions.
@@ -87,22 +94,42 @@ class OdooModuleBranch(models.Model):
         We give the priority to last modules while checking them.
         """
         self.ensure_one()
-        modules = self._get_next_versions(target_branch)
-        for module in modules.sorted(
-            key=lambda mod: mod.branch_id.sequence, reverse=True
-        ):
-            if module.timeline_ids.state == "renamed":
-                return module.timeline_ids.next_module_id
-        return self.env["odoo.module"]
+        renamed_to = self.env["odoo.module"]
+        next_ = self
+        while next_ and next_.branch_sequence < target_branch.sequence:
+            timeline = next_.timeline_ids
+            # As soon as the module has been replaced in the chain of versions
+            # it cannot be considered as renamed anymore
+            if timeline.state == "replaced":
+                renamed_to = self.env["odoo.module"]
+                next_ = False
+                continue
+            if timeline.state == "renamed":
+                renamed_to = timeline.next_module_id
+            next_ = next_.next_odoo_version_module_branch_id
+        return renamed_to
 
-    def _get_next_versions(self, target_branch):
+    def _get_next_versions(
+        self, target_branch=None, order="branch_sequence", limit=None
+    ):
+        """Return all available upcoming versions.
+
+        It doesn't take into account module renaming or replacement. Only versions
+        for the current module name are returned.
+        """
         self.ensure_one()
+        if not target_branch:
+            target_branch = self.env["odoo.branch"]._get_last_version()
         return self.env["odoo.module.branch"].search(
             [
                 ("module_id", "=", self.module_id.id),
+                ("repository_id", "!=", False),
+                ("installable", "=", True),
                 ("branch_id.sequence", ">=", self.branch_id.sequence),
                 ("branch_id.sequence", "<", target_branch.sequence),
-            ]
+            ],
+            order=order,
+            limit=limit,
         )
 
     def _get_next_module_branches(self, target_branch=None):
@@ -177,29 +204,31 @@ class OdooModuleBranch(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         recs = super().create(vals_list)
-        recs._update_migration_target_module_id()
+        recs._update_migration_data()
         return recs
 
     def write(self, vals):
         res = super().write(vals)
         # When 'pr_url' is set or unset, this means the module has been found
-        # in a PR or has been merged upstream. We want to recompute the target
-        # module in migration data in such case.
+        # in a PR or has been merged upstream. We want to refresh relevant
+        # migration data in such case.
         if "pr_url" in vals:
-            self._update_migration_target_module_id()
+            self._update_migration_data()
         return res
 
-    def _update_migration_target_module_id(self):
-        """Update `target_module_id` field on relevant module migration records."""
+    def _update_migration_data(self):
+        """Update relevant module migration records."""
         for rec in self:
+            timelines = rec._get_related_timelines()
+            impacted_modules = rec.module_id | timelines._get_all_impacted_modules()
             migrations = self.env["odoo.module.branch.migration"].search(
                 [
-                    ("module_id", "=", rec.module_id.id),
-                    ("target_branch_id", "=", rec.branch_id.id),
+                    ("module_id", "in", impacted_modules.ids),
+                    ("source_branch_id.sequence", "<=", rec.branch_id.sequence),
+                    ("target_branch_id.sequence", ">=", rec.branch_id.sequence),
                 ]
             )
-            # Recompute 'target_module_id' field
-            migrations._compute_target_module_branch_id()
+            migrations.force_update()
 
     def open_next_module_branches(self):
         self.ensure_one()
@@ -208,3 +237,20 @@ class OdooModuleBranch(models.Model):
         action["name"] = _("Next versions")
         action["domain"] = [("id", "in", self._get_next_module_branches().ids)]
         return action
+
+    def _get_related_timelines(self):
+        """Return timelines related to current module.
+
+        A module A could be renamed to a module B in version X, then renamed
+        again to C in version X+1, etc.
+        When calling this method on any module, all related timelines are returned.
+        """
+        self.ensure_one()
+        timeline = self.env["odoo.module.branch.timeline"].search(
+            [
+                "|",
+                ("module_branch_id.module_id", "=", self.module_id.id),
+                ("next_module_id", "=", self.module_id.id),
+            ]
+        )
+        return timeline._get_related_timelines() if timeline else timeline

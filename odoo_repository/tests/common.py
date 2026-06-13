@@ -71,6 +71,18 @@ class Common(TransactionCase, OdooRepoMixin):
         cls.branch2.active = True
         # branch3
         cls.branch3_name = cls.target2.split("/")[1]
+        cls.branch3 = (
+            cls.env["odoo.branch"]
+            .with_context(active_test=False)
+            .search([("name", "=", cls.branch3_name)])
+        )
+        if not cls.branch3:
+            cls.branch3 = cls.env["odoo.branch"].create(
+                {
+                    "name": cls.branch2_name,
+                }
+            )
+        cls.branch3.active = True
         # technical module
         cls.module_name = cls.addon
         cls.module_branch_model = cls.env["odoo.module.branch"]

@@ -1,4 +1,6 @@
 # Copyright 2023 Camptocamp SA
+# Copyright 2026  Akretion (https://www.akretion.com).
+# @author Sébastien Alix <sebastien.alix@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import pprint
@@ -205,11 +207,9 @@ class OdooModuleBranchMigration(models.Model):
                 and not rec.target_module_branch_id.repository_id.specific
             )
 
-    @api.depends(
-        "module_branch_id.timeline_ids.state",
-        "module_branch_id.timeline_ids.next_module_id",
-        "target_branch_id",
-    )
+    # NOTE: _renamed_to_module_in_target_version relies also on timelines, and
+    # this computed field will be recomputed automatically on timeline updates.
+    @api.depends("target_branch_id")
     def _compute_renamed_to_module_id(self):
         for rec in self:
             rec.renamed_to_module_id = (
@@ -218,11 +218,9 @@ class OdooModuleBranchMigration(models.Model):
                 )
             )
 
-    @api.depends(
-        "module_branch_id.timeline_ids.state",
-        "module_branch_id.timeline_ids.next_module_id",
-        "target_branch_id",
-    )
+    # NOTE: _replaced_by_module_in_target_version relies also on timelines, and
+    # this computed field will be recomputed automatically on timeline updates.
+    @api.depends("target_branch_id")
     def _compute_replaced_by_module_id(self):
         for rec in self:
             rec.replaced_by_module_id = (
@@ -260,7 +258,14 @@ class OdooModuleBranchMigration(models.Model):
                 # Specific module moved to a generic repository (public or private)
                 rec.state = "moved_to_generic"
                 continue
-            rec.state = rec.process or "fully_ported"
+            rec.state = rec.process or (
+                "fully_ported"
+                if (
+                    rec.target_module_branch_id
+                    and not rec.target_module_branch_id.pr_url
+                )
+                else "migrate"
+            )
             if rec.process == "migrate" and rec.pr_url:
                 rec.state = "review_migration"
 
@@ -312,6 +317,17 @@ class OdooModuleBranchMigration(models.Model):
                 rec.migration_scan = True
             elif rec.target_module_branch_id.pr_url != rec.pr_url:
                 rec.migration_scan = True
+
+    def force_update(self):
+        """Ensure the migration data is updated or will be updated on next scan."""
+        self_sudo = self.sudo()
+        self_sudo.last_target_scanned_commit = False
+        self_sudo.results = self_sudo.process = False
+        self_sudo._compute_replaced_by_module_id()
+        self_sudo._compute_renamed_to_module_id()
+        self_sudo._compute_target_module_branch_id()
+        self_sudo._compute_state()
+        self_sudo._compute_migration_scan()
 
     @api.model
     @api.returns("odoo.module.branch.migration")
