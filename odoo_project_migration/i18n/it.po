@@ -264,13 +264,6 @@ msgid "JavaScript source lines of code"
 msgstr ""
 
 #. module: odoo_project_migration
-#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report____last_update
-#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_generate_migration_data____last_update
-#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: odoo_project_migration
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__last_scanned_commit
 msgid "Last Scanned Commit"
 msgstr ""
@@ -309,7 +302,6 @@ msgstr ""
 #: code:addons/odoo_project_migration/models/odoo_project.py:0
 #: code:addons/odoo_project_migration/wizards/generate_migration_data.py:0
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__module_migration_id
-#, python-format
 msgid "Migration"
 msgstr ""
 
@@ -349,7 +341,8 @@ msgstr ""
 #. module: odoo_project_migration
 #: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__migration_script_ids
 msgid ""
-"Migration scripts available between the installed version and the last version available on the target branch.\n"
+"Migration scripts available between the installed version and the last "
+"version available on the target branch.\n"
 "Ones that rework the database schema or data could be mandatory."
 msgstr ""
 
@@ -418,6 +411,16 @@ msgid "Non-Std Dep. Level"
 msgstr ""
 
 #. module: odoo_project_migration
+#: model:ir.model,name:odoo_project_migration.model_odoo_module_branch
+msgid "Odoo Module Branch"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model,name:odoo_project_migration.model_odoo_module_branch_timeline
+msgid "Odoo Module Timeline (renaming/replacement)"
+msgstr ""
+
+#. module: odoo_project_migration
 #: model:ir.model,name:odoo_project_migration.model_odoo_project
 msgid "Odoo Project"
 msgstr ""
@@ -457,6 +460,22 @@ msgid "Project"
 msgstr ""
 
 #. module: odoo_project_migration
+#. odoo-python
+#: code:addons/odoo_project_migration/models/odoo_module_branch_timeline.py:0
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_module_branch_migration__odoo_project_module_migration_ids
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_module_branch_timeline__project_migration_ids
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_module_branch_migration_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_project_migration.odoo_module_branch_timeline_view_form
+msgid "Project Migrations"
+msgstr ""
+
+#. module: odoo_project_migration
+#. odoo-python
+#: code:addons/odoo_project_migration/models/odoo_module_branch_migration.py:0
+msgid "Project migrations"
+msgstr ""
+
+#. module: odoo_project_migration
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_module_branch_migration__odoo_project_ids
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__odoo_project_ids
 msgid "Projects"
@@ -485,8 +504,18 @@ msgid "Removed"
 msgstr ""
 
 #. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__renamed_to_module_id
+msgid "Renamed to"
+msgstr ""
+
+#. module: odoo_project_migration
 #: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__replaced
 msgid "Replaced"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__replaced_by_module_id
+msgid "Replaced by"
 msgstr ""
 
 #. module: odoo_project_migration
