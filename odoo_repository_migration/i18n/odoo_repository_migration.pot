@@ -19,9 +19,22 @@ msgid "<span>Next Versions</span>"
 msgstr ""
 
 #. module: odoo_repository_migration
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
+msgid ""
+"A scan of related modules is required to update relevant migration data.  "
+"Wait for the next scheduled scan, or trigger one manually."
+msgstr ""
+
+#. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__active
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__active
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__active
 msgid "Active"
+msgstr ""
+
+#. module: odoo_repository_migration
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
+msgid "Archived"
 msgstr ""
 
 #. module: odoo_repository_migration
@@ -97,7 +110,13 @@ msgstr ""
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid "Info"
+msgstr ""
+
+#. module: odoo_repository_migration
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__last_known_module_branch_id
+msgid "Last Known Module"
 msgstr ""
 
 #. module: odoo_repository_migration
@@ -144,6 +163,7 @@ msgstr ""
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__migration_scan
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__migration_scan
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__migration_scan
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__migration_scan
 msgid "Migration Scan"
 msgstr ""
@@ -167,8 +187,10 @@ msgstr ""
 #. module: odoo_repository_migration
 #: model:ir.actions.act_window,name:odoo_repository_migration.odoo_module_branch_migration_action
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__migration_ids
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__migration_ids
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__migration_ids
 #: model:ir.ui.menu,name:odoo_repository_migration.odoo_module_branch_migration_menu
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_view_form
 msgid "Migrations"
 msgstr ""
@@ -341,6 +363,11 @@ msgid "Repository"
 msgstr ""
 
 #. module: odoo_repository_migration
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
+msgid "Restore"
+msgstr ""
+
+#. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__results
 msgid "Results"
 msgstr ""
@@ -353,6 +380,7 @@ msgstr ""
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_migration_path_view_form
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid "Scan"
 msgstr ""
 
@@ -417,8 +445,25 @@ msgid ""
 msgstr ""
 
 #. module: odoo_repository_migration
+#: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_timeline__migration_scan
+msgid "Technical field telling if this timeline needs a migration scan."
+msgstr ""
+
+#. module: odoo_repository_migration
+#: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_timeline__last_known_module_branch_id
+msgid "Technical field to check if current selected module is the last one."
+msgstr ""
+
+#. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__module_id
 msgid "Technical name"
+msgstr ""
+
+#. module: odoo_repository_migration
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
+msgid ""
+"The selected module version is not the last one available.\n"
+"                        Recording such timeline will ignore all newest versions when computing related migration data."
 msgstr ""
 
 #. module: odoo_repository_migration
