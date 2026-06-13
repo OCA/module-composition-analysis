@@ -869,6 +869,11 @@ msgid "PR URL"
 msgstr ""
 
 #. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__previous_id
+msgid "Previous"
+msgstr ""
+
+#. module: odoo_repository
 #: model:ir.model.fields,field_description:odoo_repository.field_ssh_key__private_key
 msgid "Private Key"
 msgstr ""
