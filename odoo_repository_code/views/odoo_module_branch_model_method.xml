@@ -13,18 +13,16 @@
                             name="open_parent_methods"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-code-fork"
+                            icon="fa-sitemap"
                             invisible="not parent_ids"
                         >
                             <span>Parents</span>
                         </button>
                     </div>
-                    <group>
-                        <group>
-                            <field name="module_branch_model_id" />
-                            <field name="name" />
-                            <field name="root_id" />
-                        </group>
+                    <group name="info" string="Info">
+                        <field name="module_branch_model_id" />
+                        <field name="name" />
+                        <field name="root_id" invisible="not root_id" />
                     </group>
                     <group name="code" string="Code">
                         <field
@@ -75,10 +73,11 @@
             <search>
                 <field name="name" />
                 <field name="odoo_model_id" />
+                <field name="module_branch_id" />
                 <field name="odoo_version_id" />
                 <field name="repository_id" />
                 <field name="org_id" />
-                <field name="code" />
+                <field name="code" operator="ilike" />
                 <filter
                     name="inactive"
                     string="Archived"

@@ -8,23 +8,27 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <group>
-                        <group>
-                            <field name="module_branch_model_id" />
-                            <field name="name" />
-                            <field name="field_type" />
-                            <field
-                                name="comodel_name"
-                                invisible="not is_relational or comodel_id"
-                            />
-                            <field name="comodel_id" invisible="not comodel_id" />
-                        </group>
-                        <group>
-                            <field name="is_computed" />
-                            <field name="is_readonly" />
-                            <field name="is_required" />
-                            <field name="is_stored" />
-                        </group>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="open_parent_fields"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-sitemap"
+                            invisible="not parent_ids"
+                        >
+                            <span>Parents</span>
+                        </button>
+                    </div>
+                    <group name="info" string="Info">
+                        <field name="module_branch_model_id" />
+                        <field name="name" />
+                        <field name="field_type" />
+                        <field
+                            name="comodel_name"
+                            invisible="not is_relational or comodel_id"
+                        />
+                        <field name="comodel_id" invisible="not comodel_id" />
+                        <field name="root_id" invisible="not root_id" />
                     </group>
                     <group name="code" string="Code">
                         <field
@@ -67,11 +71,19 @@
                 <field name="name" />
                 <field name="field_type" optional="show" />
                 <field name="repository_id" optional="hide" />
-                <field name="is_computed" optional="hide" />
-                <field name="is_readonly" optional="hide" />
-                <field name="is_required" optional="hide" />
-                <field name="is_stored" optional="hide" />
                 <field name="global_dependency_level" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_model_field_view_tree2" model="ir.ui.view">
+        <field name="name">odoo.module.branch.model.field.list</field>
+        <field name="model">odoo.module.branch.model.field</field>
+        <field name="arch" type="xml">
+            <list default_order="global_dependency_level" decoration-muted="not active">
+                <field name="name" />
+                <field name="module_name" />
+                <field name="global_dependency_level" />
             </list>
         </field>
     </record>
@@ -85,36 +97,11 @@
                 <field name="name" />
                 <field name="odoo_model_id" />
                 <field name="field_type" />
-                <field name="code" />
                 <field name="module_branch_id" />
                 <field name="odoo_version_id" />
                 <field name="repository_id" />
                 <field name="org_id" />
-                <filter
-                    name="is_required"
-                    string="Required"
-                    domain="[('is_required', '=', True)]"
-                />
-                <filter
-                    name="is_computed"
-                    string="Computed"
-                    domain="[('is_computed', '=', True)]"
-                />
-                <filter
-                    name="is_readonly"
-                    string="Readonly"
-                    domain="[('is_readonly', '=', True)]"
-                />
-                <filter
-                    name="is_stored"
-                    string="Stored"
-                    domain="[('is_stored', '=', True)]"
-                />
-                <filter
-                    name="not_stored"
-                    string="Not Stored"
-                    domain="[('is_stored', '=', False)]"
-                />
+                <field name="code" operator="ilike" />
                 <filter
                     name="inactive"
                     string="Archived"
@@ -159,6 +146,13 @@
         <field
             name="context"
         >{'search_default_group_by_odoo_version_id': 1, 'search_default_group_by_odoo_model_id': 2}</field>
+    </record>
+
+    <record id="odoo_module_branch_model_field_action2" model="ir.actions.act_window">
+        <field name="name">FIelds</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.module.branch.model.field</field>
+        <field name="view_id" ref="odoo_module_branch_model_field_view_tree2" />
     </record>
 
     <menuitem

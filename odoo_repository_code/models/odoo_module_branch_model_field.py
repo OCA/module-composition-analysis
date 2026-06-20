@@ -1,60 +1,14 @@
 # Copyright 2025 Sebastien Alix <https://github.com/sebalix>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class OdooModuleBranchModelField(models.Model):
     _name = "odoo.module.branch.model.field"
+    _inherit = "odoo.module.branch.model.resource.mixin"
     _description = "Odoo field"
 
-    module_branch_model_id = fields.Many2one(
-        comodel_name="odoo.module.branch.model",
-        ondelete="cascade",
-        string="Model",
-        required=True,
-        index=True,
-    )
-    module_branch_id = fields.Many2one(
-        related="module_branch_model_id.module_branch_id",
-        store=True,
-        index=True,
-    )
-    module_name = fields.Char(
-        related="module_branch_model_id.module_name",
-        string="Technical module name",
-        required=True,
-        store=True,
-        precompute=True,
-        index=True,
-    )
-    odoo_model_id = fields.Many2one(
-        related="module_branch_model_id.odoo_model_id",
-        string="Model ",
-        required=True,
-        store=True,
-        precompute=True,
-        index=True,
-    )
-    odoo_version_id = fields.Many2one(
-        related="module_branch_model_id.odoo_version_id",
-        string="Odoo Version",
-        required=True,
-        store=True,
-        precompute=True,
-        index=True,
-    )
-    org_id = fields.Many2one(related="module_branch_id.org_id", store=True, index=True)
-    repository_id = fields.Many2one(
-        related="module_branch_id.repository_id", store=True, index=True
-    )
-    global_dependency_level = fields.Integer(
-        string="Dep. Level",
-        related="module_branch_id.global_dependency_level",
-        store=True,
-    )
-    name = fields.Char(required=True, index=True)
-    active = fields.Boolean(default=True)
     field_type = fields.Char(string="Type", required=True, index=True)
     data = fields.Serialized()
     code = fields.Text(compute="_compute_code", store=True, index="trigram")
@@ -64,10 +18,6 @@ class OdooModuleBranchModelField(models.Model):
         compute="_compute_comodel_id",
     )
     is_relational = fields.Boolean(compute="_compute_is_relational", store=True)
-    is_computed = fields.Boolean(compute="_compute_is_computed", store=True)
-    is_readonly = fields.Boolean(compute="_compute_is_readonly", store=True)
-    is_required = fields.Boolean(compute="_compute_is_required", store=True)
-    is_stored = fields.Boolean(compute="_compute_is_stored", store=True)
     inverse_method = fields.Char(
         string="Inverse method name",
         compute="_compute_methods",
@@ -85,6 +35,16 @@ class OdooModuleBranchModelField(models.Model):
     search_method_id = fields.Many2one(
         comodel_name="odoo.module.branch.model.method",
         compute="_compute_methods_id",
+    )
+    root_id = fields.Many2one(
+        string="Origin",
+        comodel_name="odoo.module.branch.model.field",
+        compute="_compute_root_id",
+    )
+    parent_ids = fields.One2many(
+        comodel_name="odoo.module.branch.model.field",
+        compute="_compute_parent_ids",
+        string="Parent Fields",
     )
 
     @api.depends("data")
@@ -121,60 +81,6 @@ class OdooModuleBranchModelField(models.Model):
             )
 
     @api.depends("data")
-    def _compute_is_computed(self):
-        for rec in self:
-            # Default: only computed
-            rec.is_computed = False
-            kwargs = rec.data.get("kwargs", {})
-            # Case of onchange computed field => we do not consider it as computed
-            if (
-                kwargs.get("compute")
-                and kwargs.get("readonly") is False
-                and kwargs.get("store")
-            ):
-                continue
-            rec.is_computed = kwargs.get("compute") or kwargs.get("related")
-
-    @api.depends("data")
-    def _compute_is_readonly(self):
-        for rec in self:
-            # Default: not readonly
-            rec.is_readonly = False
-            kwargs = rec.data.get("kwargs", {})
-            # Simple case: 'readonly' attribute manually set
-            if "readonly" in kwargs:
-                rec.is_readonly = kwargs["readonly"]
-            # Computed field without inverse
-            elif kwargs.get("compute") and not kwargs.get("inverse"):
-                rec.is_readonly = True
-            # Related field
-            elif kwargs.get("related"):
-                rec.is_readonly = True
-
-    @api.depends("data")
-    def _compute_is_required(self):
-        for rec in self:
-            # Default: not required
-            rec.is_required = False
-            kwargs = rec.data.get("kwargs", {})
-            # Simple case: 'required' attribute manually set
-            if "required" in kwargs:
-                rec.is_required = kwargs["required"]
-
-    @api.depends("data")
-    def _compute_is_stored(self):
-        for rec in self:
-            # Default: stored
-            rec.is_stored = True
-            kwargs = rec.data.get("kwargs", {})
-            # Simple case: 'store' attribute manually set
-            if "store" in kwargs:
-                rec.is_stored = kwargs["store"]
-            # Computed or related field
-            elif kwargs.get("compute") or kwargs.get("related"):
-                rec.is_stored = False
-
-    @api.depends("data")
     def _compute_methods(self):
         for rec in self:
             kwargs = rec.data.get("kwargs", {})
@@ -206,6 +112,42 @@ class OdooModuleBranchModelField(models.Model):
                     limit=1,
                 )
                 rec.search_method_id = method
+
+    @api.depends("module_branch_model_id.module_branch_id", "odoo_version_id", "name")
+    def _compute_root_id(self):
+        for rec in self:
+            parent_fields = rec._get_parent_fields()
+            root = fields.first(parent_fields)
+            rec.root_id = root if root != rec else False
+
+    @api.depends("module_branch_model_id", "name")
+    def _compute_parent_ids(self):
+        for rec in self:
+            rec.parent_ids = rec._get_parent_fields()
+
+    def _get_parent_fields(self, order="global_dependency_level"):
+        """Return all parent fields from dependencies (call stack)."""
+        self.ensure_one()
+        # Get all parent models
+        parent_models = self.module_branch_model_id._get_parent_models()
+        # Find fields with the same name in parent models
+        parent_fields = self.search(
+            [
+                ("module_branch_model_id", "in", parent_models.ids),
+                ("name", "=", self.name),
+            ],
+            order=order,
+        )
+        return parent_fields
+
+    def open_parent_fields(self):
+        self.ensure_one()
+        xml_id = "odoo_repository_code.odoo_module_branch_model_field_action2"
+        action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
+        action["name"] = _("Parent Fields")
+        action["domain"] = [("id", "in", self.parent_ids.ids)]
+        action["context"] = {}
+        return action
 
     def _to_dict(self):
         self.ensure_one()

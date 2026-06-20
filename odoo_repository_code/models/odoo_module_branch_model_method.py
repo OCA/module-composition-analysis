@@ -6,69 +6,10 @@ from odoo import _, api, fields, models
 
 class OdooModuleBranchModelMethod(models.Model):
     _name = "odoo.module.branch.model.method"
+    _inherit = "odoo.module.branch.model.resource.mixin"
     _description = "Odoo method"
     _order = "odoo_model_name, name"
 
-    module_branch_model_id = fields.Many2one(
-        comodel_name="odoo.module.branch.model",
-        ondelete="cascade",
-        string="Model",
-        required=True,
-        index=True,
-    )
-    module_branch_id = fields.Many2one(
-        related="module_branch_model_id.module_branch_id",
-        store=True,
-        index=True,
-    )
-    module_name = fields.Char(
-        related="module_branch_model_id.module_name",
-        string="Technical module name",
-        required=True,
-        store=True,
-        precompute=True,
-        index=True,
-    )
-    odoo_model_id = fields.Many2one(
-        related="module_branch_model_id.odoo_model_id",
-        string="Model ",
-        required=True,
-        store=True,
-        precompute=True,
-        index=True,
-    )
-    odoo_model_name = fields.Char(
-        related="module_branch_model_id.odoo_model_name",
-        string="Model name",
-        required=True,
-        store=True,
-        precompute=True,
-        index=True,
-    )
-    odoo_version_id = fields.Many2one(
-        related="module_branch_model_id.odoo_version_id",
-        string="Odoo Version",
-        required=True,
-        store=True,
-        precompute=True,
-        index=True,
-    )
-    org_id = fields.Many2one(related="module_branch_id.org_id", store=True, index=True)
-    repository_id = fields.Many2one(
-        related="module_branch_id.repository_id", store=True, index=True
-    )
-    global_dependency_level = fields.Integer(
-        string="Dep. Level",
-        related="module_branch_id.global_dependency_level",
-        store=True,
-    )
-    display_name = fields.Char(
-        compute="_compute_display_name",
-        store=True,
-        index=True,
-    )
-    name = fields.Char(required=True, index=True)
-    active = fields.Boolean(default=True)
     data = fields.Serialized()
     signature = fields.Char(compute="_compute_signature", store=True)
     code = fields.Text(compute="_compute_code", store=True)
@@ -86,12 +27,6 @@ class OdooModuleBranchModelMethod(models.Model):
         compute="_compute_parent_ids",
         string="Parent Methods",
     )
-
-    @api.depends("odoo_model_name", "name")
-    def _compute_display_name(self):
-        for rec in self:
-            model_name = rec.odoo_model_name
-            rec.display_name = f"<{model_name}>.{rec.name}"
 
     @api.depends("data")
     def _compute_signature(self):
@@ -123,12 +58,12 @@ class OdooModuleBranchModelMethod(models.Model):
     def _get_parent_methods(self, order="global_dependency_level"):
         """Return all parent methods from dependencies (call stack)."""
         self.ensure_one()
-        # Get all inherited models
-        inherited_models = self.module_branch_model_id._get_inherited_models()
-        # Find methods with the same name in inherited models
+        # Get all parent models
+        parent_models = self.module_branch_model_id._get_parent_models()
+        # Find methods with the same name in parent models
         parent_methods = self.search(
             [
-                ("module_branch_model_id", "in", inherited_models.ids),
+                ("module_branch_model_id", "in", parent_models.ids),
                 ("name", "=", self.name),
             ],
             order=order,

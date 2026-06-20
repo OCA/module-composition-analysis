@@ -10,12 +10,12 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
-                            name="open_inherited_models"
+                            name="open_parent_models"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-sitemap"
                         >
-                            <span>Inheritance</span>
+                            <span>Parents</span>
                         </button>
                         <button
                             name="open_next_odoo_version_model"
@@ -27,7 +27,7 @@
                             <span>Next Version</span>
                         </button>
                     </div>
-                    <group>
+                    <group name="info" string="Info">
                         <group>
                             <field name="module_branch_id" />
                             <field name="odoo_model_version_id" string="Model" />
@@ -49,40 +49,27 @@
                             />
                         </group>
                     </group>
-                    <notebook>
-                        <page name="fields" string="Fields" invisible="not field_ids">
-                            <group>
-                                <field name="field_ids" colspan="2" nolabel="1">
-                                    <list decoration-danger="not active">
-                                        <field name="name" />
-                                        <field name="field_type" />
-                                    </list>
-                                </field>
-                            </group>
-                        </page>
-                        <page
+                    <group>
+                        <group name="fields" string="Fields" invisible="not field_ids">
+                            <field name="field_ids" colspan="2" nolabel="1">
+                                <list decoration-danger="not active">
+                                    <field name="name" />
+                                    <field name="field_type" />
+                                </list>
+                            </field>
+                        </group>
+                        <group
                             name="methods"
                             string="Methods"
                             invisible="not method_ids"
                         >
-                            <group>
-                                <field name="method_ids" colspan="2" nolabel="1">
-                                    <list decoration-danger="not active">
-                                        <field name="signature" />
-                                        <field name="root_id" />
-                                        <button
-                                            name="open_parent_methods"
-                                            type="object"
-                                            class="oe_stat_button"
-                                            icon="fa-code-fork"
-                                            title=" "
-                                            invisible="not parent_ids"
-                                        />
-                                    </list>
-                                </field>
-                            </group>
-                        </page>
-                    </notebook>
+                            <field name="method_ids" colspan="2" nolabel="1">
+                                <list decoration-danger="not active">
+                                    <field name="signature" />
+                                </list>
+                            </field>
+                        </group>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -95,8 +82,8 @@
             <list decoration-muted="not active">
                 <field name="module_branch_id" />
                 <field name="odoo_model_id" />
-                <field name="inherit_ids" />
-                <field name="inherits_ids" />
+                <field name="inherit_ids" widget="many2many_tags" />
+                <field name="inherits_ids" widget="many2many_tags" />
                 <field name="model_type" />
                 <field name="root_id" optional="hide" />
                 <field name="global_dependency_level" optional="hide" />
@@ -110,8 +97,8 @@
         <field name="arch" type="xml">
             <list>
                 <field name="odoo_model_id" />
-                <field name="inherit_ids" />
-                <field name="inherits_ids" />
+                <field name="inherit_ids" widget="many2many_tags" />
+                <field name="inherits_ids" widget="many2many_tags" />
                 <field name="model_type" />
                 <field name="root_id" optional="hide" />
                 <field name="global_dependency_level" optional="hide" />
@@ -127,6 +114,7 @@
             <search>
                 <field name="odoo_model_id" />
                 <field name="inherit_ids" />
+                <field name="inherits_ids" />
                 <field name="module_id" />
                 <field name="odoo_version_id" />
                 <field name="field_ids" />

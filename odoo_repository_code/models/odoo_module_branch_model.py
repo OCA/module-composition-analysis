@@ -1,9 +1,11 @@
 # Copyright 2025 Sebastien Alix <https://github.com/sebalix>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import psycopg2.sql as pgsql
 from markupsafe import Markup
 from odoo_addons_parser.code import BASE_CLASSES
 
 from odoo import _, api, fields, models
+from odoo.osv.expression import SQL_OPERATORS
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -22,10 +24,16 @@ class OdooModuleBranchModel(models.Model):
         index=True,
     )
     module_id = fields.Many2one(
-        related="module_branch_id.module_id", store=True, index=True
+        string="Module technical name",
+        related="module_branch_id.module_id",
+        store=True,
+        index=True,
     )
     module_name = fields.Char(
-        related="module_branch_id.module_name", store=True, index=True
+        string="Module technical name ",
+        related="module_branch_id.module_name",
+        store=True,
+        index="trigram",
     )
     odoo_model_version_id = fields.Many2one(
         comodel_name="odoo.model.version",
@@ -68,7 +76,9 @@ class OdooModuleBranchModel(models.Model):
         related="module_branch_id.global_dependency_level",
         store=True,
     )
-    name = fields.Char(compute="_compute_name", store=True)
+    display_name = fields.Char(
+        compute="_compute_display_name", store=True, index="trigram"
+    )
     active = fields.Boolean(default=True)
     data = fields.Serialized()
     model_type = fields.Selection(
@@ -104,10 +114,12 @@ class OdooModuleBranchModel(models.Model):
     inherit_ids = fields.Many2many(
         comodel_name="odoo.model.version",
         compute="_compute_inherit_ids",
+        search="_search_inherit_ids",
     )
     inherits_ids = fields.Many2many(
         comodel_name="odoo.model.version",
         compute="_compute_inherits_ids",
+        search="_search_inherits_ids",
     )
     next_odoo_version_model_id = fields.Many2one(
         comodel_name="odoo.module.branch.model",
@@ -115,11 +127,12 @@ class OdooModuleBranchModel(models.Model):
     )
 
     @api.depends("odoo_model_id", "module_branch_id")
-    def _compute_name(self):
+    def _compute_display_name(self):
         for rec in self:
-            rec.name = (
-                f"{rec.odoo_model_id.name} in {rec.module_branch_id.display_name}"
-            )
+            model_name = rec.odoo_model_id.name
+            if model_name not in BASE_CLASSES:
+                model_name = f"<{model_name}>"
+            rec.display_name = f"{model_name} in {rec.module_branch_id.display_name}"
 
     @api.depends("data")
     def _compute_inherit_ids(self):
@@ -137,11 +150,32 @@ class OdooModuleBranchModel(models.Model):
                 )
                 rec.inherit_ids = models
 
+    def _search_inherit_ids(self, operator, value):
+        sql_operator = SQL_OPERATORS[operator].code
+        query = pgsql.SQL(
+            """
+                SELECT array_agg(id)
+                FROM {table}
+                WHERE data::json->>'inherit' {operator} %s;
+            """
+        )
+        query = query.format(
+            table=pgsql.Identifier(self._table),
+            operator=pgsql.SQL(sql_operator),
+        )
+        args = (f"%{value}%",)
+        self.env.cr.execute(query, args)
+        model_ids = self.env.cr.fetchone()[0] or []
+        return [("id", "in", model_ids)]
+
     @api.depends("data")
     def _compute_inherits_ids(self):
         for rec in self:
             rec.inherits_ids = False
-            inherits = safe_eval(repr(rec.data.get("inherits")))
+            if not rec.data.get("inherits"):
+                continue
+            inherits_list = list(rec.data["inherits"])
+            inherits = [safe_eval(elt) for elt in inherits_list]
             if inherits:
                 models = self.env["odoo.model.version"].search(
                     [
@@ -150,6 +184,24 @@ class OdooModuleBranchModel(models.Model):
                     ]
                 )
                 rec.inherits_ids = models
+
+    def _search_inherits_ids(self, operator, value):
+        sql_operator = SQL_OPERATORS[operator].code
+        query = pgsql.SQL(
+            """
+                SELECT array_agg(id)
+                FROM {table}
+                WHERE data::json->>'inherits' {operator} %s;
+            """
+        )
+        query = query.format(
+            table=pgsql.Identifier(self._table),
+            operator=pgsql.SQL(sql_operator),
+        )
+        args = (f"%{value}%",)
+        self.env.cr.execute(query, args)
+        model_ids = self.env.cr.fetchone()[0] or []
+        return [("id", "in", model_ids)]
 
     @api.depends("odoo_model_version_id")
     def _compute_root_id(self):
@@ -177,8 +229,8 @@ class OdooModuleBranchModel(models.Model):
                     )
                 ).format(root=rec.root_id.module_name, module=rec.module_name)
 
-    def _get_inherited_models(self):
-        """Return all inherited models, sorted by level of dependency.
+    def _get_parent_models(self, include_self=False):
+        """Return all parent models, sorted by level of dependency.
 
         This is based on actual dependencies of current module.
         """
@@ -186,9 +238,9 @@ class OdooModuleBranchModel(models.Model):
         # Get all dependencies of current module (including self)
         dependencies = self.module_branch_id._get_recursive_dependencies()
         dependencies |= self.module_branch_id
-        # Collect inherited models recursively
+        # Collect parent models recursively
         # NOTE: includes base models
-        inherited_model_ids = self.search(
+        parent_model_ids = self.search(
             [
                 ("odoo_version_id", "=", self.odoo_version_id.id),
                 ("odoo_model_name", "in", BASE_CLASSES),
@@ -196,7 +248,7 @@ class OdooModuleBranchModel(models.Model):
         ).ids
         visited = set()
 
-        def collect_inherited(current_model, inherited_model_ids=inherited_model_ids):
+        def collect_parents(current_model, parent_model_ids=parent_model_ids):
             if current_model.id in visited:
                 return
             visited.add(current_model.id)
@@ -212,17 +264,17 @@ class OdooModuleBranchModel(models.Model):
                     ]
                 )
                 for impl in implementations:
-                    if impl.id not in inherited_model_ids:
-                        inherited_model_ids.append(impl.id)
-                        collect_inherited(impl, inherited_model_ids=inherited_model_ids)
+                    if impl.id not in parent_model_ids:
+                        parent_model_ids.append(impl.id)
+                        collect_parents(impl, parent_model_ids=parent_model_ids)
 
-        collect_inherited(self, inherited_model_ids=inherited_model_ids)
+        collect_parents(self, parent_model_ids=parent_model_ids)
         # Remove self from results
-        if self.id in inherited_model_ids:
-            inherited_model_ids.remove(self.id)
+        if not include_self and self.id in parent_model_ids:
+            parent_model_ids.remove(self.id)
         # Sort by dependency level (lower levels first = base modules first)
         return self.search(
-            [("id", "in", inherited_model_ids)], order="global_dependency_level"
+            [("id", "in", parent_model_ids)], order="global_dependency_level"
         )
 
     @api.depends("odoo_version_id.next_id")
@@ -271,13 +323,13 @@ class OdooModuleBranchModel(models.Model):
         action["res_id"] = self.next_odoo_version_model_id.id
         return action
 
-    def open_inherited_models(self):
+    def open_parent_models(self):
         self.ensure_one()
-        inherited_models = self._get_inherited_models()
+        parent_models = self._get_parent_models(include_self=True)
         xml_id = "odoo_repository_code.odoo_module_branch_model_action"
         action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
-        action["name"] = _("Inherited Models")
-        action["domain"] = [("id", "in", inherited_models.ids)]
+        action["name"] = _("Parent Models")
+        action["domain"] = [("id", "in", parent_models.ids)]
         action["context"] = {}
         return action
 
