@@ -10,9 +10,9 @@ from urllib.parse import urljoin
 
 import requests
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models, tools
 from odoo.exceptions import UserError
-from odoo.osv.expression import AND, OR
+from odoo.fields import Domain
 
 from odoo.addons.queue_job.delay import chain
 from odoo.addons.queue_job.exception import RetryableJobError
@@ -137,13 +137,10 @@ class OdooRepository(models.Model):
         for rec in self:
             rec.github_url = f"{rec.org_id.github_url}/{rec.name}"
 
-    _sql_constraints = [
-        (
-            "org_id_name_uniq",
-            "UNIQUE (org_id, name)",
-            "This repository already exists.",
-        ),
-    ]
+    _org_id_name_uniq = models.Constraint(
+        "UNIQUE (org_id, name)",
+        "This repository already exists.",
+    )
 
     @api.depends("org_id.name", "name")
     def _compute_display_name(self):
@@ -171,10 +168,10 @@ class OdooRepository(models.Model):
     def _cron_scanner_domain(self):
         today = fields.Date.today()
         weekday = today.weekday()
-        return AND(
+        return Domain.AND(
             [
                 [("to_scan", "=", True)],
-                OR(
+                Domain.OR(
                     [
                         [("scan_weekday_ids.name", "=", weekday)],
                         [("scan_weekday_ids", "=", False)],
@@ -207,9 +204,10 @@ class OdooRepository(models.Model):
         repositories_path = self.env["ir.config_parameter"].sudo().get_param(key, "")
         if not repositories_path:
             raise UserError(
-                _(
-                    f"Please define the '{key}' system parameter to "
-                    "clone repositories in the folder of your choice."
+                self.env._(
+                    "Please define the '%(key)s' system parameter to "
+                    "clone repositories in the folder of your choice.",
+                    key=key,
                 )
             )
         # Ensure the folder exists
@@ -240,7 +238,9 @@ class OdooRepository(models.Model):
             )
         )
         if existing_job:
-            msg = _("A scan is already ongoing for repository %s") % self.display_name
+            msg = self.env._(
+                "A scan is already ongoing for repository %s", self.display_name
+            )
             if raise_exc:
                 raise UserError(msg)
             _logger.warning(msg)
@@ -480,14 +480,18 @@ class OdooRepository(models.Model):
         try:
             response = requests.get(url, timeout=60)
         except Exception as exc:
-            raise UserError(_("Unable to fetch data from %s") % main_node_url) from exc
+            raise UserError(
+                self.env._("Unable to fetch data from %s", main_node_url)
+            ) from exc
         else:
             if response.status_code == 200:
                 try:
                     data = json.loads(response.text)
                 except json.decoder.JSONDecodeError as exc:
                     raise UserError(
-                        _("Unable to decode data received from %s") % main_node_url
+                        self.env._(
+                            "Unable to decode data received from %s", main_node_url
+                        )
                     ) from exc
                 else:
                     self._import_data(data)

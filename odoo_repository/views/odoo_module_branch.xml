@@ -276,38 +276,36 @@
                     string="Without Repository"
                     domain="[('repository_branch_id', '=', False)]"
                 />
-                <group expand="0" name="group_by" string="Group By">
-                    <filter
-                        name="group_by_org_id"
-                        string="Organization"
-                        context="{'group_by': 'org_id'}"
-                    />
-                    <filter
-                        name="group_by_repository_id"
-                        string="Repository"
-                        context="{'group_by': 'repository_id'}"
-                    />
-                    <filter
-                        name="group_by_branch_id"
-                        string="Branch"
-                        context="{'group_by': 'branch_id'}"
-                    />
-                    <filter
-                        name="group_by_author_ids"
-                        string="Author"
-                        context="{'group_by': 'author_ids'}"
-                    />
-                    <filter
-                        name="group_by_license_id"
-                        string="License"
-                        context="{'group_by': 'license_id'}"
-                    />
-                    <filter
-                        name="group_by_development_status_id"
-                        string="Development Status"
-                        context="{'group_by': 'development_status_id'}"
-                    />
-                </group>
+                <filter
+                    name="group_by_org_id"
+                    string="Organization"
+                    context="{'group_by': 'org_id'}"
+                />
+                <filter
+                    name="group_by_repository_id"
+                    string="Repository"
+                    context="{'group_by': 'repository_id'}"
+                />
+                <filter
+                    name="group_by_branch_id"
+                    string="Branch"
+                    context="{'group_by': 'branch_id'}"
+                />
+                <filter
+                    name="group_by_author_ids"
+                    string="Author"
+                    context="{'group_by': 'author_ids'}"
+                />
+                <filter
+                    name="group_by_license_id"
+                    string="License"
+                    context="{'group_by': 'license_id'}"
+                />
+                <filter
+                    name="group_by_development_status_id"
+                    string="Development Status"
+                    context="{'group_by': 'development_status_id'}"
+                />
             </search>
         </field>
     </record>

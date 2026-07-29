@@ -10,6 +10,7 @@ class OdooModuleDevStatus(models.Model):
 
     name = fields.Char(required=True, index=True)
 
-    _sql_constraints = [
-        ("name_uniq", "UNIQUE (name)", "This development_status already exists."),
-    ]
+    _name_uniq = models.Constraint(
+        "UNIQUE (name)",
+        "This development_status already exists.",
+    )

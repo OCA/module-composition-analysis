@@ -11,6 +11,7 @@ class OdooLicense(models.Model):
 
     name = fields.Char(required=True, index=True)
 
-    _sql_constraints = [
-        ("name_uniq", "UNIQUE (name)", "This license already exists."),
-    ]
+    _name_uniq = models.Constraint(
+        "UNIQUE (name)",
+        "This license already exists.",
+    )

@@ -3,7 +3,7 @@
 
 import re
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -38,9 +38,10 @@ class OdooBranch(models.Model):
         compute="_compute_next_and_previous",
     )
 
-    _sql_constraints = [
-        ("name_uniq", "UNIQUE (name)", "This branch already exists."),
-    ]
+    _name_uniq = models.Constraint(
+        "UNIQUE (name)",
+        "This branch already exists.",
+    )
 
     @api.constrains("name")
     def _constrains_name(self):
@@ -48,7 +49,9 @@ class OdooBranch(models.Model):
         for rec in self:
             version = re.search(odoo_version_pattern, rec.name)
             if not version:
-                raise ValidationError(_("Version must match the pattern 'x.y'."))
+                raise ValidationError(
+                    self.env._("Version must match the pattern 'x.y'.")
+                )
 
     @api.depends("sequence")
     def _compute_next_and_previous(self):
@@ -117,4 +120,7 @@ class OdooBranch(models.Model):
 
     def _get_all_odoo_versions(self, active_test=False):
         """Return all Odoo versions, even archived ones."""
-        return self.with_context(active_test=active_test).search([])
+        # All Odoo versions are a few dozen records at most
+        return self.with_context(  # pylint: disable=no-search-all
+            active_test=active_test
+        ).search([])

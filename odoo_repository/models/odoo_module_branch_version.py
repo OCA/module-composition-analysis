@@ -49,13 +49,10 @@ class OdooModuleBranchVersion(models.Model):
     )
     sequence = fields.Integer()
 
-    _sql_constraints = [
-        (
-            "module_branch_id_name_manifest_value_uniq",
-            "UNIQUE (module_branch_id, name, manifest_value)",
-            "This version already exists for this module.",
-        ),
-    ]
+    _module_branch_id_name_manifest_value_uniq = models.Constraint(
+        "UNIQUE (module_branch_id, name, manifest_value)",
+        "This version already exists for this module.",
+    )
 
     @api.model_create_multi
     def create(self, vals_list):

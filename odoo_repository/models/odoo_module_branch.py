@@ -6,9 +6,9 @@ import random
 import time
 from urllib.parse import urlparse
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models, tools
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
+from odoo.fields import Domain
 
 from odoo.addons.queue_job.exception import RetryableJobError
 
@@ -185,13 +185,10 @@ class OdooModuleBranch(models.Model):
         )
     )
 
-    _sql_constraints = [
-        (
-            "module_id_branch_id_repository_id_uniq",
-            "UNIQUE (module_id, branch_id, repository_id)",
-            "This module already exists for this repository/branch.",
-        ),
-    ]
+    _module_id_branch_id_repository_id_uniq = models.Constraint(
+        "UNIQUE (module_id, branch_id, repository_id)",
+        "This module already exists for this repository/branch.",
+    )
 
     def init(self):
         # Index to complete unique constraint 'module_id_branch_id_repository_id_uniq'.
@@ -217,7 +214,7 @@ class OdooModuleBranch(models.Model):
             # """
         ]
         for index in indexes:
-            self._cr.execute(index)
+            self.env.cr.execute(index)
 
     @api.constrains("specific", "dependency_ids")
     def _check_generic_depends_on_specific(self):
@@ -225,18 +222,15 @@ class OdooModuleBranch(models.Model):
             if not rec.specific:
                 specific_deps = rec.dependency_ids.filtered("specific")
                 if specific_deps:
-                    msg = _(
-                        "Generic module %(generic_mod)s cannot depend "
-                        "on specific module(s): %(specific_mods)s"
-                    )
                     raise ValidationError(
-                        msg
-                        % {
-                            "generic_mod": rec.module_name,
-                            "specific_mods": ", ".join(
+                        self.env._(
+                            "Generic module %(generic_mod)s cannot depend "
+                            "on specific module(s): %(specific_mods)s",
+                            generic_mod=rec.module_name,
+                            specific_mods=", ".join(
                                 specific_deps.mapped("module_name")
                             ),
-                        }
+                        )
                     )
 
     @api.depends("module_name", "addons_path")
@@ -387,7 +381,6 @@ class OdooModuleBranch(models.Model):
         )
 
     @api.model
-    @api.returns("odoo.module.branch")
     def push_scanned_data(self, repo_branch_id, module, data):
         """Entry point for the scanner to push its data."""
         module = self._get_module(module)
@@ -718,14 +711,14 @@ class OdooModuleBranch(models.Model):
             modules_branch = self._get_module_branch(
                 branch,
                 module,
-                domain=expression.AND(
+                domain=Domain.AND(
                     [
                         domain or [],
                         [("specific", "=", False), ("repository_id", "!=", False)],
                     ],
                 ),
             )
-            module_branch = fields.first(modules_branch)
+            module_branch = modules_branch[:1]
         # Otherwise look for the module among orphaned modules
         if not module_branch:
             module_branch = self._get_orphaned_module_branch(

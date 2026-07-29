@@ -4,7 +4,7 @@
 {
     "name": "Odoo MCA",
     "summary": "Base module to host data collected from Odoo repositories.",
-    "version": "18.0.1.2.0",
+    "version": "19.0.1.0.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",

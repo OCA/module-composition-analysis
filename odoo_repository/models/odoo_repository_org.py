@@ -18,6 +18,7 @@ class OdooRepositoryOrg(models.Model):
         for rec in self:
             rec.github_url = f"{GITHUB_URL}/{rec.name}"
 
-    _sql_constraints = [
-        ("name_uniq", "UNIQUE (name)", "This organization already exists."),
-    ]
+    _name_uniq = models.Constraint(
+        "UNIQUE (name)",
+        "This organization already exists.",
+    )

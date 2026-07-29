@@ -31,10 +31,7 @@ class OdooRepositoryAddonsPath(models.Model):
         default=False,
     )
 
-    _sql_constraints = [
-        (
-            "addons_path_uniq",
-            "UNIQUE (relative_path, is_standard, is_enterprise, is_community)",
-            "This addons-path already exists.",
-        ),
-    ]
+    _addons_path_uniq = models.Constraint(
+        "UNIQUE (relative_path, is_standard, is_enterprise, is_community)",
+        "This addons-path already exists.",
+    )

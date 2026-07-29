@@ -5,10 +5,6 @@
     <record id="ssh_key_view_form" model="ir.ui.view">
         <field name="name">ssh.key.form</field>
         <field name="model">ssh.key</field>
-        <field
-            name="groups_id"
-            eval="[(4,ref('odoo_repository.group_odoo_repository_manager'))]"
-        />
         <field name="arch" type="xml">
             <form>
                 <sheet>
@@ -47,10 +43,6 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">ssh.key</field>
         <field name="view_id" ref="ssh_key_view_tree" />
-        <field
-            name="groups_id"
-            eval="[(4,ref('odoo_repository.group_odoo_repository_manager'))]"
-        />
     </record>
 
     <menuitem

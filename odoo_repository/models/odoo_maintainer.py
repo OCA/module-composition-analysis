@@ -26,6 +26,7 @@ class OdooMaintainer(models.Model):
         for rec in self:
             rec.github_url = f"{GITHUB_URL}/{rec.name}"
 
-    _sql_constraints = [
-        ("name_uniq", "UNIQUE (name)", "This maintainer already exists."),
-    ]
+    _name_uniq = models.Constraint(
+        "UNIQUE (name)",
+        "This maintainer already exists.",
+    )

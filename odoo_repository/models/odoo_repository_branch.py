@@ -47,13 +47,10 @@ class OdooRepositoryBranch(models.Model):
     last_scanned_commit = fields.Char(readonly=True)
     active = fields.Boolean(compute="_compute_active", store=True)
 
-    _sql_constraints = [
-        (
-            "repository_id_branch_id_uniq",
-            "UNIQUE (repository_id, branch_id)",
-            "This branch already exists for this repository.",
-        ),
-    ]
+    _repository_id_branch_id_uniq = models.Constraint(
+        "UNIQUE (repository_id, branch_id)",
+        "This branch already exists for this repository.",
+    )
 
     @api.depends("repository_id.display_name", "branch_id.name")
     def _compute_name(self):

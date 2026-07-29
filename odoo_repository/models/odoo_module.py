@@ -19,6 +19,7 @@ class OdooModule(models.Model):
         help="Blacklisted modules won't be scanned.", readonly=True
     )
 
-    _sql_constraints = [
-        ("name_uniq", "UNIQUE (name)", "This module technical name already exists."),
-    ]
+    _name_uniq = models.Constraint(
+        "UNIQUE (name)",
+        "This module technical name already exists.",
+    )
