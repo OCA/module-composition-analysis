@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from odoo import fields, models
+from odoo.fields import Domain
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -33,13 +34,10 @@ class OdooProjectStat(models.Model):
     modules_count = fields.Integer(readonly=True)
     sloc = fields.Integer(string="Lines of code", readonly=True)
 
-    _sql_constraints = [
-        (
-            "odoo_project_config_date_uniq",
-            "UNIQUE (odoo_project_id, config_id, date)",
-            "This project stats record already exists.",
-        ),
-    ]
+    _odoo_project_config_date_uniq = models.Constraint(
+        "UNIQUE (odoo_project_id, config_id, date)",
+        "This project stats record already exists.",
+    )
 
     def _get_stats(self, odoo_project, date=None, config=None, limit=None):
         domain = [("odoo_project_id", "=", odoo_project.id)]
@@ -66,7 +64,10 @@ class OdooProjectStat(models.Model):
         existing_stats = self._get_stats(odoo_project, date=today)
         existing_stats.sudo().unlink()
         # Create or update existing stat record
-        configs = self.env["odoo.project.stat.config"].search([])
+        # All stat configs are wanted here (small table)
+        configs = self.env["odoo.project.stat.config"].search(  # pylint: disable=no-search-all
+            []
+        )
         for config in configs:
             stat = self._get_stats(odoo_project, date=today, config=config, limit=1)
             values = self._generate_stat_values(odoo_project, config, total_count)
@@ -94,9 +95,12 @@ class OdooProjectStat(models.Model):
             modules_count = 0
             sloc = 0
         else:
-            domain = safe_eval(config.domain)
-            # FIXME: use odoo.osv.expression.AND
-            domain.append(("odoo_project_id", "=", odoo_project.id))
+            domain = Domain.AND(
+                [
+                    safe_eval(config.domain),
+                    [("odoo_project_id", "=", odoo_project.id)],
+                ]
+            )
             modules = self.env["odoo.project.module"].search(domain)
             modules_count = len(modules)
             sloc = (

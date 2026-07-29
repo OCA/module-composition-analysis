@@ -20,10 +20,7 @@ class OdooProjectStatConfig(models.Model):
     )
     domain = fields.Char()
 
-    _sql_constraints = [
-        (
-            "residual_uniq",
-            "UNIQUE (residual)",
-            "Only one configuration should exist for residual modules.",
-        ),
-    ]
+    _residual_uniq = models.Constraint(
+        "UNIQUE (residual)",
+        "Only one configuration should exist for residual modules.",
+    )

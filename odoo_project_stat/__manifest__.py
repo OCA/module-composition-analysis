@@ -3,7 +3,7 @@
 {
     "name": "Odoo Project Stats",
     "summary": "Get some stats about your Odoo Projects.",
-    "version": "16.0.1.0.1",
+    "version": "19.0.1.0.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",
@@ -19,5 +19,6 @@
         # OCA/web
         "web_widget_plotly_chart",
     ],
+    "external_dependencies": {"python": ["plotly"]},
     "license": "AGPL-3",
 }
