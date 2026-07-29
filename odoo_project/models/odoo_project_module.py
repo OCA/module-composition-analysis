@@ -65,9 +65,16 @@ class OdooProjectModule(models.Model):
             #   - Available versions upstream = "14.0.2.0.0" & "14.0.2.1.0"
             #   - Installed version  = "14.0.2.0.1" (in a pending-merge)
             #   - Computed installed version = "14.0.2.0.0"
-            inst_ver = [int(n) for n in rec.installed_version.split(".")]
+            try:
+                inst_ver = [int(n) for n in rec.installed_version.split(".")]
+            except ValueError:
+                # Malformed user-entered version (e.g. "15.0.1.0.")
+                continue
             for version in rec.version_ids.sorted("sequence"):
-                ver = [int(n) for n in version.name.split(".")]
+                try:
+                    ver = [int(n) for n in version.name.split(".")]
+                except ValueError:
+                    continue
                 if ver > inst_ver:
                     break
                 rec.installed_version_id = version
