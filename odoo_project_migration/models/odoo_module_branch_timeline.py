@@ -2,7 +2,7 @@
 # @author Sébastien Alix <sebastien.alix@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class OdooModuleBranchTimeline(models.Model):
@@ -72,6 +72,6 @@ class OdooModuleBranchTimeline(models.Model):
         self.ensure_one()
         xml_id = "odoo_project_migration.odoo_project_module_migration_action"
         action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
-        action["name"] = _("Project Migrations")
+        action["name"] = self.env._("Project Migrations")
         action["domain"] = [("id", "in", self.project_migration_ids.ids)]
         return action

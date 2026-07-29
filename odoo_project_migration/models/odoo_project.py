@@ -3,7 +3,7 @@
 
 import ast
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class OdooProject(models.Model):
@@ -56,7 +56,9 @@ class OdooProject(models.Model):
         action["domain"] = [("odoo_project_id", "=", self.id)]
         migration_paths = self.module_migration_ids.migration_path_id
         if len(migration_paths) == 1:
-            action["display_name"] = _("Migration") + f" {migration_paths.name}"
+            action["display_name"] = (
+                self.env._("Migration") + f" {migration_paths.name}"
+            )
         else:
             ctx["search_default_group_by_migration_path_id"] = 1
         ctx["search_default_group_by_org_id"] = 2

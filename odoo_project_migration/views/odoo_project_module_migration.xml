@@ -98,7 +98,7 @@
             <field name="license_id" position="after">
                 <field name="odoo_project_ids" />
             </field>
-            <group name="group_by" position="inside">
+            <filter name="group_by_development_status_id" position="after">
                 <filter
                     name="group_by_migration_path_id"
                     string="Migration Path"
@@ -109,7 +109,7 @@
                     string="Migration Status"
                     context="{'group_by': 'state'}"
                 />
-            </group>
+            </filter>
         </field>
     </record>
 

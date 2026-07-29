@@ -1,7 +1,7 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class OdooProjectGenerateMigrationData(models.TransientModel):
@@ -40,7 +40,9 @@ class OdooProjectGenerateMigrationData(models.TransientModel):
         # Open the generated migration data
         action = self.odoo_project_id.open_migration_data()
         action["domain"].append(("migration_path_id", "=", self.migration_path_id.id))
-        action["display_name"] = _("Migration") + f" {self.migration_path_id.name}"
+        action["display_name"] = (
+            self.env._("Migration") + f" {self.migration_path_id.name}"
+        )
         return action
 
     def _prepare_module_migration_values(self, module_branch):

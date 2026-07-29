@@ -12,13 +12,10 @@ class OdooProjectModuleMigration(models.Model):
         "is_standard DESC, is_enterprise, is_community DESC, repository_id, module_name"
     )
 
-    _sql_constraints = [
-        (
-            "uniq",
-            "UNIQUE (odoo_project_id, migration_path_id, source_module_branch_id)",
-            "This module migration path already exists.",
-        ),
-    ]
+    _uniq = models.Constraint(
+        "UNIQUE (odoo_project_id, migration_path_id, source_module_branch_id)",
+        "This module migration path already exists.",
+    )
 
     odoo_project_id = fields.Many2one(
         comodel_name="odoo.project",
