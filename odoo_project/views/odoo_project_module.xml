@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_project_module_view_form" model="ir.ui.view">
+        <field name="name">odoo.project.module.form.inherit</field>
+        <field name="model">odoo.project.module</field>
+        <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form" />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <field name="version" position="before">
+                <field name="installed_version" />
+            </field>
+            <field name="version" position="after">
+                <field name="migration_scripts" />
+            </field>
+            <field name="version" position="attributes">
+                <attribute name="string">Last Version</attribute>
+            </field>
+            <!-- Split reverse dependencies in two: installed/not installed -->
+            <field name="reverse_dependency_ids" position="before">
+                <separator string="Installed reverse dependencies" />
+                <field name="installed_reverse_dependency_ids" nolabel="1">
+                    <list decoration-warning="to_upgrade" decoration_danger="pr_url">
+                        <field name="module_id" />
+                        <field name="repository_branch_id" />
+                        <field name="installed_version" />
+                        <field name="to_upgrade" invisible="1" />
+                        <field name="version" />
+                        <field name="migration_scripts" />
+                        <field name="license_id" optional="show" />
+                        <field name="development_status_id" optional="show" />
+                        <field name="pr_url" optional="show" />
+                        <field name="global_dependency_level" optional="show" />
+                        <field name="non_std_dependency_level" optional="show" />
+                    </list>
+                </field>
+                <separator string="Not installed reverse dependencies" />
+                <field name="not_installed_reverse_dependency_ids" nolabel="1">
+                    <list>
+                        <field name="module_id" />
+                        <field name="repository_branch_id" />
+                        <field name="version" />
+                        <field name="license_id" optional="show" />
+                        <field name="development_status_id" optional="show" />
+                        <field name="global_dependency_level" optional="show" />
+                        <field name="non_std_dependency_level" optional="show" />
+                    </list>
+                </field>
+            </field>
+            <field name="reverse_dependency_ids" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="odoo_project_module_view_tree" model="ir.ui.view">
+        <field name="name">odoo.project.module.list.inherit</field>
+        <field name="model">odoo.project.module</field>
+        <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_tree" />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <list position="attributes">
+                <attribute name="decoration-warning">to_upgrade</attribute>
+                <attribute name="decoration-danger">pr_url</attribute>
+            </list>
+            <field name="module_id" position="before">
+                <field name="odoo_project_id" string="Installed in" />
+            </field>
+            <field name="author_ids" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="version" position="before">
+                <field name="installed_version" />
+                <field name="to_upgrade" invisible="1" />
+            </field>
+            <field name="version" position="after">
+                <field name="migration_scripts" />
+            </field>
+            <field name="version" position="attributes">
+                <attribute name="string">Last Version</attribute>
+                <attribute name="optional" />
+            </field>
+            <field name="pr_url" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record
+        id="odoo_project_module_view_tree_recursive_dependencies"
+        model="ir.ui.view"
+    >
+        <field name="name">odoo.project.module.list.recursive_dependencies</field>
+        <field name="model">odoo.project.module</field>
+        <field name="inherit_id" ref="odoo_project_module_view_tree" />
+        <field name="mode">primary</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list position="attributes">
+                <attribute
+                    name="default_order"
+                >global_dependency_level, non_std_dependency_level, module_name</attribute>
+            </list>
+            <field name="odoo_project_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="application" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="global_dependency_level" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="non_std_dependency_level" position="attributes">
+                <attribute name="optional">show</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="odoo_project_module_view_search" model="ir.ui.view">
+        <field name="name">odoo.project.module.search.inherit</field>
+        <field name="model">odoo.project.module</field>
+        <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <field name="license_id" position="after">
+                <field name="odoo_project_id" />
+            </field>
+            <filter name="unmerged_pr" position="before">
+                <filter
+                    name="to_upgrade"
+                    string="To Upgrade"
+                    domain="[('to_upgrade', '=', True)]"
+                />
+                <filter
+                    name="migration_scripts"
+                    string="Migration Scripts to play"
+                    domain="[('migration_scripts', '=', True)]"
+                />
+            </filter>
+            <!-- Change the group by from 'odoo_project_ids' to 'odoo_project_id' -->
+            <filter name="group_by_odoo_project_id" position="attributes">
+                <attribute name="context">{'group_by': 'odoo_project_id'}</attribute>
+            </filter>
+        </field>
+    </record>
+
+    <record id="odoo_project_module_view_pivot" model="ir.ui.view">
+        <field name="name">odoo.project.module.pivot</field>
+        <field name="model">odoo.project.module</field>
+        <field name="arch" type="xml">
+            <pivot sample="1">
+                <field name="branch_id" type="col" />
+                <field name="org_id" type="row" />
+                <field name="module_id" type="row" />
+            </pivot>
+        </field>
+    </record>
+
+    <record id="odoo_project_module_action" model="ir.actions.act_window">
+        <field name="name">Installed Modules</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.project.module</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="view_id" ref="odoo_project_module_view_tree" />
+    </record>
+
+    <record
+        id="odoo_project_module_action_view_pivot"
+        model="ir.actions.act_window.view"
+    >
+        <field name="sequence" eval="1" />
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="odoo_project_module_view_pivot" />
+        <field name="act_window_id" ref="odoo_project_module_action" />
+    </record>
+
+    <record id="odoo_project_module_for_project_action" model="ir.actions.act_window">
+        <field name="name">Installed Modules</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.project.module</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="view_id" ref="odoo_project_module_view_tree" />
+    </record>
+
+    <menuitem
+        id="odoo_project_module_menu"
+        parent="odoo_project_main_menu"
+        action="odoo_project_module_action"
+    />
+
+    <record
+        id="odoo_project_module_action_recursive_dependencies"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Dependencies</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.project.module</field>
+        <field
+            name="view_id"
+            ref="odoo_project_module_view_tree_recursive_dependencies"
+        />
+    </record>
+</odoo>

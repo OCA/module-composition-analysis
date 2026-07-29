@@ -1,0 +1,771 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* odoo_project
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
+msgid ""
+"# One module per line with an optional version number (separated by any special character like space, tabulation, comma...). E.g:\n"
+"sale\n"
+"server_environment 17.0.1.1.0"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "<span class=\"o_stat_text\"> Modules inst.</span>"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__active
+msgid "Active"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__additional_module_ids
+msgid "Additional Modules"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
+msgid "Additional modules"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__addons_path
+msgid "Addons Path"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__branch_name
+msgid ""
+"An Odoo version is also used as an Odoo branch name in generic repositories "
+"(Odoo, OCA...)."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__application
+msgid "Application"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__author_ids
+msgid "Authors"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__auto_install
+msgid "Auto-Install"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__available_odoo_version_ids
+msgid "Available Odoo Versions"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__migration_scripts
+msgid "Available migration scripts between installed and last version."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__branch_name
+msgid "Branch Name"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__branch_sequence
+msgid "Branch Sequence"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
+msgid ""
+"Build your project by adding modules. This can help to get some figures "
+"before a launch to estimate maintenance cost for instance."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__sloc_css
+msgid "CSS"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__sloc_css
+msgid "CSS source lines of code"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
+msgid "Cancel"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__category_id
+msgid "Category"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__is_community
+msgid "Community?"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_import_modules__modules_list
+msgid ""
+"Copy/paste your list of technical module names here.\n"
+"One module per line with an optional version number (separated by any special character (space, tabulation, comma...)."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__create_uid
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__create_uid
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__create_date
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__create_date
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.actions.act_window,name:odoo_project.odoo_project_module_action_recursive_dependencies
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__dependency_ids
+msgid "Dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__non_std_dependency_level
+msgid "Dependency level excluding all standard Odoo modules."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__global_dependency_level
+msgid "Dependency level including all standard Odoo modules."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_module_branch__odoo_project_module_ids
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__project_module_ids
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__odoo_project_module_ids
+msgid "Deployed Modules"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__title
+msgid "Descriptive name"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__development_status_id
+msgid "Develoment Status"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__display_name
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__display_name
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__is_enterprise
+msgid "Enterprise?"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__external_dependencies
+msgid "External Dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Find modules"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__full_path
+msgid "Full Path"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__global_dependency_level
+msgid "Global Dep. Level"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__id
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__id
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__id
+msgid "ID"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__installed_version_id
+msgid ""
+"If the real installed version is not available in the history of versions "
+"(could come from a pending merge not scanned), this field computes the "
+"nearest version available."
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
+msgid "Import"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__import_missing_dependencies
+msgid "Import Missing Dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.actions.act_window,name:odoo_project.odoo_project_import_modules_action
+msgid "Import Project Modules"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_import_modules__import_missing_dependencies
+msgid ""
+"Import module dependencies that are not part of the list above to get an "
+"exhaustive list of modules installed in the project."
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Import modules"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model,name:odoo_project.model_odoo_project_import_modules
+msgid "Import modules for an Odoo project"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
+msgid "Initialize from modules list"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
+msgid ""
+"Initialize the list of modules that are installed in your project. This will"
+" wipe the current installed modules.<br/>The list can be copied-pasted from "
+"columns 'Technical Name' and 'Latest Version' put side by side from a "
+"standard Odoo export of modules installed."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__installable
+msgid "Installable"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.actions.act_window,name:odoo_project.odoo_project_module_action
+#: model:ir.actions.act_window,name:odoo_project.odoo_project_module_for_project_action
+#: model:ir.ui.menu,name:odoo_project.odoo_project_module_menu
+msgid "Installed Modules"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__installed_reverse_dependency_ids
+msgid "Installed Reverse Dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__installed_version
+msgid "Installed Version"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_tree
+msgid "Installed in"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_module_branch_view_search
+msgid "Installed in projects"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_form
+msgid "Installed reverse dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__installed_version
+msgid "Installed version in project database."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__is_community
+msgid "Is this module a contribution of the community?"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__is_enterprise
+msgid "Is this module designed for Odoo Enterprise only?"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__is_standard
+msgid "Is this module part of Odoo standard?"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__sloc_js
+msgid "JS"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__sloc_js
+msgid "JavaScript source lines of code"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__last_scanned_commit
+msgid "Last Scanned Commit"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__write_uid
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__write_uid
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__write_date
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__write_date
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_tree
+msgid "Last Version"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__version
+msgid "Last version"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__license_id
+msgid "License"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__maintainer_ids
+msgid "Maintainers"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__migration_scripts
+msgid "Migration Scripts"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_search
+msgid "Migration Scripts to play"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_search
+msgid "Module"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__module_name
+msgid "Module Technical Name"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__specific
+msgid ""
+"Module specific to a project repository.It cannot be used across different "
+"projects."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__module_ids
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Modules"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__modules_count
+msgid "Modules Count"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__modules_list
+msgid "Modules List"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project__module_not_installed_ids
+msgid "Modules available in the project repository but not installed."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project__unmerged_module_ids
+msgid "Modules installed belonging to an open PR."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project__unknown_module_ids
+msgid "Modules installed but cannot be found among repositories/branches."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__module_not_installed_ids
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Modules not installed"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__unmerged_module_ids
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Modules to merge"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__unknown_module_ids
+msgid "Modules unknown"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__name
+msgid "Name"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__installed_version_id
+msgid "Nearest installed version"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_module_branch_view_search
+msgid "No project"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__non_std_dependency_level
+msgid "Non-Std Dep. Level"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__not_installed_reverse_dependency_ids
+msgid "Not Installed Reverse Dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_form
+msgid "Not installed reverse dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model,name:odoo_project.model_odoo_module_branch
+msgid "Odoo Module Branch"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model,name:odoo_project.model_odoo_repository
+msgid "Odoo Modules Repository"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model,name:odoo_project.model_odoo_project
+msgid "Odoo Project"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model,name:odoo_project.model_odoo_project_module
+msgid "Odoo Project Module"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__odoo_version_id
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__odoo_version_id
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__branch_id
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_search
+msgid "Odoo Version"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__org_id
+msgid "Organization"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__pr_url
+msgid "PR URL"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__odoo_project_id
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__odoo_project_id
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_module_branch_view_search
+msgid "Project"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_repository__project_count
+msgid "Project Count"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Project Name"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.actions.act_window,name:odoo_project.odoo_project_action
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_module_branch__odoo_project_ids
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__odoo_project_ids
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_repository__project_ids
+#: model:ir.ui.menu,name:odoo_project.odoo_project_main_menu
+#: model:ir.ui.menu,name:odoo_project.odoo_project_menu
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_module_branch_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_repository_view_form
+msgid "Projects"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__sloc_python
+msgid "Python"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__python_dependency_ids
+msgid "Python Dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__sloc_python
+msgid "Python source lines of code"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__removed
+msgid "Removed"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__repository_id
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__repository_id
+msgid "Repository"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__repository_branch_id
+msgid "Repository / Branch"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__repository_branch_id
+msgid "Repository Branch"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project__repository_id
+msgid ""
+"Repository this project is based on (optional). You can start to "
+"build/simulate a project without repository to get some figures."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__reverse_dependency_ids
+msgid "Reverse Dependencies"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Scan"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Scan all the repositories used by this project."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__repository_sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__specific
+msgid "Specific"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__is_standard
+msgid "Standard?"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Status"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__summary
+msgid "Summary"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__name
+msgid "Techname"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__module_name
+msgid "Technical Name"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__addons_path
+msgid "Technical field. Where the module is located in the repository."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__module_id
+msgid "Technical name"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.constraint,message:odoo_project.constraint_odoo_project_name_uniq
+msgid "This project already exists."
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__title
+msgid "Title"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__to_upgrade
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_search
+msgid "To Upgrade"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__url
+msgid "URL"
+msgstr ""
+
+#. module: odoo_project
+#: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
+msgid "Unknown modules"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__module_branch_id
+msgid "Upstream Module"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__version_ids
+msgid "Versions"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__sloc_xml
+msgid "XML"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__sloc_xml
+msgid "XML source lines of code"
+msgstr ""
