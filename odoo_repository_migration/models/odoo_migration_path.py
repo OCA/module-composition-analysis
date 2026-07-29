@@ -22,13 +22,10 @@ class OdooMigrationPath(models.Model):
         required=True,
     )
 
-    _sql_constraints = [
-        (
-            "migration_path_uniq",
-            "UNIQUE (source_branch_id, target_branch_id)",
-            "This migration path already exists.",
-        ),
-    ]
+    _migration_path_uniq = models.Constraint(
+        "UNIQUE (source_branch_id, target_branch_id)",
+        "This migration path already exists.",
+    )
 
     @api.depends("source_branch_id.name", "target_branch_id.name")
     def _compute_name(self):

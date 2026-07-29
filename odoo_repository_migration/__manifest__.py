@@ -5,7 +5,7 @@
 {
     "name": "Odoo Repository Migration Data",
     "summary": "Collect modules migration data for Odoo Repositories.",
-    "version": "18.0.1.1.0",
+    "version": "19.0.1.0.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",
@@ -24,7 +24,7 @@
     ],
     "external_dependencies": {
         "python": [
-            "oca-port",
+            "oca_port",
         ],
     },
     "license": "AGPL-3",

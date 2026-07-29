@@ -73,7 +73,10 @@ class OdooRepository(models.Model):
                 ("source_branch_id", "in", all_versions),
                 ("target_branch_id", "in", all_versions),
             ]
-        migration_paths = self.env["odoo.migration.path"].search(args)
+        # Without version filter all migration paths are wanted (small table)
+        migration_paths = self.env["odoo.migration.path"].search(  # pylint: disable=no-search-all
+            args
+        )
         # Launch one job for all migration_paths
         if migration_paths:
             # Migration paths parameter containing the migration path ID +
@@ -154,7 +157,7 @@ class OdooRepository(models.Model):
         for module in modules_to_scan:
             delayable = self.delayable(
                 description=(
-                    f"Collect {module.name} migration data " f"({' > '.join(mig_path)})"
+                    f"Collect {module.name} migration data ({' > '.join(mig_path)})"
                 ),
                 identity_key=identity_exact,
             )

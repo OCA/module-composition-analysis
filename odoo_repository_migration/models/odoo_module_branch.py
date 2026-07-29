@@ -3,7 +3,7 @@
 # @author Sébastien Alix <sebastien.alix@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class OdooModuleBranch(models.Model):
@@ -28,8 +28,7 @@ class OdooModuleBranch(models.Model):
         compute="_compute_migration_scan",
         store=True,
         help=(
-            "Technical field telling if this module is elligible "
-            "for a migration scan."
+            "Technical field telling if this module is elligible for a migration scan."
         ),
     )
 
@@ -234,7 +233,7 @@ class OdooModuleBranch(models.Model):
         self.ensure_one()
         xml_id = "odoo_repository.odoo_module_branch_action"
         action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
-        action["name"] = _("Next versions")
+        action["name"] = self.env._("Next versions")
         action["domain"] = [("id", "in", self._get_next_module_branches().ids)]
         return action
 

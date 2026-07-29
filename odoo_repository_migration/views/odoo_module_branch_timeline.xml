@@ -114,28 +114,26 @@
                     name="archived"
                     domain="[('active', '=', False)]"
                 />
-                <group expand="0" string="Group By">
-                    <filter
-                        name="group_by_org_id"
-                        string="Organization"
-                        context="{'group_by': 'org_id'}"
-                    />
-                    <filter
-                        name="group_by_repository_id"
-                        string="Repository"
-                        context="{'group_by': 'repository_id'}"
-                    />
-                    <filter
-                        name="group_by_odoo_version_id"
-                        string="Odoo Version"
-                        context="{'group_by': 'odoo_version_id'}"
-                    />
-                    <filter
-                        name="group_by_state"
-                        string="State"
-                        context="{'group_by': 'state'}"
-                    />
-                </group>
+                <filter
+                    name="group_by_org_id"
+                    string="Organization"
+                    context="{'group_by': 'org_id'}"
+                />
+                <filter
+                    name="group_by_repository_id"
+                    string="Repository"
+                    context="{'group_by': 'repository_id'}"
+                />
+                <filter
+                    name="group_by_odoo_version_id"
+                    string="Odoo Version"
+                    context="{'group_by': 'odoo_version_id'}"
+                />
+                <filter
+                    name="group_by_state"
+                    string="State"
+                    context="{'group_by': 'state'}"
+                />
             </search>
         </field>
     </record>

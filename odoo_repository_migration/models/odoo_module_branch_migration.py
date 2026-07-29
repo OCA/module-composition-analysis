@@ -133,13 +133,10 @@ class OdooModuleBranchMigration(models.Model):
         help="Technical field telling if this migration path needs a migration scan.",
     )
 
-    _sql_constraints = [
-        (
-            "module_migration_path_uniq",
-            "UNIQUE (module_branch_id, migration_path_id)",
-            "This module migration path already exists.",
-        ),
-    ]
+    _module_migration_path_uniq = models.Constraint(
+        "UNIQUE (module_branch_id, migration_path_id)",
+        "This module migration path already exists.",
+    )
 
     @api.depends(
         "module_branch_id.module_id",
@@ -330,7 +327,6 @@ class OdooModuleBranchMigration(models.Model):
         self_sudo._compute_migration_scan()
 
     @api.model
-    @api.returns("odoo.module.branch.migration")
     def push_scanned_data(self, module_branch_id, data):
         migration_path = self.env["odoo.migration.path"].search(
             [
