@@ -3,11 +3,12 @@
 {
     "name": "Odoo Project",
     "summary": "Analyze your Odoo projects code bases.",
-    "version": "18.0.1.0.1",
+    "version": "19.0.1.0.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",
     "data": [
+        "data/queue_job.xml",
         "security/ir.model.access.csv",
         "views/menu.xml",
         "views/odoo_module_branch.xml",

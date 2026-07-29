@@ -79,9 +79,10 @@ class OdooProject(models.Model):
         compute="_compute_unknown_module_ids",
     )
 
-    _sql_constraints = [
-        ("name_uniq", "UNIQUE (name)", "This project already exists."),
-    ]
+    _name_uniq = models.Constraint(
+        "UNIQUE (name)",
+        "This project already exists.",
+    )
 
     @api.depends("repository_id")
     def _compute_available_odoo_version_ids(self):

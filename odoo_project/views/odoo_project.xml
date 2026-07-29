@@ -141,18 +141,16 @@
                 <field name="name" />
                 <field name="odoo_version_id" />
                 <field name="module_ids" />
-                <group expand="0" string="Group By">
-                    <filter
-                        name="group_by_odoo_version_id"
-                        string="Odoo Version"
-                        context="{'group_by': 'odoo_version_id'}"
-                    />
-                    <filter
-                        name="group_by_module_ids"
-                        string="Module"
-                        context="{'group_by': 'module_ids'}"
-                    />
-                </group>
+                <filter
+                    name="group_by_odoo_version_id"
+                    string="Odoo Version"
+                    context="{'group_by': 'odoo_version_id'}"
+                />
+                <filter
+                    name="group_by_module_ids"
+                    string="Module"
+                    context="{'group_by': 'module_ids'}"
+                />
             </search>
         </field>
     </record>
