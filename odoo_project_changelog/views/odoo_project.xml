@@ -28,7 +28,7 @@
                             invisible="changelog_state != 'done'"
                         />
                         <button
-                            name="exists"
+                            name="action_refresh_changelog"
                             type="object"
                             string="Refresh"
                             icon="fa-refresh"

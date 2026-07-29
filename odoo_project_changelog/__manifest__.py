@@ -3,7 +3,7 @@
 {
     "name": "Odoo Project - Changelogs",
     "summary": "Generate Changelogs from repositories for installed modules.",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",

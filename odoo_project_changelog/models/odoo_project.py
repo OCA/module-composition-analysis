@@ -41,6 +41,10 @@ class OdooProject(models.Model):
                 f"report/html/odoo_project_changelog.report_changelog/{rec.id}",
             )
 
+    def action_refresh_changelog(self):
+        """No-op used by the form button to reload the changelog state."""
+        return True
+
     def action_generate_changelog(self):
         self.ensure_one()
         self.changelog_state = "in_progress"
