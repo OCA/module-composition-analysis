@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+    <!--
+    Having as much as possible Odoo versions (even old ones) is useful to ease
+    the match when importing versions of modules where branches have been forked
+    from the previous version (see '_prepare_module_branch_version_ids_values'
+    method of 'odoo.module.branch').
+    They are all archived by default, but the last 3 are enabled to align with
+    Odoo support lifetime.
+  -->
+
+    <record id="odoo_branch_8" model="odoo.branch">
+        <field name="name">8.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_9" model="odoo.branch">
+        <field name="name">9.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_10" model="odoo.branch">
+        <field name="name">10.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_11" model="odoo.branch">
+        <field name="name">11.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_12" model="odoo.branch">
+        <field name="name">12.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_13" model="odoo.branch">
+        <field name="name">13.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_14" model="odoo.branch">
+        <field name="name">14.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_15" model="odoo.branch">
+        <field name="name">15.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_16" model="odoo.branch">
+        <field name="name">16.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_17" model="odoo.branch">
+        <field name="name">17.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <record id="odoo_branch_18" model="odoo.branch">
+        <field name="name">18.0</field>
+        <field name="active" eval="False" />
+    </record>
+
+    <!-- Recompute the sequence on all records -->
+    <function model="odoo.branch" name="_recompute_sequence" />
+
+    <!-- Enable last three versions -->
+    <function model="odoo.branch" name="write">
+        <value
+            model="odoo.branch"
+            eval="obj().with_context(active_test=False).search([], order='sequence DESC', limit=3).ids"
+        />
+        <value eval="{'active': True}" />
+    </function>
+</odoo>

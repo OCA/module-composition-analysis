@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2023 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <menuitem
+        id="main_odoo_repository_menu"
+        groups="odoo_repository.group_odoo_repository_user"
+        web_icon="odoo_repository,static/description/icon.png"
+        name="Odoo MCA"
+    />
+    <menuitem
+        id="data_odoo_repository_menu"
+        parent="main_odoo_repository_menu"
+        name="Data"
+        sequence="20"
+    />
+    <menuitem
+        id="report_odoo_repository_menu"
+        parent="main_odoo_repository_menu"
+        name="Report"
+        sequence="30"
+    />
+    <menuitem
+        id="misc_odoo_repository_menu"
+        parent="main_odoo_repository_menu"
+        name="Misc."
+        sequence="40"
+    />
+    <menuitem
+        id="config_odoo_repository_menu"
+        parent="main_odoo_repository_menu"
+        groups="odoo_repository.group_odoo_repository_manager"
+        name="Configuration"
+        sequence="50"
+    />
+</odoo>
