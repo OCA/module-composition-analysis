@@ -62,6 +62,14 @@ class OCARepositorySynchronizer(Component):
             stats = self._sync_oca_repositories(current_repos)
             _logger.info("OCA repository sync completed: %s", stats)
             return stats
+        except github.GitHubRateLimitError as e:
+            # Postpone the job until the rate limit is reset, without
+            # increasing its retry counter
+            raise RetryableJobError(
+                "GitHub API rate limit reached, waiting for reset",
+                seconds=e.retry_after,
+                ignore_retry=True,
+            ) from e
         except Exception as e:
             raise RetryableJobError("Failed to fetch OCA repositories") from e
 

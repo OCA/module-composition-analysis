@@ -362,6 +362,14 @@ class OdooModuleBranch(models.Model):
                 # by adding a random waiting time of 1-4s
                 time.sleep(random.randrange(1, 5))
                 prs = github.request(self.env, url)
+            except github.GitHubRateLimitError as exc:
+                # Postpone the job until the rate limit is reset, without
+                # increasing its retry counter
+                raise RetryableJobError(
+                    "GitHub API rate limit reached, waiting for reset",
+                    seconds=exc.retry_after,
+                    ignore_retry=True,
+                ) from exc
             except RuntimeError as exc:
                 raise RetryableJobError("Error while looking for PR URL") from exc
             for pr in prs.get("items", []):
