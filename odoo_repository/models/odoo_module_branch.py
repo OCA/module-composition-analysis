@@ -418,7 +418,12 @@ class OdooModuleBranch(models.Model):
         }
         if manifest:
             category_id = self._get_module_category_id(manifest.get("category", ""))
-            author_ids = self._get_author_ids(manifest.get("author", ""))
+            # Some Odoo std modules have a list instead of a string as 'author':
+            # convert it to a tuple to keep the ormcache key hashable
+            author = manifest.get("author") or ""
+            if isinstance(author, list):
+                author = tuple(author)
+            author_ids = self._get_author_ids(author)
             maintainer_ids = self._get_maintainer_ids(
                 tuple(manifest.get("maintainers", []))
             )
