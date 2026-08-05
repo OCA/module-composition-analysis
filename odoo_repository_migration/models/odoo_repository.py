@@ -238,6 +238,16 @@ class OdooRepository(models.Model):
                 module_names=module_names,
             )
         except Exception as exc:
+            # oca-port requests the GitHub API on its own: when the rate
+            # limit is reached, postpone the job until the limit is reset
+            # (at worst 1h for an authenticated user) without increasing
+            # its retry counter.
+            if "rate limit" in str(exc).lower():
+                raise RetryableJobError(
+                    "GitHub API rate limit reached, waiting for reset",
+                    seconds=3600,
+                    ignore_retry=True,
+                ) from exc
             raise RetryableJobError("Scanner error") from exc
 
     def _migration_get_modules_to_scan(self, migration_path):
