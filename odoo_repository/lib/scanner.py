@@ -1058,8 +1058,24 @@ class RepositoryScanner(BaseScanner):
     ):
         """Perform a code analysis of `module_path`."""
         # Get current code analysis data
-        parser = ModuleParser(f"{self.path}/{module_path}", scan_models=False)
-        data = parser.to_dict()
+        try:
+            parser = ModuleParser(f"{self.path}/{module_path}", scan_models=False)
+            data = parser.to_dict()
+        except Exception as exc:
+            # Some modules ship files the parser cannot handle (e.g. nested
+            # <odoo> tags in XML, tolerated by Odoo): log and push an empty
+            # analysis instead of failing the scan forever.
+            _logger.warning(
+                "%s#%s: code analysis failed for '%s': %s",
+                self.full_name,
+                self.branch,
+                module_path,
+                exc,
+            )
+            data = {
+                "manifest": {},
+                "code": {"Python": 0, "XML": 0, "JavaScript": 0, "CSS": 0},
+            }
         # Append the history of versions
         versions = self._read_module_versions(
             repo, module_path, branch, from_commit, to_commit
