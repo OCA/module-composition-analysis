@@ -491,11 +491,16 @@ class OdooModuleBranch(models.Model):
             python_dependency_ids = self._get_python_dependency_ids(
                 tuple(external_dependencies.get("python", []))
             )
+        # Some Odoo std modules have a list instead of a string as 'author':
+        # convert it to a tuple to keep the ormcache key hashable
+        author = manifest.get("author") or ""
+        if isinstance(author, list):
+            author = tuple(author)
         return {
             "title": manifest.get("name", False),
             "summary": manifest.get("summary", manifest.get("description", False)),
             "category_id": self._get_module_category_id(manifest.get("category", "")),
-            "author_ids": [(6, 0, self._get_author_ids(manifest.get("author", "")))],
+            "author_ids": [(6, 0, self._get_author_ids(author))],
             "maintainer_ids": [
                 (6, 0, self._get_maintainer_ids(tuple(manifest.get("maintainers", []))))
             ],
