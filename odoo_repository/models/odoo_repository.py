@@ -221,13 +221,12 @@ class OdooRepository(models.Model):
     def _check_existing_jobs(self, raise_exc=True):
         """Check if a scan is already triggered for this repository."""
         self.ensure_one()
-        existing_job = (
+        ongoing_jobs = (
             self.env["queue.job"]
             .sudo()
             .search(
                 [
                     ("model_name", "=", self._name),
-                    ("records", "ilike", f'%"ids": [{self.id}]%'),
                     (
                         "state",
                         "in",
@@ -238,10 +237,14 @@ class OdooRepository(models.Model):
                             "started",
                         ],
                     ),
-                ],
-                limit=1,
+                ]
             )
         )
+        # NOTE: 'records' cannot take part in the domain. It is a jsonb holding
+        # an escaped JSON string, so a pattern such as '"ids": [42]' is never
+        # found in it, and searching on it silently matched nothing. Which
+        # repository the ongoing jobs are about is therefore told here instead.
+        existing_job = ongoing_jobs.filtered(lambda job: self in job.records)
         if existing_job:
             msg = _("A scan is already ongoing for repository %s") % self.display_name
             if raise_exc:
