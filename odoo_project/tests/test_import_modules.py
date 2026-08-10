@@ -164,3 +164,32 @@ class TestImportModules(ProjectCommon):
         self.assertIn(mod1_branch_in_repo, existing_mods)
         # Project modules are also created
         self.assertEqual(len(existing_mods.odoo_project_module_ids), 2)
+
+    def test_get_module_branch_in_given_repository(self):
+        """A module can be looked up in a repository other than the project one."""
+        module = self.module_branch_model._get_module("test1")
+        # The very same module lives in two scanned repositories
+        other_org = self.env["odoo.repository.org"].create({"name": "other-org"})
+        other_repository = self.env["odoo.repository"].create(
+            {
+                "org_id": other_org.id,
+                "name": self.odoo_repository.name,
+                "repo_url": "https://github.com/other-org/repo",
+                "repo_type": "github",
+            }
+        )
+        module_branches = {}
+        for repository in (self.odoo_repository, other_repository):
+            repo_branch = self._create_odoo_repository_branch(repository, self.branch)
+            module_branches[repository] = self._create_odoo_module_branch(
+                module,
+                self.branch,
+                specific=False,
+                repository_branch_id=repo_branch.id,
+            )
+        for repository, module_branch in module_branches.items():
+            with self.subTest(repository=repository.display_name):
+                self.assertEqual(
+                    self.project._get_module_branch(module, repository=repository),
+                    module_branch,
+                )

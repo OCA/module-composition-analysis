@@ -167,15 +167,18 @@ class OdooProject(models.Model):
         for module in self.unknown_module_ids:
             module.action_find_pr_url()
 
-    def _get_module_branch(self, module):
+    def _get_module_branch(self, module, repository=None):
         """Return the `odoo.module.branch` matching `module` for this project.
 
-        If it doesn't exist it'll be automatically created as an orphaned
-        module.
+        The module is looked up in `repository` first, defaulting to the
+        repository of the project. If it doesn't exist it'll be automatically
+        created as an orphaned module.
         """
         self.ensure_one()
+        if repository is None:
+            repository = self.repository_id
         module_branch = self.env["odoo.module.branch"]._find_or_create(
-            self.odoo_version_id, module, self.repository_id
+            self.odoo_version_id, module, repository
         )
         if not module_branch.repository_branch_id and not module_branch.specific:
             # If the module hasn't been found in existing repositories content,
