@@ -1,4 +1,5 @@
 # Copyright 2024 Camptocamp SA
+# Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from .common import ProjectCommon
@@ -62,7 +63,7 @@ class TestImportModules(ProjectCommon):
     def test_match_blacklisted_module(self):
         mod1 = "test1"
         mod2 = "test2"
-        mod1_blacklisted = self.wiz_import_modules_model._get_module(mod1)
+        mod1_blacklisted = self.module_branch_model._get_module(mod1)
         mod1_blacklisted.blacklisted = True
         # Import them through the wizard
         modules_list_text = f"{mod1}\n{mod2}"
@@ -82,7 +83,7 @@ class TestImportModules(ProjectCommon):
     def test_match_orphaned_module(self):
         mod1 = "test1"
         mod2 = "test2"
-        mod1_orphaned = self.wiz_import_modules_model._get_module(mod1)
+        mod1_orphaned = self.module_branch_model._get_module(mod1)
         mod1_branch_orphaned = self.module_branch_model._create_orphaned_module_branch(
             self.branch, mod1_orphaned
         )
@@ -106,7 +107,7 @@ class TestImportModules(ProjectCommon):
     def test_match_generic_module(self):
         mod1 = "test1"
         mod2 = "test2"
-        mod1_generic = self.wiz_import_modules_model._get_module(mod1)
+        mod1_generic = self.module_branch_model._get_module(mod1)
         repo_branch = self._create_odoo_repository_branch(
             self.odoo_repository, self.branch
         )
@@ -138,7 +139,7 @@ class TestImportModules(ProjectCommon):
         self.project.odoo_version_id = self.branch
         mod1 = "test1"
         mod2 = "test2"
-        mod1_in_repo = self.wiz_import_modules_model._get_module(mod1)
+        mod1_in_repo = self.module_branch_model._get_module(mod1)
         repo_branch = self._create_odoo_repository_branch(
             self.odoo_repository, self.branch
         )
