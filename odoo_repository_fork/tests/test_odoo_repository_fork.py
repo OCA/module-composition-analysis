@@ -195,8 +195,7 @@ class TestOdooRepositoryFork(Common):
             upstream_repository_id=upstream.id,
             token_id=token.id,
         )
-        url = "https://github.com/acsone/account-invoicing.git"
-        self.assertEqual(
-            fork._get_authenticated_url(url),
-            "https://oauth2:s3cr3t@github.com/acsone/account-invoicing.git",
-        )
+        params = fork._prepare_base_scanner_parameters()
+        self.assertEqual(params["org"], "acsone")
+        self.assertEqual(params["token"], "s3cr3t")
+        self.assertNotEqual(params["token"], upstream._get_token())
