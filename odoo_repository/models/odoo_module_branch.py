@@ -18,6 +18,7 @@ from ..utils.module import adapt_version
 
 class OdooModuleBranch(models.Model):
     _name = "odoo.module.branch"
+    _inherit = "odoo.ref.data.mixin"
     _description = "Odoo Module Branch"
     _order = "repository_sequence, module_name, branch_name"
 
@@ -644,13 +645,13 @@ class OdooModuleBranch(models.Model):
             rec = self.env["odoo.module.category"].search(
                 [("name", "=", category_name)], limit=1
             )
-            if not rec:
-                rec = (
-                    self.env["odoo.module.category"]
-                    .sudo()
-                    .create({"name": category_name})
-                )
-            return rec.id
+            if rec:
+                return rec.id
+            return self._create_ref_data(
+                "odoo.module.category",
+                [("name", "=", category_name)],
+                {"name": category_name},
+            )
         return False
 
     @tools.ormcache("names")
@@ -661,14 +662,14 @@ class OdooModuleBranch(models.Model):
                 names = [name.strip() for name in names.split(",")]
             authors = self.env["odoo.author"].search([("name", "in", names)])
             missing_author_names = set(names) - set(authors.mapped("name"))
-            missing_authors = self.env["odoo.author"]
+            created_ids = []
             if missing_author_names:
-                missing_authors = (
-                    self.env["odoo.author"]
-                    .sudo()
-                    .create([{"name": name} for name in missing_author_names])
+                created_ids = self._create_ref_data_multi(
+                    "odoo.author",
+                    "name",
+                    [{"name": name} for name in missing_author_names],
                 )
-            return (authors | missing_authors).ids
+            return authors.ids + created_ids
         return []
 
     @tools.ormcache("names")
@@ -676,12 +677,14 @@ class OdooModuleBranch(models.Model):
         if names:
             maintainers = self.env["odoo.maintainer"].search([("name", "in", names)])
             missing_maintainer_names = set(names) - set(maintainers.mapped("name"))
-            created = self.env["odoo.maintainer"]
+            created_ids = []
             if missing_maintainer_names:
-                created = created.sudo().create(
-                    [{"name": name} for name in missing_maintainer_names]
+                created_ids = self._create_ref_data_multi(
+                    "odoo.maintainer",
+                    "name",
+                    [{"name": name} for name in missing_maintainer_names],
                 )
-            return (maintainers | created).ids
+            return maintainers.ids + created_ids
         return []
 
     @tools.ormcache("name")
@@ -690,9 +693,11 @@ class OdooModuleBranch(models.Model):
             rec = self.env["odoo.module.dev.status"].search(
                 [("name", "=", name)], limit=1
             )
-            if not rec:
-                rec = self.env["odoo.module.dev.status"].sudo().create({"name": name})
-            return rec.id
+            if rec:
+                return rec.id
+            return self._create_ref_data(
+                "odoo.module.dev.status", [("name", "=", name)], {"name": name}
+            )
         return False
 
     @api.model
@@ -759,13 +764,15 @@ class OdooModuleBranch(models.Model):
             dependencies = self.env["odoo.python.dependency"].search(
                 [("name", "in", packages)]
             )
-            missing_dependencies = set(packages) - set(dependencies.mapped("name"))
-            created = self.env["odoo.python.dependency"]
-            if missing_dependencies:
-                created = created.sudo().create(
-                    [{"name": package} for package in missing_dependencies]
+            missing_names = set(packages) - set(dependencies.mapped("name"))
+            created_ids = []
+            if missing_names:
+                created_ids = self._create_ref_data_multi(
+                    "odoo.python.dependency",
+                    "name",
+                    [{"name": name} for name in missing_names],
                 )
-            return (dependencies | created).ids
+            return dependencies.ids + created_ids
         return []
 
     @tools.ormcache("license_name")
@@ -773,9 +780,11 @@ class OdooModuleBranch(models.Model):
         if license_name:
             license_model = self.env["odoo.license"]
             rec = license_model.search([("name", "=", license_name)], limit=1)
-            if not rec:
-                rec = license_model.sudo().create({"name": license_name})
-            return rec.id
+            if rec:
+                return rec.id
+            return self._create_ref_data(
+                "odoo.license", [("name", "=", license_name)], {"name": license_name}
+            )
         return False
 
     def _get_module(self, name):

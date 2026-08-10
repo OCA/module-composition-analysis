@@ -1,5 +1,6 @@
 from . import authentication_token
 from . import ssh_key
+from . import odoo_ref_data_mixin
 from . import odoo_author
 from . import odoo_branch
 from . import odoo_license
