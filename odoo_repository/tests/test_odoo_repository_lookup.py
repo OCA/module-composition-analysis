@@ -1,6 +1,7 @@
+import pathlib
+
 # Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-
 from .common import Common
 
 
@@ -90,3 +91,21 @@ class TestOdooRepositoryLookup(Common):
         module_branches["acsone"].repository_id.org_id.sequence = 1
         found = module_branch_model._find(self.branch, module, repo=False)
         self.assertEqual(found, module_branches["acsone"])
+
+    def test_get_local_clone_path(self):
+        """The clone path matches the layout built by the scanner."""
+        repository = self._create_repository("OCA", "account-invoicing")
+        self.assertEqual(
+            repository._get_local_clone_path(),
+            pathlib.Path(self.repositories_path, "OCA", "account-invoicing"),
+        )
+
+    def test_get_local_clone_path_with_clone_name(self):
+        """A forced clone name overrides the repository name on disk."""
+        repository = self._create_repository(
+            "OCA", "account-invoicing", clone_name="oca-account-invoicing"
+        )
+        self.assertEqual(
+            repository._get_local_clone_path(),
+            pathlib.Path(self.repositories_path, "OCA", "oca-account-invoicing"),
+        )

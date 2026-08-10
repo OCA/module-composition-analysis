@@ -19,6 +19,7 @@ from odoo.addons.queue_job.delay import chain
 from odoo.addons.queue_job.exception import RetryableJobError
 from odoo.addons.queue_job.job import identity_exact
 
+from ..lib.scanner import BaseScanner
 from ..utils.scanner import RepositoryScannerOdooEnv
 
 _logger = logging.getLogger(__name__)
@@ -659,6 +660,23 @@ class OdooRepository(models.Model):
         # NOTE: GitHub and GitLab supports the same URL pattern
         url = "/".join(["tree", branch, path])
         return urljoin(self.repo_url + "/", url)
+
+    def _get_local_clone_path(self):
+        """Return the path of the local clone of this repository.
+
+        The clone is the one maintained by the scanner, so it only exists
+        once the repository has been scanned at least once.
+        """
+        self.ensure_one()
+        repositories_path = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param(self._repositories_path_key)
+        )
+        # NOTE: delegate to the scanner to build the very same layout
+        return BaseScanner._prepare_repositories_path(repositories_path).joinpath(
+            self.org_id.name, self.clone_name or self.name
+        )
 
     @staticmethod
     def _parse_clone_url(clone_url):
