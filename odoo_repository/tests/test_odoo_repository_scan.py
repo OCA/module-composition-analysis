@@ -8,6 +8,22 @@ from .common import Common
 
 
 class TestOdooRepositoryScan(Common):
+    def test_create_scan_jobs_does_not_delay_them(self):
+        """The jobs are returned so that callers can build a graph out of them.
+
+        'action_scan' delays them right away, but something meant to run once
+        the scan is over has to connect to them first.
+        """
+        before = self.env["queue.job"].search_count([])
+        jobs = self.odoo_repository._create_scan_jobs(branch_ids=self.branch.ids)
+        self.assertTrue(jobs)
+        self.assertEqual(
+            [job._job_method.__name__ for job in jobs],
+            ["_detect_modules_to_scan_on_branch"],
+        )
+        self.env.flush_all()
+        self.assertEqual(self.env["queue.job"].search_count([]), before)
+
     def test_check_config(self):
         self.odoo_repository._check_config()
 

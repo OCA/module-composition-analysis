@@ -252,7 +252,21 @@ class OdooRepository(models.Model):
 
     def action_scan(self, branch_ids=None, force=False, raise_exc=True):
         """Scan the whole repository."""
+        for job in self._create_scan_jobs(
+            branch_ids=branch_ids, force=force, raise_exc=raise_exc
+        ):
+            job.delay()
+        return True
+
+    def _create_scan_jobs(self, branch_ids=None, force=False, raise_exc=True):
+        """Return the jobs scanning these repositories, without delaying them.
+
+        Callers wanting something to happen once the scan is over can build
+        their own graph out of them, rather than delaying them right away as
+        `action_scan` does.
+        """
         self._check_config()
+        jobs = []
         for rec in self:
             if not rec.to_scan:
                 continue
@@ -286,11 +300,12 @@ class OdooRepository(models.Model):
             #      on the next branch
             version_branch = versions_branches[0]
             next_versions_branches = versions_branches[1:]
-            job = rec._create_job_detect_modules_to_scan_on_branch(
-                version_branch, next_versions_branches, versions_branches
+            jobs.append(
+                rec._create_job_detect_modules_to_scan_on_branch(
+                    version_branch, next_versions_branches, versions_branches
+                )
             )
-            job.delay()
-        return True
+        return jobs
 
     def _create_job_detect_modules_to_scan_on_branch(
         self, version_branch, next_versions_branches, all_versions_branches
