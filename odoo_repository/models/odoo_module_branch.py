@@ -307,9 +307,10 @@ class OdooModuleBranch(models.Model):
             domain = []
         if _visited is None:
             _visited = set()
-        if self.id in _visited:
+        current_ids = set(self.ids)
+        if current_ids.issubset(_visited):
             return self.browse()
-        _visited.add(self.id)
+        _visited |= current_ids
         # Apply domain and exclude self
         dependencies = (self.dependency_ids - self).filtered_domain(domain)
         dep_ids = set(dependencies.ids)

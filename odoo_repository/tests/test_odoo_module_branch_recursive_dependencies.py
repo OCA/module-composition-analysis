@@ -188,6 +188,22 @@ class TestOdooModuleBranchRecursiveDependencies(Common):
         deps = mod_alone_branch._get_recursive_dependencies()
         self.assertEqual(len(deps), 0)
 
+    def test_get_recursive_dependencies_multi_record_self(self):
+        """Test _get_recursive_dependencies called on a non-singleton recordset."""
+        # This mirrors odoo.project.import.modules._action_import_missing_dependencies,
+        # which calls the method on the module_branch_id of several project
+        # modules at once. The previous implementation relied on `self.id`,
+        # raising `ValueError: Expected singleton` for more than one record.
+        self.mod_a_branch.dependency_ids = self.mod_base_branch
+        self.mod_b_branch.dependency_ids = self.mod_c_branch
+        modules = self.mod_a_branch + self.mod_b_branch
+        deps = modules._get_recursive_dependencies()
+        self.assertIn(self.mod_base_branch, deps)
+        self.assertIn(self.mod_c_branch, deps)
+        self.assertNotIn(self.mod_a_branch, deps)
+        self.assertNotIn(self.mod_b_branch, deps)
+        self.assertEqual(len(deps), 2)  # base, module_c
+
     def test_get_recursive_dependencies_self_exclusion(self):
         """Test that _get_recursive_dependencies excludes self."""
         # Create modules
