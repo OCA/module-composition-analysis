@@ -193,3 +193,21 @@ class TestImportModules(ProjectCommon):
                     self.project._get_module_branch(module, repository=repository),
                     module_branch,
                 )
+
+    def test_repository_branch_id_follows_the_repository_branches(self):
+        """The branch of a project is found whenever its repository gets one.
+
+        A project is commonly created before its repository has been scanned,
+        so the matching branch does not exist yet at that point.
+        """
+        self.project.write(
+            {
+                "repository_id": self.odoo_repository.id,
+                "odoo_version_id": self.branch.id,
+            }
+        )
+        self.assertFalse(self.project.repository_branch_id)
+        repository_branch = self._create_odoo_repository_branch(
+            self.odoo_repository, self.branch
+        )
+        self.assertEqual(self.project.repository_branch_id, repository_branch)

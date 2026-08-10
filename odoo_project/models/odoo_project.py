@@ -92,7 +92,7 @@ class OdooProject(models.Model):
             if rec.repository_id:
                 rec.available_odoo_version_ids = rec.repository_id.branch_ids.branch_id
 
-    @api.depends("repository_id", "odoo_version_id")
+    @api.depends("repository_id.branch_ids.branch_id", "odoo_version_id")
     def _compute_repository_branch_id(self):
         for rec in self:
             rec.repository_branch_id = False
