@@ -7,3 +7,4 @@ from . import test_odoo_module_branch
 from . import test_odoo_branch
 from . import test_oca_repository_synchronizer
 from . import test_odoo_module_branch_recursive_dependencies
+from . import test_odoo_repository_lookup

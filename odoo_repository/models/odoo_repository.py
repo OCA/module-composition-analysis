@@ -1,12 +1,13 @@
 # Copyright 2023 Camptocamp SA
 # Copyright 2026 Sébastien Alix
+# Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import json
 import logging
 import os
 import pathlib
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 
@@ -658,6 +659,42 @@ class OdooRepository(models.Model):
         # NOTE: GitHub and GitLab supports the same URL pattern
         url = "/".join(["tree", branch, path])
         return urljoin(self.repo_url + "/", url)
+
+    @staticmethod
+    def _parse_clone_url(clone_url):
+        """Return the ``(host, org, name)`` parts of a clone URL.
+
+        Supports both HTTP(S) and SCP-like (``git@host:org/name.git``) syntax.
+        Returns ``(None, None, None)`` if the URL cannot be parsed.
+        """
+        if not clone_url:
+            return (None, None, None)
+        url = clone_url.strip()
+        if "://" in url:
+            parts = urlparse(url)
+            host, path = parts.hostname, parts.path
+        elif ":" in url:
+            # SCP-like syntax: [user@]host:path
+            host, _, path = url.partition(":")
+            host = host.rpartition("@")[2]
+        else:
+            return (None, None, None)
+        path = path.strip("/")
+        if path.endswith(".git"):
+            path = path[: -len(".git")]
+        # NOTE: 'org' keeps every leading segment to support nested namespaces
+        # (GitLab sub-groups).
+        org, _, name = path.rpartition("/")
+        if not host or not org or not name:
+            return (None, None, None)
+        return (host, org, name)
+
+    @api.model
+    def _find_from_org_and_name(self, org, name):
+        """Return the repository matching an organization and a name."""
+        return self.with_context(active_test=False).search(
+            [("org_id.name", "=", org), ("name", "=", name)], limit=1
+        )
 
     def unlink(self):
         # There is no deletion on cascade policy by default, but for specific

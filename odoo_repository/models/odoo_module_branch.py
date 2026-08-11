@@ -1,4 +1,5 @@
 # Copyright 2023 Camptocamp SA
+# Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import pathlib
@@ -20,7 +21,7 @@ class OdooModuleBranch(models.Model):
     _name = "odoo.module.branch"
     _inherit = "odoo.ref.data.mixin"
     _description = "Odoo Module Branch"
-    _order = "repository_sequence, module_name, branch_name"
+    _order = "org_sequence, repository_sequence, module_name, branch_name"
 
     module_id = fields.Many2one(
         comodel_name="odoo.module",
@@ -54,6 +55,12 @@ class OdooModuleBranch(models.Model):
         related="repository_branch_id.repository_id.org_id",
         store=True,
         string="Organization",
+    )
+    org_sequence = fields.Integer(
+        related="repository_branch_id.repository_id.org_id.sequence",
+        store=True,
+        index=True,
+        string="Organization Sequence",
     )
     branch_id = fields.Many2one(
         # NOTE: not a related on 'repository_branch_id' as we need to create
