@@ -425,59 +425,14 @@ class OdooModuleBranch(models.Model):
             "pr_url": False,
         }
         if manifest:
-            category_id = self._get_module_category_id(manifest.get("category", ""))
-            author_ids = self._get_author_ids(manifest.get("author", ""))
-            maintainer_ids = self._get_maintainer_ids(
-                tuple(manifest.get("maintainers", []))
-            )
-            dev_status_id = self._get_dev_status_id(
-                manifest.get("development_status", "")
-            )
-            dependency_ids = []
-            external_dependencies = {}
-            python_dependency_ids = []
-            if manifest.get("installable", True):
-                dependency_ids = self._get_dependency_ids(
-                    repo_branch.branch_id,
-                    repo_branch.repository_id,
-                    # Set at least a dependency on "base" if not defined
-                    manifest.get("depends") or ["base"],
-                )
-                external_dependencies = manifest.get("external_dependencies", {})
-                python_dependency_ids = self._get_python_dependency_ids(
-                    tuple(external_dependencies.get("python", []))
-                )
-            license_id = self._get_license_id(manifest.get("license", ""))
             values.update(
-                {
-                    "title": manifest.get("name", False),
-                    "summary": manifest.get(
-                        "summary", manifest.get("description", False)
-                    ),
-                    "category_id": category_id,
-                    "author_ids": [(6, 0, author_ids)],
-                    "maintainer_ids": [(6, 0, maintainer_ids)],
-                    "dependency_ids": [(6, 0, dependency_ids)],
-                    "external_dependencies": external_dependencies,
-                    "python_dependency_ids": [(6, 0, python_dependency_ids)],
-                    "license_id": license_id,
-                    "version": manifest.get("version", False),
-                    "development_status_id": dev_status_id,
-                    "application": manifest.get("application", False),
-                    "installable": manifest.get("installable", True),
-                    "auto_install": manifest.get("auto_install", False),
-                }
+                self._prepare_manifest_values(
+                    manifest, repo_branch.branch_id, repo_branch.repository_id
+                )
             )
         if data.get("last_scanned_commit"):
-            values.update(
-                {
-                    "removed": False,
-                    "sloc_python": data["code"]["Python"],
-                    "sloc_xml": data["code"]["XML"],
-                    "sloc_js": data["code"]["JavaScript"],
-                    "sloc_css": data["code"]["CSS"],
-                }
-            )
+            values["removed"] = False
+            values.update(self._prepare_code_analysis_values(data["code"]))
         # Handle module removal
         elif module_branch:
             values.update(
@@ -507,6 +462,66 @@ class OdooModuleBranch(models.Model):
             if versions:
                 values["version_ids"] = versions
         return values
+
+    def _prepare_manifest_values(self, manifest, branch, repository):
+        """Return the `odoo.module.branch` values a manifest carries.
+
+        `branch` and `repository` are where the dependencies it declares are
+        looked up, those of the module the manifest belongs to.
+        """
+        dependency_ids = []
+        external_dependencies = {}
+        python_dependency_ids = []
+        if manifest.get("installable", True):
+            dependency_ids = self._get_dependency_ids(
+                branch,
+                repository,
+                # Set at least a dependency on "base" if not defined
+                manifest.get("depends") or ["base"],
+            )
+            external_dependencies = manifest.get("external_dependencies", {})
+            python_dependency_ids = self._get_python_dependency_ids(
+                tuple(external_dependencies.get("python", []))
+            )
+        return {
+            "title": manifest.get("name", False),
+            "summary": manifest.get("summary", manifest.get("description", False)),
+            "category_id": self._get_module_category_id(manifest.get("category", "")),
+            "author_ids": [(6, 0, self._get_author_ids(manifest.get("author", "")))],
+            "maintainer_ids": [
+                (6, 0, self._get_maintainer_ids(tuple(manifest.get("maintainers", []))))
+            ],
+            "dependency_ids": [(6, 0, dependency_ids)],
+            "external_dependencies": external_dependencies,
+            "python_dependency_ids": [(6, 0, python_dependency_ids)],
+            "license_id": self._get_license_id(manifest.get("license", "")),
+            "version": manifest.get("version", False),
+            "development_status_id": self._get_dev_status_id(
+                manifest.get("development_status", "")
+            ),
+            "application": manifest.get("application", False),
+            "installable": manifest.get("installable", True),
+            "auto_install": manifest.get("auto_install", False),
+        }
+
+    def _get_sloc_fields(self):
+        """Return the field holding the count of each analysed language.
+
+        Counting one more language is adding it here, and having the scanner
+        analyse it.
+        """
+        return {
+            "Python": "sloc_python",
+            "XML": "sloc_xml",
+            "JavaScript": "sloc_js",
+            "CSS": "sloc_css",
+        }
+
+    def _prepare_code_analysis_values(self, code):
+        """Return the `odoo.module.branch` values a code analysis carries."""
+        return {
+            field: code[language] for language, field in self._get_sloc_fields().items()
+        }
 
     def _create_or_update(self, repo_branch, module, values):
         """Create or update a `odoo.module.branch` record from scanned module.
@@ -926,10 +941,7 @@ class OdooModuleBranch(models.Model):
             "is_standard": self.is_standard,
             "is_enterprise": self.is_enterprise,
             "is_community": self.is_community,
-            "sloc_python": self.sloc_python,
-            "sloc_xml": self.sloc_xml,
-            "sloc_js": self.sloc_js,
-            "sloc_css": self.sloc_css,
+            **{field: self[field] for field in self._get_sloc_fields().values()},
             "last_scanned_commit": self.last_scanned_commit,
             "addons_path": self.addons_path,
             "pr_url": self.pr_url,

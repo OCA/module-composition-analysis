@@ -590,10 +590,14 @@ class OdooRepository(models.Model):
             "is_standard": data["is_standard"],
             "is_enterprise": data["is_enterprise"],
             "is_community": data["is_community"],
-            "sloc_python": data["sloc_python"],
-            "sloc_xml": data["sloc_xml"],
-            "sloc_js": data["sloc_js"],
-            "sloc_css": data["sloc_css"],
+            # The exchange format spells the code analysis with the very names
+            # of the fields holding it. A node counting one more language than
+            # the one it imports from simply gets nothing for it.
+            **{
+                field: data[field]
+                for field in mb_model._get_sloc_fields().values()
+                if field in data
+            },
             "last_scanned_commit": data["last_scanned_commit"],
             "pr_url": data["pr_url"],
         }
