@@ -556,7 +556,9 @@ class OdooRepository(models.Model):
         maintainer_ids = mb_model._get_maintainer_ids(tuple(data["maintainers"]))
         dev_status_id = mb_model._get_dev_status_id(data["development_status"])
         dependency_ids = mb_model._get_dependency_ids(
-            repository_branch, data["depends"]
+            repository_branch.branch_id,
+            repository_branch.repository_id,
+            data["depends"],
         )
         external_dependencies = data["external_dependencies"]
         python_dependency_ids = mb_model._get_python_dependency_ids(

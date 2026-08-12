@@ -438,7 +438,8 @@ class OdooModuleBranch(models.Model):
             python_dependency_ids = []
             if manifest.get("installable", True):
                 dependency_ids = self._get_dependency_ids(
-                    repo_branch,
+                    repo_branch.branch_id,
+                    repo_branch.repository_id,
                     # Set at least a dependency on "base" if not defined
                     manifest.get("depends") or ["base"],
                 )
@@ -756,13 +757,17 @@ class OdooModuleBranch(models.Model):
             module_branch = self.sudo()._create_orphaned_module_branch(branch, module)
         return module_branch
 
-    def _get_dependency_ids(self, repo_branch, depends: list):
+    def _get_dependency_ids(self, branch, repository, depends: list):
+        """Return the modules `depends` refers to, on `branch`.
+
+        They are looked up in `repository` first. Both are those of the module
+        depending on them, which a repository branch does not always tell: a
+        module read outside of a scan can belong to no repository at all.
+        """
         dependency_ids = []
         for depend in depends:
             module = self._get_module(depend)
-            dependency = self._find_or_create(
-                repo_branch.branch_id, module, repo_branch.repository_id
-            )
+            dependency = self._find_or_create(branch, module, repository)
             dependency_ids.append(dependency.id)
         return dependency_ids
 
