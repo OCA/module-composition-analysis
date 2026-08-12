@@ -109,3 +109,21 @@ class TestOdooRepositoryLookup(Common):
             repository._get_local_clone_path(),
             pathlib.Path(self.repositories_path, "OCA", "oca-account-invoicing"),
         )
+
+    def test_prepare_base_scanner_parameters(self):
+        """Every scanner of a repository gets the same way to reach it."""
+        token = self.env["authentication.token"].create(
+            {"name": "OCA", "token": "s3cr3t"}
+        )
+        repository = self._create_repository("OCA", "account-invoicing")
+        repository.token_id = token
+        params = repository._prepare_base_scanner_parameters()
+        self.assertEqual(params["org"], "OCA")
+        self.assertEqual(params["name"], "account-invoicing")
+        self.assertEqual(params["token"], "s3cr3t")
+        self.assertEqual(
+            params["clone_url"], "https://github.com/OCA/account-invoicing.git"
+        )
+        # The parameters of a repository scanner build on them
+        scanner_params = repository._prepare_scanner_parameters("18.0", "18.0")
+        self.assertLessEqual(params.items(), scanner_params.items())

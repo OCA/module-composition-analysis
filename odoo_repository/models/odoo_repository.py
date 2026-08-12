@@ -445,13 +445,33 @@ class OdooRepository(models.Model):
             or os.environ.get("GITHUB_TOKEN")
         )
 
-    def _prepare_scanner_parameters(self, version, branch):
+    def _prepare_base_scanner_parameters(self):
+        """Return the parameters every scanner of this repository needs.
+
+        They are the ones telling where the clone lives and how to reach the
+        remote, which any scanner working on this repository has to share,
+        whatever it scans.
+        """
         ir_config = self.env["ir.config_parameter"]
-        repositories_path = ir_config.sudo().get_param(self._repositories_path_key)
         return {
             "org": self.org_id.name,
             "name": self.name,
             "clone_url": self.clone_url,
+            "repositories_path": ir_config.sudo().get_param(
+                self._repositories_path_key
+            ),
+            "repo_type": self.repo_type,
+            "ssh_key": self.ssh_key_id.private_key,
+            "token": self._get_token(),
+            "workaround_fs_errors": (
+                self.env.company.config_odoo_repository_workaround_fs_errors
+            ),
+            "clone_name": self.clone_name,
+        }
+
+    def _prepare_scanner_parameters(self, version, branch):
+        return {
+            **self._prepare_base_scanner_parameters(),
             "version": version,
             "branch": branch,
             "addons_paths_data": self.addons_path_ids.read(
@@ -462,14 +482,6 @@ class OdooRepository(models.Model):
                     "is_community",
                 ]
             ),
-            "repositories_path": repositories_path,
-            "repo_type": self.repo_type,
-            "ssh_key": self.ssh_key_id.private_key,
-            "token": self._get_token(),
-            "workaround_fs_errors": (
-                self.env.company.config_odoo_repository_workaround_fs_errors
-            ),
-            "clone_name": self.clone_name,
             "env": self.env,
         }
 
