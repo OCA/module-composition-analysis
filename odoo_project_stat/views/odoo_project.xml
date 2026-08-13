@@ -11,7 +11,7 @@
                 <page
                     name="stats"
                     string="Stats"
-                    attrs="{'invisible': [('chart_modules_count', '=', False), ('chart_sloc', '=', False)]}"
+                    invisible="not chart_modules_count and not chart_sloc"
                 >
                     <group>
                         <group>

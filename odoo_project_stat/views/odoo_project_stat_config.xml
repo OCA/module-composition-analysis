@@ -6,7 +6,7 @@
         <field name="name">odoo.project.stat.config.tree</field>
         <field name="model">odoo.project.stat.config</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="color" widget="color" />
@@ -15,9 +15,9 @@
                     name="domain"
                     widget="domain"
                     options="{'model': 'odoo.project.module'}"
-                    attrs="{'required': [('residual', '=', False)]}"
+                    required="not residual"
                 />
-            </tree>
+            </list>
         </field>
     </record>
 
