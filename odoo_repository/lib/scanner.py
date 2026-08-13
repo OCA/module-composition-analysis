@@ -247,6 +247,9 @@ class BaseScanner:
                 extra = {"env": git_env}
                 if self.workaround_fs_errors:
                     extra["separate_git_dir"] = str(tmp_git_dir_path)
+                    # GitPython blocks '--separate-git-dir' since 3.1.59
+                    # We must allow unsafe options to be able to use it,
+                    extra["allow_unsafe_options"] = True
                 params = self._clone_params(**extra)
                 try:
                     git.Repo.clone_from(**params)
