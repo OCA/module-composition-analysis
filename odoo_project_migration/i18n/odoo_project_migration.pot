@@ -441,6 +441,11 @@ msgid "Organization"
 msgstr ""
 
 #. module: odoo_project_migration
+#: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__org_sequence
+msgid "Organization Sequence"
+msgstr ""
+
+#. module: odoo_project_migration
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__pr_url
 msgid "PR URL"
 msgstr ""
@@ -448,6 +453,13 @@ msgstr ""
 #. module: odoo_project_migration
 #: model:ir.model.fields.selection,name:odoo_project_migration.selection__odoo_project_module_migration__state__port_commits
 msgid "Ported (missing commits?)"
+msgstr ""
+
+#. module: odoo_project_migration
+#: model:ir.model.fields,help:odoo_project_migration.field_odoo_project_module_migration__org_sequence
+msgid ""
+"Priority of this organization when looking for the origin of a module shared"
+" by several organizations (forks). The lowest sequence wins."
 msgstr ""
 
 #. module: odoo_project_migration
