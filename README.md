@@ -24,7 +24,7 @@ addon | version | maintainers | summary
 [odoo_project](odoo_project/) | 18.0.1.1.0 |  | Analyze your Odoo projects code bases.
 [odoo_project_changelog](odoo_project_changelog/) | 18.0.1.0.0 |  | Generate Changelogs from repositories for installed modules.
 [odoo_project_migration](odoo_project_migration/) | 18.0.1.1.0 |  | Analyze your Odoo project migrations.
-[odoo_repository](odoo_repository/) | 18.0.1.3.0 |  | Base module to host data collected from Odoo repositories.
+[odoo_repository](odoo_repository/) | 18.0.1.3.1 |  | Base module to host data collected from Odoo repositories.
 [odoo_repository_migration](odoo_repository_migration/) | 18.0.1.1.0 |  | Collect modules migration data for Odoo Repositories.
 
 [//]: # (end addons)
