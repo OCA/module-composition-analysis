@@ -3,7 +3,7 @@
 {
     "name": "Odoo Project",
     "summary": "Analyze your Odoo projects code bases.",
-    "version": "18.0.1.0.1",
+    "version": "18.0.1.1.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",
