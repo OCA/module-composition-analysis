@@ -588,8 +588,20 @@ msgid "Organization"
 msgstr ""
 
 #. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__org_sequence
+msgid "Organization Sequence"
+msgstr ""
+
+#. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__pr_url
 msgid "PR URL"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__org_sequence
+msgid ""
+"Priority of this organization when looking for the origin of a module shared"
+" by several organizations (forks). The lowest sequence wins."
 msgstr ""
 
 #. module: odoo_project
