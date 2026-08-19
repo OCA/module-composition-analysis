@@ -377,6 +377,14 @@ class OdooModuleBranch(models.Model):
                 # by adding a random waiting time of 1-4s
                 time.sleep(random.randrange(1, 5))
                 prs = github.request(self.env, url)
+            except github.GitHubRateLimitError as exc:
+                # Postpone the job until the rate limit is reset, without
+                # increasing its retry counter
+                raise RetryableJobError(
+                    "GitHub API rate limit reached, waiting for reset",
+                    seconds=exc.retry_after,
+                    ignore_retry=True,
+                ) from exc
             except RuntimeError as exc:
                 raise RetryableJobError("Error while looking for PR URL") from exc
             for pr in prs.get("items", []):
@@ -483,11 +491,16 @@ class OdooModuleBranch(models.Model):
             python_dependency_ids = self._get_python_dependency_ids(
                 tuple(external_dependencies.get("python", []))
             )
+        # Some Odoo std modules have a list instead of a string as 'author':
+        # convert it to a tuple to keep the ormcache key hashable
+        author = manifest.get("author") or ""
+        if isinstance(author, list):
+            author = tuple(author)
         return {
             "title": manifest.get("name", False),
             "summary": manifest.get("summary", manifest.get("description", False)),
             "category_id": self._get_module_category_id(manifest.get("category", "")),
-            "author_ids": [(6, 0, self._get_author_ids(manifest.get("author", "")))],
+            "author_ids": [(6, 0, self._get_author_ids(author))],
             "maintainer_ids": [
                 (6, 0, self._get_maintainer_ids(tuple(manifest.get("maintainers", []))))
             ],
