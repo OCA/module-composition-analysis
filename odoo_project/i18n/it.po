@@ -17,7 +17,8 @@ msgstr ""
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
 msgid ""
-"# One module per line with an optional version number (separated by any special character like space, tabulation, comma...). E.g:\n"
+"# One module per line with an optional version number (separated by any "
+"special character like space, tabulation, comma...). E.g:\n"
 "sale\n"
 "server_environment 17.0.1.1.0"
 msgstr ""
@@ -135,7 +136,8 @@ msgstr ""
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_import_modules__modules_list
 msgid ""
 "Copy/paste your list of technical module names here.\n"
-"One module per line with an optional version number (separated by any special character (space, tabulation, comma...)."
+"One module per line with an optional version number (separated by any "
+"special character (space, tabulation, comma...)."
 msgstr ""
 
 #. module: odoo_project
@@ -302,8 +304,8 @@ msgstr ""
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
 msgid ""
-"Initialize the list of modules that are installed in your project. This will"
-" wipe the current installed modules.<br/>The list can be copied-pasted from "
+"Initialize the list of modules that are installed in your project. This will "
+"wipe the current installed modules.<br/>The list can be copied-pasted from "
 "columns 'Technical Name' and 'Latest Version' put side by side from a "
 "standard Odoo export of modules installed."
 msgstr ""
@@ -381,13 +383,6 @@ msgid "JavaScript source lines of code"
 msgstr ""
 
 #. module: odoo_project
-#: model:ir.model.fields,field_description:odoo_project.field_odoo_project____last_update
-#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules____last_update
-#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__last_scanned_commit
 msgid "Last Scanned Commit"
 msgstr ""
@@ -420,11 +415,6 @@ msgstr ""
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__license_id
 msgid "License"
-msgstr ""
-
-#. module: odoo_project
-#: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_main_attachment_id
-msgid "Main Attachment"
 msgstr ""
 
 #. module: odoo_project
@@ -601,8 +591,20 @@ msgid "Organization"
 msgstr ""
 
 #. module: odoo_project
+#: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__org_sequence
+msgid "Organization Sequence"
+msgstr ""
+
+#. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__pr_url
 msgid "PR URL"
+msgstr ""
+
+#. module: odoo_project
+#: model:ir.model.fields,help:odoo_project.field_odoo_project_module__org_sequence
+msgid ""
+"Priority of this organization when looking for the origin of a module shared "
+"by several organizations (forks). The lowest sequence wins."
 msgstr ""
 
 #. module: odoo_project
@@ -673,8 +675,8 @@ msgstr ""
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__repository_id
 msgid ""
-"Repository this project is based on (optional). You can start to "
-"build/simulate a project without repository to get some figures."
+"Repository this project is based on (optional). You can start to build/"
+"simulate a project without repository to get some figures."
 msgstr ""
 
 #. module: odoo_project
