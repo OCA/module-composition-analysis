@@ -864,6 +864,11 @@ msgid "Organization"
 msgstr ""
 
 #. module: odoo_repository
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__org_sequence
+msgid "Organization Sequence"
+msgstr ""
+
+#. module: odoo_repository
 #: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
 msgid "Others"
 msgstr ""
@@ -876,6 +881,14 @@ msgstr ""
 #. module: odoo_repository
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_branch__previous_id
 msgid "Previous"
+msgstr ""
+
+#. module: odoo_repository
+#: model:ir.model.fields,help:odoo_repository.field_odoo_module_branch__org_sequence
+#: model:ir.model.fields,help:odoo_repository.field_odoo_repository_org__sequence
+msgid ""
+"Priority of this organization when looking for the origin of a module shared "
+"by several organizations (forks). The lowest sequence wins."
 msgstr ""
 
 #. module: odoo_repository
@@ -1008,6 +1021,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__repository_sequence
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch_version__sequence
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository__sequence
+#: model:ir.model.fields,field_description:odoo_repository.field_odoo_repository_org__sequence
 msgid "Sequence"
 msgstr ""
 
