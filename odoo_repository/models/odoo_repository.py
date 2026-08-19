@@ -25,6 +25,7 @@ _logger = logging.getLogger(__name__)
 
 class OdooRepository(models.Model):
     _name = "odoo.repository"
+    _inherit = "odoo.ref.data.mixin"
     _description = "Odoo Modules Repository"
     _order = "sequence, display_name"
 
@@ -501,12 +502,18 @@ class OdooRepository(models.Model):
     def _prepare_module_branch_values(self, data):
         # Get branch, repository and technical module
         branch = self.env["odoo.branch"].search([("name", "=", data["branch"])])
-        org = self._get_repository_org(data["repository"]["org"])
-        repository = self._get_repository(
-            org.id, data["repository"]["name"], data["repository"]
+        org_id = self._get_repository_org_id(data["repository"]["org"])
+        repository_id = self._get_repository_id(
+            org_id, data["repository"]["name"], data["repository"]
         )
-        repository_branch = self._get_repository_branch(
-            org.id, repository.id, branch.id, data["repository"]
+        repository_branch_id = self._get_repository_branch_id(
+            org_id, repository_id, branch.id, data["repository"]
+        )
+        # `_get_repository_branch_id` returns a plain id (see `_create_ref_data`
+        # docstring), so browse it here to get a recordset bound to this
+        # transaction's cursor.
+        repository_branch = self.env["odoo.repository.branch"].browse(
+            repository_branch_id
         )
 
         mb_model = self.env["odoo.module.branch"]
@@ -605,21 +612,18 @@ class OdooRepository(models.Model):
         """Hook executed after the creation or update of `rec`."""
 
     @tools.ormcache("name")
-    def _get_repository_org(self, name):
+    def _get_repository_org_id(self, name):
         rec = self.env["odoo.repository.org"].search([("name", "=", name)], limit=1)
-        if not rec:
-            rec = self.env["odoo.repository.org"].sudo().create({"name": name})
-        return rec
+        if rec:
+            return rec.id
+        return self._create_ref_data(
+            "odoo.repository.org", [("name", "=", name)], {"name": name}
+        )
 
     @tools.ormcache("org_id", "name")
-    def _get_repository(self, org_id, name, data):
-        rec = self.env["odoo.repository"].search(
-            [
-                ("org_id", "=", org_id),
-                ("name", "=", name),
-            ],
-            limit=1,
-        )
+    def _get_repository_id(self, org_id, name, data):
+        domain = [("org_id", "=", org_id), ("name", "=", name)]
+        rec = self.env["odoo.repository"].search(domain, limit=1)
         values = {
             "org_id": org_id,
             "name": name,
@@ -629,19 +633,16 @@ class OdooRepository(models.Model):
         }
         if rec:
             rec.sudo().write(values)
-        else:
-            rec = self.env["odoo.repository"].sudo().create(values)
-        return rec
+            return rec.id
+        return self._create_ref_data("odoo.repository", domain, values)
 
     @tools.ormcache("org_id", "repository_id", "branch_id")
-    def _get_repository_branch(self, org_id, repository_id, branch_id, data):
-        rec = self.env["odoo.repository.branch"].search(
-            [
-                ("repository_id", "=", repository_id),
-                ("branch_id", "=", branch_id),
-            ],
-            limit=1,
-        )
+    def _get_repository_branch_id(self, org_id, repository_id, branch_id, data):
+        domain = [
+            ("repository_id", "=", repository_id),
+            ("branch_id", "=", branch_id),
+        ]
+        rec = self.env["odoo.repository.branch"].search(domain, limit=1)
         values = {
             "repository_id": repository_id,
             "branch_id": branch_id,
@@ -649,9 +650,8 @@ class OdooRepository(models.Model):
         }
         if rec:
             rec.sudo().write(values)
-        else:
-            rec = self.env["odoo.repository.branch"].sudo().create(values)
-        return rec
+            return rec.id
+        return self._create_ref_data("odoo.repository.branch", domain, values)
 
     def _get_resource_url(self, branch, path):
         self.ensure_one()

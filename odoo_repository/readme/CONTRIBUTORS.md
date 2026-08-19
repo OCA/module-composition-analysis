@@ -1,2 +1,4 @@
 - Camptocamp
   - Sébastien Alix \<seb@usr-src.org\>
+- ACSONE SA/NV
+  - Laurent Mignon \<laurent.mignon@acsone.eu\>
