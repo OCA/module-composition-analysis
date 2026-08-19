@@ -1,4 +1,5 @@
 # Copyright 2023 Camptocamp SA
+# Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import ast
@@ -91,7 +92,7 @@ class OdooProject(models.Model):
             if rec.repository_id:
                 rec.available_odoo_version_ids = rec.repository_id.branch_ids.branch_id
 
-    @api.depends("repository_id", "odoo_version_id")
+    @api.depends("repository_id.branch_ids.branch_id", "odoo_version_id")
     def _compute_repository_branch_id(self):
         for rec in self:
             rec.repository_branch_id = False
@@ -165,6 +166,61 @@ class OdooProject(models.Model):
         """Try to locate unknown modules."""
         for module in self.unknown_module_ids:
             module.action_find_pr_url()
+
+    def _get_module_branch(self, module, repository=None):
+        """Return the `odoo.module.branch` matching `module` for this project.
+
+        The module is looked up in `repository` first, defaulting to the
+        repository of the project. If it doesn't exist it'll be automatically
+        created as an orphaned module.
+        """
+        self.ensure_one()
+        if repository is None:
+            repository = self.repository_id
+        module_branch = self.env["odoo.module.branch"]._find_or_create(
+            self.odoo_version_id, module, repository
+        )
+        if not module_branch.repository_branch_id and not module_branch.specific:
+            # If the module hasn't been found in existing repositories content,
+            # it could be available somewhere on GitHub as a PR that could help
+            # to identity its repository
+            module_branch.with_delay().action_find_pr_url()
+        return module_branch
+
+    def _get_project_module(self, module_branch, version=False):
+        """Return the `odoo.project.module` of this project for `module_branch`.
+
+        If it doesn't exist it'll be automatically created, otherwise its
+        installed version is updated.
+        """
+        self.ensure_one()
+        project_module_model = self.env["odoo.project.module"]
+        domain = [
+            ("module_branch_id", "=", module_branch.id),
+            ("odoo_project_id", "=", self.id),
+        ]
+        project_module = project_module_model.search(domain)
+        values = {
+            "module_branch_id": module_branch.id,
+            "odoo_project_id": self.id,
+            "installed_version": version,
+        }
+        if project_module:
+            project_module.sudo().write(values)
+        else:
+            # Create the module to make it available for the project
+            project_module = project_module_model.sudo().create(values)
+        return project_module
+
+    def _import_missing_dependencies(self, project_modules):
+        """Complete the project with the dependencies of `project_modules`."""
+        self.ensure_one()
+        branch_modules = project_modules.module_branch_id
+        all_dependencies = branch_modules._get_recursive_dependencies()
+        missing_dependencies = all_dependencies - branch_modules
+        for missing_dependency in missing_dependencies:
+            self._get_project_module(missing_dependency, missing_dependency.version)
+        return True
 
     def _get_repositories_to_scan(self):
         """Return the repositories to scan."""

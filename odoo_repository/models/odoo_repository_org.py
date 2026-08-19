@@ -1,4 +1,5 @@
 # Copyright 2023 Camptocamp SA
+# Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from odoo import api, fields, models
@@ -9,8 +10,17 @@ from ..utils.github import GITHUB_URL
 class OdooRepositoryOrg(models.Model):
     _name = "odoo.repository.org"
     _description = "Odoo Repository Organization"
+    _order = "sequence, name"
 
     name = fields.Char(required=True, index=True)
+    sequence = fields.Integer(
+        default=100,
+        help=(
+            "Priority of this organization when looking for the origin of a "
+            "module shared by several organizations (forks). "
+            "The lowest sequence wins."
+        ),
+    )
     github_url = fields.Char(string="GitHub URL", compute="_compute_github_url")
 
     @api.depends("name")

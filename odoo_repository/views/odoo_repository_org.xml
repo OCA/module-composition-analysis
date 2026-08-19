@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2023 Camptocamp SA
+     Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="odoo_repository_org_view_form" model="ir.ui.view">
@@ -10,6 +11,7 @@
                 <sheet>
                     <group>
                         <field name="name" />
+                        <field name="sequence" />
                     </group>
                 </sheet>
             </form>
@@ -21,6 +23,7 @@
         <field name="model">odoo.repository.org</field>
         <field name="arch" type="xml">
             <list editable="bottom">
+                <field name="sequence" widget="handle" />
                 <field name="name" />
             </list>
         </field>

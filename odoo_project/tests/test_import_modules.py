@@ -1,4 +1,5 @@
 # Copyright 2024 Camptocamp SA
+# Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from .common import ProjectCommon
@@ -62,7 +63,7 @@ class TestImportModules(ProjectCommon):
     def test_match_blacklisted_module(self):
         mod1 = "test1"
         mod2 = "test2"
-        mod1_blacklisted = self.wiz_import_modules_model._get_module(mod1)
+        mod1_blacklisted = self.module_branch_model._get_module(mod1)
         mod1_blacklisted.blacklisted = True
         # Import them through the wizard
         modules_list_text = f"{mod1}\n{mod2}"
@@ -82,7 +83,7 @@ class TestImportModules(ProjectCommon):
     def test_match_orphaned_module(self):
         mod1 = "test1"
         mod2 = "test2"
-        mod1_orphaned = self.wiz_import_modules_model._get_module(mod1)
+        mod1_orphaned = self.module_branch_model._get_module(mod1)
         mod1_branch_orphaned = self.module_branch_model._create_orphaned_module_branch(
             self.branch, mod1_orphaned
         )
@@ -106,7 +107,7 @@ class TestImportModules(ProjectCommon):
     def test_match_generic_module(self):
         mod1 = "test1"
         mod2 = "test2"
-        mod1_generic = self.wiz_import_modules_model._get_module(mod1)
+        mod1_generic = self.module_branch_model._get_module(mod1)
         repo_branch = self._create_odoo_repository_branch(
             self.odoo_repository, self.branch
         )
@@ -138,7 +139,7 @@ class TestImportModules(ProjectCommon):
         self.project.odoo_version_id = self.branch
         mod1 = "test1"
         mod2 = "test2"
-        mod1_in_repo = self.wiz_import_modules_model._get_module(mod1)
+        mod1_in_repo = self.module_branch_model._get_module(mod1)
         repo_branch = self._create_odoo_repository_branch(
             self.odoo_repository, self.branch
         )
@@ -163,3 +164,50 @@ class TestImportModules(ProjectCommon):
         self.assertIn(mod1_branch_in_repo, existing_mods)
         # Project modules are also created
         self.assertEqual(len(existing_mods.odoo_project_module_ids), 2)
+
+    def test_get_module_branch_in_given_repository(self):
+        """A module can be looked up in a repository other than the project one."""
+        module = self.module_branch_model._get_module("test1")
+        # The very same module lives in two scanned repositories
+        other_org = self.env["odoo.repository.org"].create({"name": "other-org"})
+        other_repository = self.env["odoo.repository"].create(
+            {
+                "org_id": other_org.id,
+                "name": self.odoo_repository.name,
+                "repo_url": "https://github.com/other-org/repo",
+                "repo_type": "github",
+            }
+        )
+        module_branches = {}
+        for repository in (self.odoo_repository, other_repository):
+            repo_branch = self._create_odoo_repository_branch(repository, self.branch)
+            module_branches[repository] = self._create_odoo_module_branch(
+                module,
+                self.branch,
+                specific=False,
+                repository_branch_id=repo_branch.id,
+            )
+        for repository, module_branch in module_branches.items():
+            with self.subTest(repository=repository.display_name):
+                self.assertEqual(
+                    self.project._get_module_branch(module, repository=repository),
+                    module_branch,
+                )
+
+    def test_repository_branch_id_follows_the_repository_branches(self):
+        """The branch of a project is found whenever its repository gets one.
+
+        A project is commonly created before its repository has been scanned,
+        so the matching branch does not exist yet at that point.
+        """
+        self.project.write(
+            {
+                "repository_id": self.odoo_repository.id,
+                "odoo_version_id": self.branch.id,
+            }
+        )
+        self.assertFalse(self.project.repository_branch_id)
+        repository_branch = self._create_odoo_repository_branch(
+            self.odoo_repository, self.branch
+        )
+        self.assertEqual(self.project.repository_branch_id, repository_branch)

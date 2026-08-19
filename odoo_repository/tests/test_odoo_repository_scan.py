@@ -2,12 +2,75 @@
 # Copyright 2026 Sébastien Alix
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+import contextlib
+import gc
+
 from odoo import fields
+from odoo.exceptions import UserError
+from odoo.tools import mute_logger
 
 from .common import Common
 
 
 class TestOdooRepositoryScan(Common):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        muted = contextlib.ExitStack()
+        cls.addClassCleanup(muted.close)
+        muted.enter_context(mute_logger("odoo.addons.queue_job.delay"))
+
+    def tearDown(self):
+        super().tearDown()
+        # A delayable warns when collected without having been delayed, which
+        # is what these tests do on purpose. Collect here, while
+        # the logger above is still muted, rather than after 'tearDownClass'.
+        gc.collect()
+
+    def test_create_scan_jobs_does_not_delay_them(self):
+        """The jobs are returned so that callers can build a graph out of them.
+
+        'action_scan' delays them right away, but something meant to run once
+        the scan is over has to connect to them first.
+        """
+        before = self.env["queue.job"].search_count([])
+        jobs = self.odoo_repository._create_scan_jobs(branch_ids=self.branch.ids)
+        self.assertTrue(jobs)
+        self.assertEqual(
+            [job._job_method.__name__ for job in jobs],
+            ["_detect_modules_to_scan_on_branch"],
+        )
+        self.env.flush_all()
+        self.assertEqual(self.env["queue.job"].search_count([]), before)
+
+    def test_check_existing_jobs(self):
+        """A scan is not started again while one is still ongoing."""
+        self.assertFalse(self.odoo_repository._check_existing_jobs(raise_exc=False))
+        for job in self.odoo_repository._create_scan_jobs(branch_ids=self.branch.ids):
+            job.delay()
+        self.env.flush_all()
+        with mute_logger("odoo.addons.odoo_repository.models.odoo_repository"):
+            self.assertTrue(self.odoo_repository._check_existing_jobs(raise_exc=False))
+            with self.assertRaisesRegex(UserError, "already ongoing"):
+                self.odoo_repository._check_existing_jobs()
+
+    def test_check_existing_jobs_ignores_other_repositories(self):
+        """The ongoing scan of another repository does not block this one."""
+        other = self.env["odoo.repository"].create(
+            {
+                "org_id": self.org.id,
+                "name": "other-repo",
+                "repo_url": "https://github.com/ORG/other-repo",
+                "repo_type": "github",
+            }
+        )
+        for job in other._create_scan_jobs(branch_ids=self.branch.ids):
+            job.delay()
+        self.env.flush_all()
+        with mute_logger("odoo.addons.odoo_repository.models.odoo_repository"):
+            self.assertTrue(other._check_existing_jobs(raise_exc=False))
+        self.assertFalse(self.odoo_repository._check_existing_jobs(raise_exc=False))
+
     def test_check_config(self):
         self.odoo_repository._check_config()
 

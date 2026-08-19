@@ -1,12 +1,13 @@
 # Copyright 2023 Camptocamp SA
 # Copyright 2026 Sébastien Alix
+# Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 import json
 import logging
 import os
 import pathlib
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 
@@ -18,6 +19,7 @@ from odoo.addons.queue_job.delay import chain
 from odoo.addons.queue_job.exception import RetryableJobError
 from odoo.addons.queue_job.job import identity_exact
 
+from ..lib.scanner import BaseScanner
 from ..utils.scanner import RepositoryScannerOdooEnv
 
 _logger = logging.getLogger(__name__)
@@ -219,13 +221,12 @@ class OdooRepository(models.Model):
     def _check_existing_jobs(self, raise_exc=True):
         """Check if a scan is already triggered for this repository."""
         self.ensure_one()
-        existing_job = (
+        ongoing_jobs = (
             self.env["queue.job"]
             .sudo()
             .search(
                 [
                     ("model_name", "=", self._name),
-                    ("records", "ilike", f'%"ids": [{self.id}]%'),
                     (
                         "state",
                         "in",
@@ -236,10 +237,14 @@ class OdooRepository(models.Model):
                             "started",
                         ],
                     ),
-                ],
-                limit=1,
+                ]
             )
         )
+        # NOTE: 'records' cannot take part in the domain. It is a jsonb holding
+        # an escaped JSON string, so a pattern such as '"ids": [42]' is never
+        # found in it, and searching on it silently matched nothing. Which
+        # repository the ongoing jobs are about is therefore told here instead.
+        existing_job = ongoing_jobs.filtered(lambda job: self in job.records)
         if existing_job:
             msg = _("A scan is already ongoing for repository %s") % self.display_name
             if raise_exc:
@@ -250,7 +255,21 @@ class OdooRepository(models.Model):
 
     def action_scan(self, branch_ids=None, force=False, raise_exc=True):
         """Scan the whole repository."""
+        for job in self._create_scan_jobs(
+            branch_ids=branch_ids, force=force, raise_exc=raise_exc
+        ):
+            job.delay()
+        return True
+
+    def _create_scan_jobs(self, branch_ids=None, force=False, raise_exc=True):
+        """Return the jobs scanning these repositories, without delaying them.
+
+        Callers wanting something to happen once the scan is over can build
+        their own graph out of them, rather than delaying them right away as
+        `action_scan` does.
+        """
         self._check_config()
+        jobs = []
         for rec in self:
             if not rec.to_scan:
                 continue
@@ -284,11 +303,12 @@ class OdooRepository(models.Model):
             #      on the next branch
             version_branch = versions_branches[0]
             next_versions_branches = versions_branches[1:]
-            job = rec._create_job_detect_modules_to_scan_on_branch(
-                version_branch, next_versions_branches, versions_branches
+            jobs.append(
+                rec._create_job_detect_modules_to_scan_on_branch(
+                    version_branch, next_versions_branches, versions_branches
+                )
             )
-            job.delay()
-        return True
+        return jobs
 
     def _create_job_detect_modules_to_scan_on_branch(
         self, version_branch, next_versions_branches, all_versions_branches
@@ -425,13 +445,33 @@ class OdooRepository(models.Model):
             or os.environ.get("GITHUB_TOKEN")
         )
 
-    def _prepare_scanner_parameters(self, version, branch):
+    def _prepare_base_scanner_parameters(self):
+        """Return the parameters every scanner of this repository needs.
+
+        They are the ones telling where the clone lives and how to reach the
+        remote, which any scanner working on this repository has to share,
+        whatever it scans.
+        """
         ir_config = self.env["ir.config_parameter"]
-        repositories_path = ir_config.sudo().get_param(self._repositories_path_key)
         return {
             "org": self.org_id.name,
             "name": self.name,
             "clone_url": self.clone_url,
+            "repositories_path": ir_config.sudo().get_param(
+                self._repositories_path_key
+            ),
+            "repo_type": self.repo_type,
+            "ssh_key": self.ssh_key_id.private_key,
+            "token": self._get_token(),
+            "workaround_fs_errors": (
+                self.env.company.config_odoo_repository_workaround_fs_errors
+            ),
+            "clone_name": self.clone_name,
+        }
+
+    def _prepare_scanner_parameters(self, version, branch):
+        return {
+            **self._prepare_base_scanner_parameters(),
             "version": version,
             "branch": branch,
             "addons_paths_data": self.addons_path_ids.read(
@@ -442,14 +482,6 @@ class OdooRepository(models.Model):
                     "is_community",
                 ]
             ),
-            "repositories_path": repositories_path,
-            "repo_type": self.repo_type,
-            "ssh_key": self.ssh_key_id.private_key,
-            "token": self._get_token(),
-            "workaround_fs_errors": (
-                self.env.company.config_odoo_repository_workaround_fs_errors
-            ),
-            "clone_name": self.clone_name,
             "env": self.env,
         }
 
@@ -524,7 +556,9 @@ class OdooRepository(models.Model):
         maintainer_ids = mb_model._get_maintainer_ids(tuple(data["maintainers"]))
         dev_status_id = mb_model._get_dev_status_id(data["development_status"])
         dependency_ids = mb_model._get_dependency_ids(
-            repository_branch, data["depends"]
+            repository_branch.branch_id,
+            repository_branch.repository_id,
+            data["depends"],
         )
         external_dependencies = data["external_dependencies"]
         python_dependency_ids = mb_model._get_python_dependency_ids(
@@ -556,10 +590,14 @@ class OdooRepository(models.Model):
             "is_standard": data["is_standard"],
             "is_enterprise": data["is_enterprise"],
             "is_community": data["is_community"],
-            "sloc_python": data["sloc_python"],
-            "sloc_xml": data["sloc_xml"],
-            "sloc_js": data["sloc_js"],
-            "sloc_css": data["sloc_css"],
+            # The exchange format spells the code analysis with the very names
+            # of the fields holding it. A node counting one more language than
+            # the one it imports from simply gets nothing for it.
+            **{
+                field: data[field]
+                for field in mb_model._get_sloc_fields().values()
+                if field in data
+            },
             "last_scanned_commit": data["last_scanned_commit"],
             "pr_url": data["pr_url"],
         }
@@ -658,6 +696,59 @@ class OdooRepository(models.Model):
         # NOTE: GitHub and GitLab supports the same URL pattern
         url = "/".join(["tree", branch, path])
         return urljoin(self.repo_url + "/", url)
+
+    def _get_local_clone_path(self):
+        """Return the path of the local clone of this repository.
+
+        The clone is the one maintained by the scanner, so it only exists
+        once the repository has been scanned at least once.
+        """
+        self.ensure_one()
+        repositories_path = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param(self._repositories_path_key)
+        )
+        # NOTE: delegate to the scanner to build the very same layout
+        return BaseScanner._prepare_repositories_path(repositories_path).joinpath(
+            self.org_id.name, self.clone_name or self.name
+        )
+
+    @staticmethod
+    def _parse_clone_url(clone_url):
+        """Return the ``(host, org, name)`` parts of a clone URL.
+
+        Supports both HTTP(S) and SCP-like (``git@host:org/name.git``) syntax.
+        Returns ``(None, None, None)`` if the URL cannot be parsed.
+        """
+        if not clone_url:
+            return (None, None, None)
+        url = clone_url.strip()
+        if "://" in url:
+            parts = urlparse(url)
+            host, path = parts.hostname, parts.path
+        elif ":" in url:
+            # SCP-like syntax: [user@]host:path
+            host, _, path = url.partition(":")
+            host = host.rpartition("@")[2]
+        else:
+            return (None, None, None)
+        path = path.strip("/")
+        if path.endswith(".git"):
+            path = path[: -len(".git")]
+        # NOTE: 'org' keeps every leading segment to support nested namespaces
+        # (GitLab sub-groups).
+        org, _, name = path.rpartition("/")
+        if not host or not org or not name:
+            return (None, None, None)
+        return (host, org, name)
+
+    @api.model
+    def _find_from_org_and_name(self, org, name):
+        """Return the repository matching an organization and a name."""
+        return self.with_context(active_test=False).search(
+            [("org_id.name", "=", org), ("name", "=", name)], limit=1
+        )
 
     def unlink(self):
         # There is no deletion on cascade policy by default, but for specific
