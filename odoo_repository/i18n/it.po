@@ -829,6 +829,11 @@ msgid "Odoo Python Dependency"
 msgstr ""
 
 #. module: odoo_repository
+#: model:ir.model,name:odoo_repository.model_odoo_ref_data_mixin
+msgid "Odoo Ref Data Mixin"
+msgstr ""
+
+#. module: odoo_repository
 #: model:ir.actions.server,name:odoo_repository.cron_sync_oca_repositories_ir_actions_server
 msgid "Odoo Repositories - Sync OCA repositories"
 msgstr ""
