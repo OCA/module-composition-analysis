@@ -15,7 +15,8 @@ from urllib.parse import urlparse, urlunparse
 
 import git
 import oca_port
-from odoo_addons_parser import ModuleParser
+from odoo_addons_parser import ModuleParser, OdooParser
+from odoo_addons_parser.odoo import ODOO_BASE_ADDONS_PATH
 
 # Disable logging from 'pygount' (used by odoo_addons_parser)
 logging.getLogger("pygount").setLevel(logging.ERROR)
@@ -872,6 +873,7 @@ class RepositoryScanner(BaseScanner):
         token: str = None,
         workaround_fs_errors: bool = False,
         clone_name: str = None,
+        parse_code: bool = False,
     ):
         super().__init__(
             org,
@@ -888,6 +890,7 @@ class RepositoryScanner(BaseScanner):
         self.version = version
         self.branch = branch
         self.addons_paths_data = addons_paths_data
+        self.parse_code = parse_code
 
     def detect_modules_to_scan(self):
         res = self.sync()
@@ -1060,9 +1063,28 @@ class RepositoryScanner(BaseScanner):
         self, repo, module_path, branch, from_commit, to_commit
     ):
         """Perform a code analysis of `module_path`."""
-        # Get current code analysis data
-        parser = ModuleParser(f"{self.path}/{module_path}", scan_models=False)
-        data = parser.to_dict()
+        module = pathlib.Path(module_path).parts[-1]
+        # When scanning 'base' module, we want to include framework base models
+        # in it as well (AbstractModel, Model...) to ease the data exploration
+        # afterwards.
+        if self.parse_code and module == "base":
+            parser = OdooParser(
+                self.path,
+                scan_models=self.parse_code,
+                # No addons path provided to scan only framework code
+                # Put ODOO_BASE_ADDONS_PATH to avoid the merge of modules data
+                # with results of two parsers.
+                # This will also scan other modules (mainly Odoo test modules) but
+                # it's fine.
+                addons_paths=(ODOO_BASE_ADDONS_PATH,),
+                base_models_key=module,
+            )
+            data = parser.to_dict()[module]
+        else:
+            # Get current code analysis data
+            full_module_path = self.path.joinpath(module_path)
+            parser = ModuleParser(full_module_path, scan_models=self.parse_code)
+            data = parser.to_dict()
         # Append the history of versions
         versions = self._read_module_versions(
             repo, module_path, branch, from_commit, to_commit

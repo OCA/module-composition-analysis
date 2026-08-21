@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Sebastien Alix <https://github.com/sebalix>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_module_branch_view_form" model="ir.ui.view">
+        <field name="name">odoo.module.branch.form.inherit</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button
+                    name="open_models"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-square"
+                    invisible="models_count == 0"
+                >
+                    <field string="Models" name="models_count" widget="statinfo" />
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_view_search" model="ir.ui.view">
+        <field name="name">odoo.module.branch.search.inherit</field>
+        <field name="model">odoo.module.branch</field>
+        <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_search" />
+        <field name="arch" type="xml">
+            <field name="license_id" position="after">
+                <field name="model_ids" />
+            </field>
+        </field>
+    </record>
+</odoo>
