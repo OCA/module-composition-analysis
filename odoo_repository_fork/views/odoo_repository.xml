@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_repository_view_form" model="ir.ui.view">
+        <field name="name">odoo.repository.form.fork</field>
+        <field name="model">odoo.repository</field>
+        <field name="inherit_id" ref="odoo_repository.odoo_repository_view_form" />
+        <field name="arch" type="xml">
+            <field name="sequence" position="after">
+                <field
+                    name="upstream_repository_id"
+                    options="{'no_create': True}"
+                    readonly="module_ids"
+                />
+            </field>
+            <!-- A fork is never scanned, yet still has to be readable, so its
+                 credentials cannot be hidden along with the scan options. -->
+            <xpath expr="//field[@name='clone_url']/.." position="attributes">
+                <attribute
+                    name="invisible"
+                >not to_scan and not upstream_repository_id</attribute>
+            </xpath>
+            <group name="options" position="after">
+                <group name="forks" string="Forks" invisible="not fork_ids">
+                    <field name="fork_ids" nolabel="1" colspan="2">
+                        <list>
+                            <field name="org_id" />
+                            <field name="name" />
+                            <field name="clone_url" />
+                        </list>
+                    </field>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>
