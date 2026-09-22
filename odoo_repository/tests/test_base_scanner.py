@@ -55,6 +55,25 @@ class TestBaseScanner(Common):
         # Fetch once cloned
         scanner.sync()
 
+    def test_sparse_checkout(self):
+        scanner = self._init_scanner()
+        scanner.sync()
+        self.assertTrue(scanner.is_cloned)
+        with scanner.repo() as repo:
+            # Sparse checkout is enabled
+            self.assertEqual(repo.git.config("core.sparseCheckout"), "true")
+            # Only required files are checked out
+            branch = self.branch1_name
+            scanner._checkout_branch(repo, branch)
+            self.assertTrue(
+                scanner.path.joinpath(self.addon, "__manifest__.py").exists()
+            )
+            self.assertFalse(
+                scanner.path.joinpath(
+                    self.addon, "static", "description", "icon.png"
+                ).exists()
+            )
+
     def test_branch_exists(self):
         scanner = self._init_scanner()
         scanner.sync()

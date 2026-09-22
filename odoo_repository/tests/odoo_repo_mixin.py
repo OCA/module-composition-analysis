@@ -144,6 +144,11 @@ class OdooRepoMixin(unittest.TestCase):
         manifest_path = module_path / "__manifest__.py"
         with open(manifest_path, "w") as manifest:
             manifest.writelines(manifest_lines)
+        # Add a file which should not be checked out with sparse checkout
+        icon_path = module_path / "static" / "description" / "icon.png"
+        icon_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(icon_path, "wb") as icon:
+            icon.write(b"fake icon data")
 
     @classmethod
     def tearDownClass(cls):

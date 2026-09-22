@@ -28,6 +28,21 @@ IGNORE_FILES = [".po", ".pot", "README.rst", "index.html"]
 
 MANIFEST_FILES = ("__manifest__.py", "__openerp__.py")
 
+# File patterns to checkout in cloned repositories (sparse-checkout):
+# only source files required by the scanners are written on the filesystem,
+# other files (images, fonts, ...) are neither downloaded nor checked out.
+SPARSE_CHECKOUT_PATTERNS = [
+    "**/*.py",
+    "**/*.xml",
+    "**/*.csv",
+    "**/*.js",
+    "**/*.ts",
+    "**/*.css",
+    "**/*.md",
+    "**/*.rst",
+    "**/*.yml",
+]
+
 AUTHOR_EMAILS_TO_SKIP = [
     "transbot@odoo-community.org",
     "noreply@weblate.org",
@@ -194,6 +209,17 @@ class BaseScanner:
             writer.set_value("gc", "worktreePruneExpire", "never")
             writer.set_value("gc", "reflogExpire", "never")
             writer.set_value("gc", "reflogExpireUnreachable", "never")
+            # Optimize index writes (e.g. during checkouts) on repositories
+            # with a lot of files.
+            writer.set_value("feature", "manyFiles", "true")
+
+    def _init_sparse_checkout(self, repo):
+        """Restrict the worktree to the files required by the scanners.
+
+        As blobs are filtered out at clone time ('--filter=blob:none'),
+        sparse checkout ensures that only the required blobs are downloaded.
+        """
+        repo.git.sparse_checkout("set", "--no-cone", *SPARSE_CHECKOUT_PATTERNS)
 
     def _set_git_remote_url(self, repo, remote, url):
         """Ensure that `remote` has `url` set."""
@@ -231,6 +257,14 @@ class BaseScanner:
             # "allow_unsafe_options": True,
             # "multi_options": ["--config core.filemode=false"],
         }
+        if not self.ssh_key:
+            # Tree/blobless clone: tree & blobs are not downloaded during the
+            # clone itself, only the ones required by the sparse checkout
+            # are fetched on demand.
+            # Not applied when authenticating with an SSH key: they are fetched
+            # on demand outside of clone/fetch operations would fail, as
+            # 'GIT_SSH_COMMAND' is not set for these operations.
+            params["filter"] = "tree:0"
         if self.branches:
             params["branch"] = self.branches[0]
         params.update(extra)
@@ -270,6 +304,16 @@ class BaseScanner:
                         if repo_git_dir_path.exists():
                             repo_git_dir_path.unlink()
                         shutil.move(tmp_git_dir_path, repo_git_dir_path)
+            # Restrict the checkout to the files required by the scanners
+            with self.repo() as repo:
+                try:
+                    self._init_sparse_checkout(repo)
+                except git.exc.GitException as exc:
+                    _logger.warning(
+                        "%s: unable to setup sparse checkout, skipping (%s)",
+                        self.full_name,
+                        exc,
+                    )
         return True
 
     def _fetch(self, repo):
