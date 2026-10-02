@@ -1,0 +1,2 @@
+- Camptocamp
+  - Sébastien Alix \<seb@usr-src.org\>
