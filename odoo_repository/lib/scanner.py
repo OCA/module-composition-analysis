@@ -537,6 +537,11 @@ class MigrationScanner(BaseScanner):
         if self.is_cloned and self.new_repo_name and self.new_repo_url:
             with self.repo() as repo:
                 self._set_git_remote_url(repo, self.new_repo_name, self.new_repo_url)
+                # Also enable the partialclonefilter option as the initial remote
+                with repo.config_writer() as writer:
+                    writer.set_value(
+                        f"remote.{self.new_repo_name}", "partialclonefilter", "tree:0"
+                    )
         return res
 
     def scan(self, addons_path=".", target_addons_path=".", module_names=None):
