@@ -7,7 +7,28 @@
         <field name="model">odoo.project.module</field>
         <field name="inherit_id" ref="odoo_repository.odoo_module_branch_view_form" />
         <field name="mode">primary</field>
+        <!-- Dropping what other modules add to the button box of the upstream
+             form is deliberate, hence the priority allowing 'replace'. -->
+        <field name="priority">99</field>
         <field name="arch" type="xml">
+            <!-- Keep only the buttons this model can honour. It delegates to
+                 'odoo.module.branch' through '_inherits', which carries its
+                 fields but not its methods, so a button any module adds to the
+                 form of the upstream module would break this one. Adding a
+                 button here is therefore up to the module providing its
+                 method. -->
+            <div name="button_box" position="replace">
+                <div class="oe_button_box" name="button_box">
+                    <button
+                        name="open_recursive_dependencies"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-sitemap icon"
+                    >
+                        <span>Dependencies</span>
+                    </button>
+                </div>
+            </div>
             <field name="version" position="before">
                 <field name="installed_version" />
             </field>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_project_view_form" model="ir.ui.view">
+        <field name="name">odoo.project.form.dependency.resolver</field>
+        <field name="model">odoo.project</field>
+        <field name="inherit_id" ref="odoo_project.odoo_project_view_form" />
+        <field name="arch" type="xml">
+            <button name="open_import_modules" position="attributes">
+                <attribute
+                    name="invisible"
+                >dependency_management == 'resolved'</attribute>
+            </button>
+            <button name="open_import_modules" position="after">
+                <button
+                    name="action_resolve_dependencies"
+                    type="object"
+                    string="Resolve dependencies"
+                    help="Rebuild the modules from the dependency file of the repository."
+                    class="btn-primary"
+                    invisible="dependency_management != 'resolved'"
+                />
+            </button>
+            <field name="odoo_version_id" position="after">
+                <field name="dependency_management" />
+                <field
+                    name="dependency_resolver"
+                    invisible="dependency_management != 'resolved'"
+                    required="dependency_management == 'resolved'"
+                />
+                <field
+                    name="dependency_source_path"
+                    invisible="dependency_management != 'resolved'"
+                    required="dependency_management == 'resolved'"
+                />
+                <field
+                    name="last_resolution_date"
+                    invisible="dependency_management != 'resolved'"
+                />
+            </field>
+            <page name="status" position="before">
+                <page
+                    name="dependencies"
+                    string="Dependencies"
+                    invisible="dependency_management != 'resolved'"
+                >
+                    <group
+                        name="app_modules"
+                        string="Additional Modules"
+                        help="Modules the dependency file cannot declare, and that the project repository does not host either."
+                    >
+                        <field
+                            name="app_module_ids"
+                            nolabel="1"
+                            colspan="2"
+                            domain="[('branch_id', '=', odoo_version_id)]"
+                        >
+                            <list>
+                                <field name="module_name" />
+                                <field name="repository_id" />
+                                <field name="version" />
+                            </list>
+                        </field>
+                    </group>
+                    <group name="resolution_log" string="Resolution Log">
+                        <field name="resolution_log" nolabel="1" colspan="2" />
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>

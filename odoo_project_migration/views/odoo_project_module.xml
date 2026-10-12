@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_project_module_view_form" model="ir.ui.view">
+        <field name="name">odoo.project.module.form.migration</field>
+        <field name="model">odoo.project.module</field>
+        <field name="inherit_id" ref="odoo_project.odoo_project_module_view_form" />
+        <field name="arch" type="xml">
+            <!-- The form of 'odoo.project.module' only keeps the buttons it can
+                 honour, so the one of the upstream module does not reach it.
+                 Add it here, next to the method forwarding it. -->
+            <div name="button_box" position="inside">
+                <field name="next_odoo_version_module_branch_id" invisible="1" />
+                <button
+                    name="open_next_module_branches"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-arrow-up"
+                    invisible="not next_odoo_version_module_branch_id"
+                >
+                    <span>Next Versions</span>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>
