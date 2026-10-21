@@ -264,7 +264,7 @@ class BaseScanner:
             # Not applied when authenticating with an SSH key: they are fetched
             # on demand outside of clone/fetch operations would fail, as
             # 'GIT_SSH_COMMAND' is not set for these operations.
-            params["filter"] = "tree:0"
+            params["filter"] = "blob:none"
         if self.branches:
             params["branch"] = self.branches[0]
         params.update(extra)
@@ -540,7 +540,9 @@ class MigrationScanner(BaseScanner):
                 # Also enable the partialclonefilter option as the initial remote
                 with repo.config_writer() as writer:
                     writer.set_value(
-                        f"remote.{self.new_repo_name}", "partialclonefilter", "tree:0"
+                        f"remote.{self.new_repo_name}",
+                        "partialclonefilter",
+                        "blob:none",
                     )
         return res
 
