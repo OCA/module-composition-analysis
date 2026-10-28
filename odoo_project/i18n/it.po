@@ -6,13 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-10-28 16:46+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
@@ -22,36 +24,41 @@ msgid ""
 "sale\n"
 "server_environment 17.0.1.1.0"
 msgstr ""
+"# Un modulo per riga, con un numero di versione opzionale (separato da "
+"qualsiasi carattere speciale, come spazio, tabulazione, virgola...). Ad "
+"es.:\n"
+"sale\n"
+"server_environment 17.0.1.1.0"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "<span class=\"o_stat_text\"> Modules inst.</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\"> Moduli installati</span>"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Azione richiesta"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__active
 msgid "Active"
-msgstr ""
+msgstr "Attivo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__additional_module_ids
 msgid "Additional Modules"
-msgstr ""
+msgstr "Moduli aggiuntivi"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
 msgid "Additional modules"
-msgstr ""
+msgstr "Moduli aggiuntivi"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__addons_path
 msgid "Addons Path"
-msgstr ""
+msgstr "Percorso degli addon"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__branch_name
@@ -59,46 +66,50 @@ msgid ""
 "An Odoo version is also used as an Odoo branch name in generic repositories "
 "(Odoo, OCA...)."
 msgstr ""
+"Una versione di Odoo viene utilizzata anche come nome di branch Odoo nei "
+"repository generici (Odoo, OCA...)."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__application
 msgid "Application"
-msgstr ""
+msgstr "Applicazione"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Numero di allegati"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__author_ids
 msgid "Authors"
-msgstr ""
+msgstr "Autori"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__auto_install
 msgid "Auto-Install"
-msgstr ""
+msgstr "Installazione automatica"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__available_odoo_version_ids
 msgid "Available Odoo Versions"
-msgstr ""
+msgstr "Versioni di Odoo disponibili"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__migration_scripts
 msgid "Available migration scripts between installed and last version."
 msgstr ""
+"Script di migrazione disponibili tra la versione installata e l'ultima "
+"versione."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__branch_name
 msgid "Branch Name"
-msgstr ""
+msgstr "Nome del branch"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__branch_sequence
 msgid "Branch Sequence"
-msgstr ""
+msgstr "Sequenza del branch"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
@@ -106,31 +117,33 @@ msgid ""
 "Build your project by adding modules. This can help to get some figures "
 "before a launch to estimate maintenance cost for instance."
 msgstr ""
+"Crea il progetto aggiungendo moduli. Questo può aiutare, ad esempio, a "
+"ottenere alcuni dati prima del rilascio per stimare i costi di manutenzione."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__sloc_css
 msgid "CSS"
-msgstr ""
+msgstr "CSS"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__sloc_css
 msgid "CSS source lines of code"
-msgstr ""
+msgstr "Numero di righe di codice sorgente CSS"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__category_id
 msgid "Category"
-msgstr ""
+msgstr "Categoria"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__is_community
 msgid "Community?"
-msgstr ""
+msgstr "Comunità?"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_import_modules__modules_list
@@ -139,122 +152,125 @@ msgid ""
 "One module per line with an optional version number (separated by any "
 "special character (space, tabulation, comma...)."
 msgstr ""
+"Copia e incolla qui l'elenco dei nomi tecnici dei moduli.\n"
+"Un modulo per riga, con un numero di versione opzionale (separato da "
+"qualsiasi carattere speciale: spazio, tabulazione, virgola...)."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__create_uid
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__create_uid
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creato da"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__create_date
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__create_date
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creato il"
 
 #. module: odoo_project
 #: model:ir.actions.act_window,name:odoo_project.odoo_project_module_action_recursive_dependencies
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__dependency_ids
 msgid "Dependencies"
-msgstr ""
+msgstr "Dipendenze"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__non_std_dependency_level
 msgid "Dependency level excluding all standard Odoo modules."
-msgstr ""
+msgstr "Livello di dipendenza esclusi tutti i moduli standard di Odoo."
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__global_dependency_level
 msgid "Dependency level including all standard Odoo modules."
-msgstr ""
+msgstr "Livello di dipendenza inclusi tutti i moduli standard di Odoo."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_module_branch__odoo_project_module_ids
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__project_module_ids
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__odoo_project_module_ids
 msgid "Deployed Modules"
-msgstr ""
+msgstr "Moduli distribuiti"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__title
 msgid "Descriptive name"
-msgstr ""
+msgstr "Nome descrittivo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__development_status_id
 msgid "Develoment Status"
-msgstr ""
+msgstr "Stato dello sviluppo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__display_name
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__display_name
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__is_enterprise
 msgid "Enterprise?"
-msgstr ""
+msgstr "Enterprise?"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__external_dependencies
 msgid "External Dependencies"
-msgstr ""
+msgstr "Dipendenze esterne"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Find modules"
-msgstr ""
+msgstr "Trova moduli"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Chi segue"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Chi segue (Partner)"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__full_path
 msgid "Full Path"
-msgstr ""
+msgstr "Percorso completo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__global_dependency_level
 msgid "Global Dep. Level"
-msgstr ""
+msgstr "Livello di dipendenza globale"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Raggruppa per"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Ha un messaggio"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__id
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__id
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Se selezionato, i nuovi messaggi richiedono la tua attenzione."
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Se selezionato, alcuni messaggi presentano un errore di consegna."
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__installed_version_id
@@ -263,21 +279,24 @@ msgid ""
 "(could come from a pending merge not scanned), this field computes the "
 "nearest version available."
 msgstr ""
+"Se la versione effettivamente installata non è disponibile nella cronologia "
+"delle versioni (ad esempio, perché proviene da un merge in sospeso non "
+"ancora analizzato), questo campo calcola la versione disponibile più vicina."
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
 msgid "Import"
-msgstr ""
+msgstr "Importa"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__import_missing_dependencies
 msgid "Import Missing Dependencies"
-msgstr ""
+msgstr "Importa le dipendenze mancanti"
 
 #. module: odoo_project
 #: model:ir.actions.act_window,name:odoo_project.odoo_project_import_modules_action
 msgid "Import Project Modules"
-msgstr ""
+msgstr "Importa i moduli del progetto"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_import_modules__import_missing_dependencies
@@ -285,21 +304,23 @@ msgid ""
 "Import module dependencies that are not part of the list above to get an "
 "exhaustive list of modules installed in the project."
 msgstr ""
+"Importa le dipendenze dei moduli che non fanno parte dell'elenco precedente "
+"per ottenere un elenco completo dei moduli installati nel progetto."
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Import modules"
-msgstr ""
+msgstr "Importa moduli"
 
 #. module: odoo_project
 #: model:ir.model,name:odoo_project.model_odoo_project_import_modules
 msgid "Import modules for an Odoo project"
-msgstr ""
+msgstr "Importa moduli per un progetto Odoo"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
 msgid "Initialize from modules list"
-msgstr ""
+msgstr "Inizializza dall'elenco dei moduli"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_import_modules_view_form
@@ -309,148 +330,152 @@ msgid ""
 "columns 'Technical Name' and 'Latest Version' put side by side from a "
 "standard Odoo export of modules installed."
 msgstr ""
+"Inizializza l'elenco dei moduli installati nel progetto. Questa operazione "
+"eliminerà i moduli attualmente installati.<br/>L'elenco può essere copiato "
+"dalle colonne 'Nome tecnico' e 'Ultima versione', affiancate in "
+"un'esportazione standard di Odoo dei moduli installati."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__installable
 msgid "Installable"
-msgstr ""
+msgstr "Installabile"
 
 #. module: odoo_project
 #: model:ir.actions.act_window,name:odoo_project.odoo_project_module_action
 #: model:ir.actions.act_window,name:odoo_project.odoo_project_module_for_project_action
 #: model:ir.ui.menu,name:odoo_project.odoo_project_module_menu
 msgid "Installed Modules"
-msgstr ""
+msgstr "Moduli installati"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__installed_reverse_dependency_ids
 msgid "Installed Reverse Dependencies"
-msgstr ""
+msgstr "Dipendenze inverse installate"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__installed_version
 msgid "Installed Version"
-msgstr ""
+msgstr "Versione installata"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_tree
 msgid "Installed in"
-msgstr ""
+msgstr "Installato in"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_module_branch_view_search
 msgid "Installed in projects"
-msgstr ""
+msgstr "Installato nei progetti"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_form
 msgid "Installed reverse dependencies"
-msgstr ""
+msgstr "Dipendenze inverse installate"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__installed_version
 msgid "Installed version in project database."
-msgstr ""
+msgstr "Versione installata nel database del progetto."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Segue"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__is_community
 msgid "Is this module a contribution of the community?"
-msgstr ""
+msgstr "Questo modulo è un contributo della community?"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__is_enterprise
 msgid "Is this module designed for Odoo Enterprise only?"
-msgstr ""
+msgstr "Questo modulo è progettato solo per Odoo Enterprise?"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__is_standard
 msgid "Is this module part of Odoo standard?"
-msgstr ""
+msgstr "Questo modulo fa parte dello standard Odoo?"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__sloc_js
 msgid "JS"
-msgstr ""
+msgstr "JS"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__sloc_js
 msgid "JavaScript source lines of code"
-msgstr ""
+msgstr "Numero di righe di codice sorgente JavaScript"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__last_scanned_commit
 msgid "Last Scanned Commit"
-msgstr ""
+msgstr "Ultimo commit analizzato"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__write_uid
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__write_uid
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Ultimo aggiornamento di"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__write_date
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__write_date
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Ultimo aggiornamento il"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_form
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_tree
 msgid "Last Version"
-msgstr ""
+msgstr "Ultima versione"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__version
 msgid "Last version"
-msgstr ""
+msgstr "Ultima versione"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__license_id
 msgid "License"
-msgstr ""
+msgstr "Licenza"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__maintainer_ids
 msgid "Maintainers"
-msgstr ""
+msgstr "Maintainers"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Errore di consegna del messaggio"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "Messaggi"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__migration_scripts
 msgid "Migration Scripts"
-msgstr ""
+msgstr "Script di migrazione"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_search
 msgid "Migration Scripts to play"
-msgstr ""
+msgstr "Script di migrazione da eseguire"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_search
 msgid "Module"
-msgstr ""
+msgstr "Modulo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__module_name
 msgid "Module Technical Name"
-msgstr ""
+msgstr "Nome tecnico del modulo"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__specific
@@ -458,124 +483,126 @@ msgid ""
 "Module specific to a project repository.It cannot be used across different "
 "projects."
 msgstr ""
+"Modulo specifico di un repository di progetto. Non può essere utilizzato in "
+"progetti diversi."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__module_ids
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Modules"
-msgstr ""
+msgstr "Moduli"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__modules_count
 msgid "Modules Count"
-msgstr ""
+msgstr "Numero di moduli"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__modules_list
 msgid "Modules List"
-msgstr ""
+msgstr "Elenco dei moduli"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__module_not_installed_ids
 msgid "Modules available in the project repository but not installed."
-msgstr ""
+msgstr "Moduli disponibili nel repository del progetto ma non installati."
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__unmerged_module_ids
 msgid "Modules installed belonging to an open PR."
-msgstr ""
+msgstr "Moduli installati appartenenti a una PR aperta."
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__unknown_module_ids
 msgid "Modules installed but cannot be found among repositories/branches."
-msgstr ""
+msgstr "Moduli installati che non si trovano nei repository/branch."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__module_not_installed_ids
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Modules not installed"
-msgstr ""
+msgstr "Moduli non installati"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__unmerged_module_ids
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Modules to merge"
-msgstr ""
+msgstr "Moduli da unire"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__unknown_module_ids
 msgid "Modules unknown"
-msgstr ""
+msgstr "Moduli sconosciuti"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__name
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__installed_version_id
 msgid "Nearest installed version"
-msgstr ""
+msgstr "Versione installata più vicina"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_module_branch_view_search
 msgid "No project"
-msgstr ""
+msgstr "Nessun progetto"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__non_std_dependency_level
 msgid "Non-Std Dep. Level"
-msgstr ""
+msgstr "Livello di dipendenza non standard"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__not_installed_reverse_dependency_ids
 msgid "Not Installed Reverse Dependencies"
-msgstr ""
+msgstr "Dipendenze inverse non installate"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_form
 msgid "Not installed reverse dependencies"
-msgstr ""
+msgstr "Dipendenze inverse non installate"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Numero di azioni"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Numero di errori"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr ""
+msgstr "Numero di messaggi che richiedono un'azione"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "Numero di messaggi con errore di consegna"
 
 #. module: odoo_project
 #: model:ir.model,name:odoo_project.model_odoo_module_branch
 msgid "Odoo Module Branch"
-msgstr ""
+msgstr "Branch del modulo Odoo"
 
 #. module: odoo_project
 #: model:ir.model,name:odoo_project.model_odoo_repository
 msgid "Odoo Modules Repository"
-msgstr ""
+msgstr "Repository dei moduli Odoo"
 
 #. module: odoo_project
 #: model:ir.model,name:odoo_project.model_odoo_project
 msgid "Odoo Project"
-msgstr ""
+msgstr "Progetto Odoo"
 
 #. module: odoo_project
 #: model:ir.model,name:odoo_project.model_odoo_project_module
 msgid "Odoo Project Module"
-msgstr ""
+msgstr "Modulo del progetto Odoo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__odoo_version_id
@@ -583,22 +610,22 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__branch_id
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_search
 msgid "Odoo Version"
-msgstr ""
+msgstr "Versione di Odoo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__org_id
 msgid "Organization"
-msgstr ""
+msgstr "Organizzazione"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__org_sequence
 msgid "Organization Sequence"
-msgstr ""
+msgstr "Sequenza dell'organizzazione"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__pr_url
 msgid "PR URL"
-msgstr ""
+msgstr "URL della PR"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__org_sequence
@@ -606,23 +633,25 @@ msgid ""
 "Priority of this organization when looking for the origin of a module shared "
 "by several organizations (forks). The lowest sequence wins."
 msgstr ""
+"Priorità di questa organizzazione nella ricerca dell'origine di un modulo "
+"condiviso da più organizzazioni (fork). Prevale la sequenza più bassa."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_import_modules__odoo_project_id
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__odoo_project_id
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_module_branch_view_search
 msgid "Project"
-msgstr ""
+msgstr "Progetto"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_repository__project_count
 msgid "Project Count"
-msgstr ""
+msgstr "Numero di progetti"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Project Name"
-msgstr ""
+msgstr "Nome del progetto"
 
 #. module: odoo_project
 #: model:ir.actions.act_window,name:odoo_project.odoo_project_action
@@ -634,43 +663,43 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_module_branch_view_form
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_repository_view_form
 msgid "Projects"
-msgstr ""
+msgstr "Progetti"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__sloc_python
 msgid "Python"
-msgstr ""
+msgstr "Python"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__python_dependency_ids
 msgid "Python Dependencies"
-msgstr ""
+msgstr "Dipendenze Python"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__sloc_python
 msgid "Python source lines of code"
-msgstr ""
+msgstr "Numero di righe di codice sorgente Python"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__removed
 msgid "Removed"
-msgstr ""
+msgstr "Rimosso"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__repository_id
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__repository_id
 msgid "Repository"
-msgstr ""
+msgstr "Repository"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__repository_branch_id
 msgid "Repository / Branch"
-msgstr ""
+msgstr "Repository / Branch"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__repository_branch_id
 msgid "Repository Branch"
-msgstr ""
+msgstr "Branch del repository"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project__repository_id
@@ -678,109 +707,111 @@ msgid ""
 "Repository this project is based on (optional). You can start to build/"
 "simulate a project without repository to get some figures."
 msgstr ""
+"Repository su cui si basa questo progetto (opzionale). È possibile iniziare "
+"a creare/simulare un progetto senza repository per ottenere alcuni dati."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__reverse_dependency_ids
 msgid "Reverse Dependencies"
-msgstr ""
+msgstr "Dipendenze inverse"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Scan"
-msgstr ""
+msgstr "Analizza"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Scan all the repositories used by this project."
-msgstr ""
+msgstr "Analizza tutti i repository utilizzati da questo progetto."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__repository_sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Sequenza"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__specific
 msgid "Specific"
-msgstr ""
+msgstr "Specifico"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__is_standard
 msgid "Standard?"
-msgstr ""
+msgstr "Standard?"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Status"
-msgstr ""
+msgstr "Stato"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__summary
 msgid "Summary"
-msgstr ""
+msgstr "Riepilogo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__name
 msgid "Techname"
-msgstr ""
+msgstr "Nome tecnico"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__module_name
 msgid "Technical Name"
-msgstr ""
+msgstr "Nome tecnico"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__addons_path
 msgid "Technical field. Where the module is located in the repository."
-msgstr ""
+msgstr "Campo tecnico. Indica dove si trova il modulo nel repository."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__module_id
 msgid "Technical name"
-msgstr ""
+msgstr "Nome tecnico"
 
 #. module: odoo_project
 #: model:ir.model.constraint,message:odoo_project.constraint_odoo_project_name_uniq
 msgid "This project already exists."
-msgstr ""
+msgstr "Questo progetto esiste già."
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__title
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__to_upgrade
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_module_view_search
 msgid "To Upgrade"
-msgstr ""
+msgstr "Da aggiornare"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__url
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #. module: odoo_project
 #: model_terms:ir.ui.view,arch_db:odoo_project.odoo_project_view_form
 msgid "Unknown modules"
-msgstr ""
+msgstr "Moduli sconosciuti"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__module_branch_id
 msgid "Upstream Module"
-msgstr ""
+msgstr "Modulo upstream"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__version_ids
 msgid "Versions"
-msgstr ""
+msgstr "Versioni"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__sloc_xml
 msgid "XML"
-msgstr ""
+msgstr "XML"
 
 #. module: odoo_project
 #: model:ir.model.fields,help:odoo_project.field_odoo_project_module__sloc_xml
 msgid "XML source lines of code"
-msgstr ""
+msgstr "Numero di righe di codice sorgente XML"
