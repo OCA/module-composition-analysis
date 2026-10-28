@@ -6,18 +6,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-10-28 16:47+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.report_changelog
 msgid "- CHANGELOG"
-msgstr ""
+msgstr "- CHANGELOG"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.odoo_project_view_form
@@ -25,28 +27,30 @@ msgid ""
 "<span class=\"fa fa-arrow-right ml8 mr8\" title=\"Arrow Right\" "
 "attrs=\"{'invisible': [('changelog_state', '!=', 'done')]}\"/>"
 msgstr ""
+"<span class=\"fa fa-arrow-right ml8 mr8\" title=\"Arrow Right\" attrs=\""
+"{'invisible': [('changelog_state', '!=', 'done')]}\"/>"
 
 #. module: odoo_project_changelog
 #: model:ir.actions.report,name:odoo_project_changelog.action_report_changelog
 #: model:ir.actions.report,print_report_name:odoo_project_changelog.action_report_changelog
 msgid "CHANGELOG"
-msgstr ""
+msgstr "CHANGELOG"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.odoo_project_view_form
 msgid "Changelog"
-msgstr ""
+msgstr "Changelog"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project__changelog_state
 msgid "Changelog State"
-msgstr ""
+msgstr "Stato changelog"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project__changelog_url
 msgid "Changelog Url"
-msgstr ""
+msgstr "URL changelog"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,help:odoo_project_changelog.field_odoo_project_repository__target_commit
@@ -54,158 +58,160 @@ msgid ""
 "Changelog is generated until this commit. If not set, the latest commit of "
 "the branch is used."
 msgstr ""
+"Il changelog viene generato fino a questo commit. Se non è impostato, viene "
+"utilizzato l'ultimo commit del ramo."
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creato da"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creato il"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.report_changelog
 msgid "Date:"
-msgstr ""
+msgstr "Data:"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__deployed_commit
 msgid "Deployed Commit"
-msgstr ""
+msgstr "Commit distribuito"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields.selection,name:odoo_project_changelog.selection__odoo_project__changelog_state__done
 msgid "Done"
-msgstr ""
+msgstr "Completato"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project__changelog_enabled_repository_ids
 msgid "Enabled Repositories for CHANGELOG"
-msgstr ""
+msgstr "Repository abilitati per il registro delle modifiche"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.report_changelog
 msgid "From"
-msgstr ""
+msgstr "Da"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.odoo_project_view_form
 msgid "Generate CHANGELOG"
-msgstr ""
+msgstr "Genera il registro delle modifiche"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields.selection,name:odoo_project_changelog.selection__odoo_project__changelog_state__in_progress
 msgid "In progress"
-msgstr ""
+msgstr "In corso"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__active
 msgid "Include"
-msgstr ""
+msgstr "Includi"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Ultima modifica il"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Ultimo aggiornamento di"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Ultimo aggiornamento il"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.report_changelog
 msgid "Link"
-msgstr ""
+msgstr "Collegamento"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields.selection,name:odoo_project_changelog.selection__odoo_project__changelog_state__none
 msgid "None"
-msgstr ""
+msgstr "Nessuno"
 
 #. module: odoo_project_changelog
 #: model:ir.model,name:odoo_project_changelog.model_odoo_project
 msgid "Odoo Project"
-msgstr ""
+msgstr "Progetto Odoo"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.odoo_project_view_form
 msgid "Open CHANGELOG"
-msgstr ""
+msgstr "Apri il registro delle modifiche"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__odoo_project_id
 msgid "Project"
-msgstr ""
+msgstr "Progetto"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.odoo_project_view_form
 msgid "Refresh"
-msgstr ""
+msgstr "Aggiorna"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.odoo_project_view_form
 msgid "Repositories"
-msgstr ""
+msgstr "Repository"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__repository_branch_id
 msgid "Repository Branch"
-msgstr ""
+msgstr "Ramo del repository"
 
 #. module: odoo_project_changelog
 #: model:ir.model,name:odoo_project_changelog.model_odoo_project_repository
 msgid "Repository used in a project"
-msgstr ""
+msgstr "Repository utilizzato in un progetto"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project_repository__target_commit
 msgid "Target Commit"
-msgstr ""
+msgstr "Commit di destinazione"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,help:odoo_project_changelog.field_odoo_project_repository__deployed_commit
 msgid "The changelog is generated from this commit."
-msgstr ""
+msgstr "Il registro delle modifiche viene generato a partire da questo commit."
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.odoo_project_view_form
 msgid "To compare with"
-msgstr ""
+msgstr "Da confrontare con"
 
 #. module: odoo_project_changelog
 #: model:ir.model.fields,field_description:odoo_project_changelog.field_odoo_project__used_repository_ids
 msgid "Used Repositories"
-msgstr ""
+msgstr "Repository utilizzati"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.report_changelog
 msgid "change"
-msgstr ""
+msgstr "modifica"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.report_changelog
 msgid "modules)"
-msgstr ""
+msgstr "moduli)"
 
 #. module: odoo_project_changelog
 #: model_terms:ir.ui.view,arch_db:odoo_project_changelog.report_changelog
 msgid "to"
-msgstr ""
+msgstr "a"
