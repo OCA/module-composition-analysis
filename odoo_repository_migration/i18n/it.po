@@ -6,18 +6,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-10-28 16:47+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_view_form
 msgid "<span>Next Versions</span>"
-msgstr ""
+msgstr "<span>Versioni successive</span>"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
@@ -25,141 +27,145 @@ msgid ""
 "A scan of related modules is required to update relevant migration data.  "
 "Wait for the next scheduled scan, or trigger one manually."
 msgstr ""
+"È necessaria una scansione dei moduli correlati per aggiornare i dati di "
+"migrazione pertinenti.  Attendi la prossima scansione pianificata oppure "
+"avviane una manualmente."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__active
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__active
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__active
 msgid "Active"
-msgstr ""
+msgstr "Attivo"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Archived"
-msgstr ""
+msgstr "In archivio"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__author_ids
 msgid "Authors"
-msgstr ""
+msgstr "Autori"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_repository__collect_migration_data
 msgid "Collect migration data"
-msgstr ""
+msgstr "Raccogli dati di migrazione"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_repository__collect_migration_data
 msgid "Collect migration data based on the configured migration paths."
 msgstr ""
+"Raccoglie i dati di migrazione in base ai percorsi di migrazione configurati."
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_view_search
 msgid "Commits to Port"
-msgstr ""
+msgstr "Commit da trasferire"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__create_uid
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__create_uid
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creato da"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__create_date
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__create_date
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creato il"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_form
 msgid "Data"
-msgstr ""
+msgstr "Dati"
 
 #. module: odoo_repository_migration
 #: model:ir.model,name:odoo_repository_migration.model_odoo_migration_path
 msgid "Define a migration path (from one branch to another)"
-msgstr ""
+msgstr "Definisce un percorso di migrazione (da un ramo a un altro)"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__display_name
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__display_name
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__fully_ported
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 msgid "Fully Ported"
-msgstr ""
+msgstr "Trasferito completamente"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Raggruppa per"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__id
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__id
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_form
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid "Info"
-msgstr ""
+msgstr "Informazioni"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__last_known_module_branch_id
 msgid "Last Known Module"
-msgstr ""
+msgstr "Ultimo modulo noto"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__last_source_scanned_commit
 msgid "Last Source Scanned Commit"
-msgstr ""
+msgstr "Ultimo commit analizzato nel ramo sorgente"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__last_target_scanned_commit
 msgid "Last Target Scanned Commit"
-msgstr ""
+msgstr "Ultimo commit analizzato nel ramo di destinazione"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__write_uid
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__write_uid
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Ultimo aggiornamento di"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__write_date
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__write_date
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Ultimo aggiornamento il"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__maintainer_ids
 msgid "Maintainers"
-msgstr ""
+msgstr "Maintainers"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__migration_path_id
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 msgid "Migration Path"
-msgstr ""
+msgstr "Percorso di migrazione"
 
 #. module: odoo_repository_migration
 #: model:ir.actions.act_window,name:odoo_repository_migration.odoo_migration_path_action
 #: model:ir.ui.menu,name:odoo_repository_migration.odoo_migration_path_menu
 msgid "Migration Paths"
-msgstr ""
+msgstr "Percorsi di migrazione"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__migration_scan
@@ -167,23 +173,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__migration_scan
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__migration_scan
 msgid "Migration Scan"
-msgstr ""
+msgstr "Scansione della migrazione"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__state
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 msgid "Migration Status"
-msgstr ""
+msgstr "Stato della migrazione"
 
 #. module: odoo_repository_migration
 #: model:ir.model,name:odoo_repository_migration.model_odoo_module_branch_migration
 msgid "Migration data for a module of a given branch."
-msgstr ""
+msgstr "Dati di migrazione per un modulo di un determinato ramo."
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 msgid "Migration to review"
-msgstr ""
+msgstr "Migrazione da esaminare"
 
 #. module: odoo_repository_migration
 #: model:ir.actions.act_window,name:odoo_repository_migration.odoo_module_branch_migration_action
@@ -194,13 +200,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_view_form
 msgid "Migrations"
-msgstr ""
+msgstr "Migrazioni"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__module_branch_id
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 msgid "Module"
-msgstr ""
+msgstr "Modulo"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_migration__moved_to_oca
@@ -208,6 +214,9 @@ msgid ""
 "Module now available in OCA. This module is maybe not exactly the same, and "
 "doesn't have the same scope so it deserves a check during a migration."
 msgstr ""
+"Modulo ora disponibile in OCA. Questo modulo potrebbe non essere esattamente "
+"lo stesso e potrebbe avere un ambito diverso, quindi è opportuno verificarlo "
+"durante una migrazione."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_migration__moved_to_standard
@@ -216,93 +225,96 @@ msgid ""
 "the same, and doesn't have the same scope so it deserves a check during a "
 "migration."
 msgstr ""
+"Modulo ora disponibile nel codice standard di Odoo. Questo modulo potrebbe "
+"non essere esattamente lo stesso e potrebbe avere un ambito diverso, quindi "
+"è opportuno verificarlo durante una migrazione."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__moved_to_oca
 msgid "Moved To Oca"
-msgstr ""
+msgstr "Spostato in OCA"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__moved_to_standard
 msgid "Moved To Standard"
-msgstr ""
+msgstr "Spostato nello standard"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__moved_to_oca
 msgid "Moved to OCA"
-msgstr ""
+msgstr "Spostato in OCA"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__moved_to_generic
 msgid "Moved to generic repo"
-msgstr ""
+msgstr "Spostato in un repository generico"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__moved_to_standard
 msgid "Moved to standard?"
-msgstr ""
+msgstr "Spostato nello standard?"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__name
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__next_module_branch_id
 msgid "New module"
-msgstr ""
+msgstr "Nuovo modulo"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__next_module_id
 msgid "New module name"
-msgstr ""
+msgstr "Nome del nuovo modulo"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__next_odoo_version_module_branch_id
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__next_odoo_version_module_branch_id
 msgid "Next Odoo Version Module Branch"
-msgstr ""
+msgstr "Ramo del modulo per la versione successiva di Odoo"
 
 #. module: odoo_repository_migration
 #. odoo-python
 #: code:addons/odoo_repository_migration/models/odoo_module_branch.py:0
 msgid "Next versions"
-msgstr ""
+msgstr "Versioni successive"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__note
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid "Notes"
-msgstr ""
+msgstr "Note"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__moved_to_generic
 msgid "Now generic"
-msgstr ""
+msgstr "Ora generico"
 
 #. module: odoo_repository_migration
 #: model:ir.model,name:odoo_repository_migration.model_odoo_module_branch
 msgid "Odoo Module Branch"
-msgstr ""
+msgstr "Ramo del modulo Odoo"
 
 #. module: odoo_repository_migration
 #: model:ir.model,name:odoo_repository_migration.model_odoo_module_branch_timeline
 msgid "Odoo Module Timeline (renaming/replacement)"
-msgstr ""
+msgstr "Cronologia del modulo Odoo (rinomina/sostituzione)"
 
 #. module: odoo_repository_migration
 #: model:ir.model,name:odoo_repository_migration.model_odoo_repository
 msgid "Odoo Modules Repository"
-msgstr ""
+msgstr "Repository dei moduli Odoo"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Odoo Version"
-msgstr ""
+msgstr "Versione di Odoo"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__org_id
@@ -310,32 +322,32 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Organization"
-msgstr ""
+msgstr "Organizzazione"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__pr_url
 msgid "PR URL"
-msgstr ""
+msgstr "URL della PR"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__port_commits
 msgid "Ported (missing commits?)"
-msgstr ""
+msgstr "Trasferito (commit mancanti?)"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__process
 msgid "Process"
-msgstr ""
+msgstr "Elabora"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Renamed"
-msgstr ""
+msgstr "Rinominato"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__renamed_to_module_id
 msgid "Renamed to"
-msgstr ""
+msgstr "Rinominato in"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_timeline__state
@@ -345,17 +357,21 @@ msgid ""
 "Replaced: module has been replaced (or merged) by another one that fulfill "
 "the same feature"
 msgstr ""
+"Rinominato: i moduli condividono ancora la stessa cronologia Git (ciò "
+"consente di verificare quali commit possono essere trasferiti)\n"
+"Sostituito: il modulo è stato sostituito (o unito) a un altro che offre la "
+"stessa funzionalità"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__replaced
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Replaced"
-msgstr ""
+msgstr "Sostituito"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__replaced_by_module_id
 msgid "Replaced by"
-msgstr ""
+msgstr "Sostituito da"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__repository_id
@@ -363,46 +379,46 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Repository"
-msgstr ""
+msgstr "Repository"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid "Restore"
-msgstr ""
+msgstr "Ripristina"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__results
 msgid "Results"
-msgstr ""
+msgstr "Risultati"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__results_text
 msgid "Results Text"
-msgstr ""
+msgstr "Testo dei risultati"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_migration_path_view_form
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_form
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid "Scan"
-msgstr ""
+msgstr "Scansiona"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__odoo_version_sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Sequenza"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__module_branch_id
 msgid "Source"
-msgstr ""
+msgstr "Sorgente"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__source_branch_id
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__source_branch_id
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 msgid "Source Branch"
-msgstr ""
+msgstr "Ramo sorgente"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_migration__moved_to_generic
@@ -411,34 +427,39 @@ msgid ""
 "not exactly the same, and doesn't have the same scope so it deserves a check "
 "during a migration."
 msgstr ""
+"Modulo specifico ora disponibile in un repository generico. Questo modulo "
+"potrebbe non essere esattamente lo stesso e potrebbe avere un ambito "
+"diverso, quindi è opportuno verificarlo durante una migrazione."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__odoo_version_id
 msgid "Starting from version"
-msgstr ""
+msgstr "A partire dalla versione"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__state
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "State"
-msgstr ""
+msgstr "Stato"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__target_module_branch_id
 msgid "Target"
-msgstr ""
+msgstr "Destinazione"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__target_branch_id
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__target_branch_id
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 msgid "Target Branch"
-msgstr ""
+msgstr "Ramo di destinazione"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_migration__migration_scan
 msgid "Technical field telling if this migration path needs a migration scan."
 msgstr ""
+"Campo tecnico che indica se questo percorso di migrazione richiede una "
+"scansione della migrazione."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch__migration_scan
@@ -446,21 +467,26 @@ msgstr ""
 msgid ""
 "Technical field telling if this module is elligible for a migration scan."
 msgstr ""
+"Campo tecnico che indica se questo modulo è idoneo a una scansione della "
+"migrazione."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_timeline__migration_scan
 msgid "Technical field telling if this timeline needs a migration scan."
 msgstr ""
+"Campo tecnico che indica se questa cronologia richiede una scansione della "
+"migrazione."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_timeline__last_known_module_branch_id
 msgid "Technical field to check if current selected module is the last one."
 msgstr ""
+"Campo tecnico per verificare se il modulo attualmente selezionato è l’ultimo."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__module_id
 msgid "Technical name"
-msgstr ""
+msgstr "Nome tecnico"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
@@ -469,56 +495,59 @@ msgid ""
 "                        Recording such timeline will ignore all newest "
 "versions when computing related migration data."
 msgstr ""
+"La versione del modulo selezionata non è l’ultima disponibile.\n"
+"                        La registrazione di questa cronologia ignorerà tutte "
+"le versioni più recenti nel calcolo dei dati di migrazione correlati."
 
 #. module: odoo_repository_migration
 #: model:ir.model.constraint,message:odoo_repository_migration.constraint_odoo_migration_path_migration_path_uniq
 msgid "This migration path already exists."
-msgstr ""
+msgstr "Questo percorso di migrazione esiste già."
 
 #. module: odoo_repository_migration
 #: model:ir.model.constraint,message:odoo_repository_migration.constraint_odoo_module_branch_migration_module_migration_path_uniq
 msgid "This module migration path already exists."
-msgstr ""
+msgstr "Questo percorso di migrazione del modulo esiste già."
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_migration_path_view_form
 msgid "This operation will scan all relevant repositories. Are you sure?"
-msgstr ""
+msgstr "Questa operazione analizzerà tutti i repository pertinenti. Continuare?"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__timeline_ids
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_project_module__timeline_ids
 msgid "Timeline"
-msgstr ""
+msgstr "Cronologia"
 
 #. module: odoo_repository_migration
 #: model:ir.actions.act_window,name:odoo_repository_migration.odoo_module_branch_timeline_action
 #: model:ir.ui.menu,name:odoo_repository_migration.odoo_module_branch_timeline_menu
 msgid "Timelines"
-msgstr ""
+msgstr "Cronologie"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_view_search
 msgid "To Migrate"
-msgstr ""
+msgstr "Da migrare"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__migrate
 msgid "To migrate"
-msgstr ""
+msgstr "Da migrare"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__review_migration
 msgid "To review"
-msgstr ""
+msgstr "Da esaminare"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__state__renamed
 msgid "has been renamed to"
-msgstr ""
+msgstr "è stato rinominato in"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__state__replaced
 msgid "has been replaced by"
-msgstr ""
+msgstr "è stato sostituito da"
