@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-10-28 12:46+0000\n"
+"PO-Revision-Date: 2026-10-28 16:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -672,7 +672,7 @@ msgstr "Nodo principale"
 #: model:ir.model.fields,field_description:odoo_repository.field_odoo_module_branch__maintainer_ids
 #: model:ir.ui.menu,name:odoo_repository.odoo_maintainer_menu
 msgid "Maintainers"
-msgstr "Manutentori"
+msgstr "Maintainers"
 
 #. module: odoo_repository
 #: model_terms:ir.ui.view,arch_db:odoo_repository.odoo_module_branch_view_form
