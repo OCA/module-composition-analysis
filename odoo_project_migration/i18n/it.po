@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-10-28 12:46+0000\n"
+"PO-Revision-Date: 2026-10-28 16:47+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -95,7 +95,7 @@ msgstr "Categoria"
 #. module: odoo_project_migration
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__is_community
 msgid "Community?"
-msgstr "Community?"
+msgstr "Comunità?"
 
 #. module: odoo_project_migration
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_export_migration_report__create_uid
@@ -300,7 +300,7 @@ msgstr "Licenza"
 #. module: odoo_project_migration
 #: model:ir.model.fields,field_description:odoo_project_migration.field_odoo_project_module_migration__maintainer_ids
 msgid "Maintainers"
-msgstr "Manutentori"
+msgstr "Maintainers"
 
 #. module: odoo_project_migration
 #. odoo-python
