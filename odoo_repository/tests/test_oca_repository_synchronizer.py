@@ -4,6 +4,7 @@
 from unittest.mock import MagicMock, patch
 
 from odoo import tools
+from odoo.exceptions import UserError
 
 from odoo.addons.component.tests.common import TransactionComponentCase
 from odoo.addons.queue_job.exception import RetryableJobError
@@ -28,7 +29,16 @@ class TestOCARepositorySynchronizer(TransactionComponentCase):
             }
         )
 
-    def _mock_requests_get(self, mock_get):
+    def setUp(self):
+        super().setUp()
+        patcher = patch(
+            "odoo.addons.odoo_repository.utils.github.get_repo_info",
+            return_value=None,
+        )
+        self.mock_get_repo_info = patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def _patch_requests_get(self, mock_get):
         # Mock GitHub API response for directory listing
         mock_dir_response = MagicMock()
         mock_dir_response.json.return_value = [
@@ -59,6 +69,30 @@ class TestOCARepositorySynchronizer(TransactionComponentCase):
                 return mock_yaml_response
 
         mock_get.side_effect = get_side_effect
+
+    def _get_current_repos(self, names):
+        """Return OCA configuration data for the given repository names."""
+        return {
+            name: {
+                "name": name,
+                "repo_url": f"https://github.com/OCA/{name}",
+                "clone_url": f"https://github.com/OCA/{name}",
+                "repo_type": "github",
+            }
+            for name in names
+        }
+
+    def _mock_github_repo_info(self, info_by_name):
+        """Map each repository name to the GitHub API payload it should get.
+
+        A ``KeyError`` is raised if the synchronizer queries GitHub
+        about a repository which is not explicitly mapped.
+        """
+
+        def get_repo_info_side_effect(env, org, name):
+            return info_by_name[name]
+
+        self.mock_get_repo_info.side_effect = get_repo_info_side_effect
 
     def test_parse_oca_repo_configurations(self):
         """Test OCA repository configurations parsing.
@@ -149,14 +183,7 @@ class TestOCARepositorySynchronizer(TransactionComponentCase):
         mca_backend = self.env.ref("odoo_repository.mca_backend")
         with mca_backend.work_on("odoo.repository") as work:
             synchronizer = work.component(usage="oca.repository.synchronizer")
-            current_repos = {
-                "new-test-repo": {
-                    "name": "new-test-repo",
-                    "repo_url": "https://github.com/OCA/new-test-repo",
-                    "clone_url": "https://github.com/OCA/new-test-repo",
-                    "repo_type": "github",
-                }
-            }
+            current_repos = self._get_current_repos(["new-test-repo"])
             stats = synchronizer._sync_oca_repositories(current_repos)
         self.assertEqual(stats["created"], 1)
         # Check that repository was created
@@ -188,11 +215,165 @@ class TestOCARepositorySynchronizer(TransactionComponentCase):
             self.test_repo.repo_url, "https://github.com/OCA/test-archive-repo-updated"
         )
         self.assertTrue(self.test_repo.active)
+        # The repository is still declared in the OCA configuration:
+        # GitHub must not have been queried about it
+        self.mock_get_repo_info.assert_not_called()
+
+    def _get_github_renamed_repo_info(self):
+        """Return GitHub API payload for a repository renamed on GitHub."""
+        return {
+            "name": "test-renamed-repo",
+            "full_name": "OCA/test-renamed-repo",
+        }
+
+    def test_sync_oca_repositories_rename(self):
+        """Test that a repository renamed on GitHub is renamed locally.
+
+        GitHub redirects the query of a renamed repository to its new
+        name: the local record is renamed in place instead of being
+        archived and duplicated under the new name.
+        """
+        self._mock_github_repo_info(
+            {"test-archive-repo": self._get_github_renamed_repo_info()}
+        )
+        mca_backend = self.env.ref("odoo_repository.mca_backend")
+        with mca_backend.work_on("odoo.repository") as work:
+            synchronizer = work.component(usage="oca.repository.synchronizer")
+            current_repos = self._get_current_repos(["test-renamed-repo"])
+            stats = synchronizer._sync_oca_repositories(current_repos)
+        self.assertEqual(stats["renamed"], 1)
+        self.assertEqual(stats["created"], 0)
+        self.assertEqual(stats["updated"], 0)
+        self.assertEqual(stats["archived"], 0)
+        self.test_repo.invalidate_model()
+        # The existing record was renamed in place, not archived
+        self.assertEqual(self.test_repo.name, "test-renamed-repo")
+        self.assertEqual(
+            self.test_repo.repo_url, "https://github.com/OCA/test-renamed-repo"
+        )
+        self.assertEqual(
+            self.test_repo.clone_url, "https://github.com/OCA/test-renamed-repo"
+        )
+        self.assertTrue(self.test_repo.active)
+        self.assertTrue(self.test_repo.to_scan)
+        # No duplicate left under the old name
+        self.assertFalse(
+            self.repository_model.with_context(active_test=False).search(
+                [("name", "=", "test-archive-repo")]
+            )
+        )
+
+    def test_sync_oca_repositories_rename_not_in_config(self):
+        """Test rename of a repository not declared (yet) in the OCA config.
+
+        GitHub gives the new identity, but the OCA configuration remains
+        authoritative for the lifecycle: the record is renamed then
+        archived, and reactivated as soon as the OCA configuration
+        declares its new name.
+        """
+        self._mock_github_repo_info(
+            {"test-archive-repo": self._get_github_renamed_repo_info()}
+        )
+        mca_backend = self.env.ref("odoo_repository.mca_backend")
+        with mca_backend.work_on("odoo.repository") as work:
+            synchronizer = work.component(usage="oca.repository.synchronizer")
+            # First sync: the new name is not (yet) in the OCA configuration
+            stats = synchronizer._sync_oca_repositories({})
+            self.assertEqual(stats["renamed"], 1)
+            self.assertEqual(stats["created"], 0)
+            self.assertEqual(stats["archived"], 1)
+            self.test_repo.invalidate_model()
+            self.assertEqual(self.test_repo.name, "test-renamed-repo")
+            self.assertFalse(self.test_repo.active)
+            self.assertFalse(self.test_repo.to_scan)
+            # Second sync: the new name is now declared
+            self.mock_get_repo_info.reset_mock()
+            current_repos = self._get_current_repos(["test-renamed-repo"])
+            stats = synchronizer._sync_oca_repositories(current_repos)
+            self.assertEqual(stats["renamed"], 0)
+            self.assertEqual(stats["created"], 0)
+            self.assertEqual(stats["updated"], 1)
+            self.test_repo.invalidate_model()
+            self.assertTrue(self.test_repo.active)
+            # The reactivation of the record must not query GitHub
+            self.mock_get_repo_info.assert_not_called()
+
+    def test_sync_oca_repositories_rename_duplicate(self):
+        """Test rename when a duplicate record exists under the new name.
+
+        GitHub guarantees both records are the same repository: the
+        sync is then aborted (error raised).
+        """
+        self._mock_github_repo_info(
+            {"test-archive-repo": self._get_github_renamed_repo_info()}
+        )
+        # Duplicate created by a previous sync under the new name
+        duplicate = self.repository_model.create(
+            {
+                "org_id": self.oca_org.id,
+                "name": "test-renamed-repo",
+                "repo_url": "https://github.com/OCA/test-renamed-repo",
+                "clone_url": "https://github.com/OCA/test-renamed-repo",
+                "repo_type": "github",
+            }
+        )
+        mca_backend = self.env.ref("odoo_repository.mca_backend")
+        with mca_backend.work_on("odoo.repository") as work:
+            synchronizer = work.component(usage="oca.repository.synchronizer")
+            current_repos = self._get_current_repos(["test-renamed-repo"])
+            with self.assertRaises(UserError):
+                synchronizer._sync_oca_repositories(current_repos)
+        # The duplicate is kept
+        self.assertTrue(duplicate.exists())
+
+    def test_sync_oca_repositories_transfer(self):
+        """Test that a repository transferred to another organization is archived."""
+        self._mock_github_repo_info(
+            {
+                "test-archive-repo": {
+                    "name": "test-renamed-repo",
+                    "full_name": "OtherOrg/test-renamed-repo",
+                }
+            }
+        )
+        mca_backend = self.env.ref("odoo_repository.mca_backend")
+        with mca_backend.work_on("odoo.repository") as work:
+            synchronizer = work.component(usage="oca.repository.synchronizer")
+            stats = synchronizer._sync_oca_repositories({})
+        self.assertEqual(stats["renamed"], 0)
+        self.assertEqual(stats["archived"], 1)
+        self.test_repo.invalidate_model()
+        self.assertEqual(self.test_repo.name, "test-archive-repo")
+        self.assertFalse(self.test_repo.active)
+
+    def test_sync_oca_repositories_removed(self):
+        """Test that a repository still existing on GitHub is archived.
+
+        The repository was removed from the OCA configuration but not
+        on GitHub: the regular archive process applies.
+        """
+        self._mock_github_repo_info(
+            {
+                "test-archive-repo": {
+                    "name": "test-archive-repo",
+                    "full_name": "OCA/test-archive-repo",
+                }
+            }
+        )
+        mca_backend = self.env.ref("odoo_repository.mca_backend")
+        with mca_backend.work_on("odoo.repository") as work:
+            synchronizer = work.component(usage="oca.repository.synchronizer")
+            stats = synchronizer._sync_oca_repositories({})
+        self.assertEqual(stats["renamed"], 0)
+        self.assertEqual(stats["archived"], 1)
+        self.test_repo.invalidate_model()
+        self.assertEqual(self.test_repo.name, "test-archive-repo")
+        self.assertFalse(self.test_repo.active)
 
     @patch("requests.get")
     def test_fetch_oca_repo_configurations(self, mock_get):
         """Test fetching repository configuration from GitHub."""
-        self._mock_requests_get(mock_get)
+        self._patch_requests_get(mock_get)
         mca_backend = self.env.ref("odoo_repository.mca_backend")
         with mca_backend.work_on("odoo.repository") as work:
             synchronizer = work.component(usage="oca.repository.synchronizer")
@@ -203,7 +384,7 @@ class TestOCARepositorySynchronizer(TransactionComponentCase):
     @patch("requests.get")
     def test_run_oca_repository_synchronizer(self, mock_get):
         """Test running the repository synchronizer component (main entrypoint)."""
-        self._mock_requests_get(mock_get)
+        self._patch_requests_get(mock_get)
         mca_backend = self.env.ref("odoo_repository.mca_backend")
         with mca_backend.work_on("odoo.repository") as work:
             synchronizer = work.component(usage="oca.repository.synchronizer")
@@ -226,7 +407,7 @@ class TestOCARepositorySynchronizer(TransactionComponentCase):
     @patch("requests.get")
     def test_cron_sync_oca_repositories(self, mock_get):
         """Test cron method syncing OCA repositories from GitHub."""
-        self._mock_requests_get(mock_get)
+        self._patch_requests_get(mock_get)
         result = self.repository_model.cron_sync_oca_repositories()
         self.assertTrue(result)
         test_repo = self.repository_model.search([("name", "=", "test-repo")])
