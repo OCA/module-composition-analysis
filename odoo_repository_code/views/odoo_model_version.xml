@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 Sebastien Alix <https://github.com/sebalix>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_model_version_view_form" model="ir.ui.view">
+        <field name="name">odoo.model.version.form</field>
+        <field name="model">odoo.model.version</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="odoo_model_id" />
+                            <field name="odoo_version_id" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page
+                            name="implementations"
+                            string="Implementations"
+                            invisible="not module_branch_model_ids"
+                        >
+                            <field name="module_branch_model_ids" nolabel="1">
+                                <list>
+                                    <field name="module_branch_id" />
+                                    <field name="model_type" />
+                                    <field name="global_dependency_level" />
+                                    <field name="root_id" optional="hide" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
