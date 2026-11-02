@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-10-28 16:46+0000\n"
+"PO-Revision-Date: 2026-11-02 18:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -228,12 +228,12 @@ msgstr "Trova moduli"
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_follower_ids
 msgid "Followers"
-msgstr "Chi segue"
+msgstr "Seguito da"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project__message_partner_ids
 msgid "Followers (Partners)"
-msgstr "Chi segue (Partner)"
+msgstr "Seguito da (partner)"
 
 #. module: odoo_project
 #: model:ir.model.fields,field_description:odoo_project.field_odoo_project_module__full_path
