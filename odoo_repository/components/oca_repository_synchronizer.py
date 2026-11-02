@@ -7,6 +7,7 @@ import requests
 import yaml
 
 from odoo import Command
+from odoo.exceptions import UserError
 
 from odoo.addons.component.core import Component
 from odoo.addons.queue_job.exception import RetryableJobError
@@ -21,8 +22,10 @@ class OCARepositorySynchronizer(Component):
 
     This component is syncing the list of OCA repositories in local database
     from https://github.com/OCA/repo-maintainer-conf repository.
-    It creates new repositories, updates existing ones, and archive those
-    no longer declared in the OCA configuration.
+    It creates new repositories, updates existing ones, archives those
+    no longer declared in the OCA configuration, and renames those renamed
+    on GitHub (detected thanks to the permanent redirects GitHub keeps on
+    renamed repositories).
     """
 
     _name = "oca.repository.synchronizer"
@@ -51,6 +54,7 @@ class OCARepositorySynchronizer(Component):
         parses the YAML files, and synchronizes the local repository database by:
         - Creating new repositories that exist in OCA config but not locally
         - Updating existing repositories with any changes
+        - Renaming repositories renamed on GitHub
         - Archiving repositories that no longer exist in OCA config
         """
         try:
@@ -70,6 +74,11 @@ class OCARepositorySynchronizer(Component):
                 seconds=e.retry_after,
                 ignore_retry=True,
             ) from e
+        except UserError:
+            # e.g. a repository renamed on GitHub collides with an existing
+            # record: a manual intervention is required, fail the job
+            # immediately with the explicit error message, no blind retries
+            raise
         except Exception as e:
             raise RetryableJobError("Failed to fetch OCA repositories") from e
 
@@ -158,9 +167,9 @@ class OCARepositorySynchronizer(Component):
             current_repos: Dict of repository data from OCA configuration
 
         Returns:
-            dict: Statistics about created/updated/archived repositories
+            dict: Statistics about created/updated/archived/renamed repositories
         """
-        stats = {"created": 0, "updated": 0, "archived": 0}
+        stats = {"created": 0, "updated": 0, "archived": 0, "renamed": 0}
         env = self.work.env
         # Get OCA organization
         oca_org = env.ref(
@@ -174,6 +183,9 @@ class OCARepositorySynchronizer(Component):
         existing_repos = odoo_repository.with_context(active_test=False).search(
             [("org_id", "=", oca_org.id)]
         )
+        # Rename repositories renamed on GitHub, before any other processing,
+        # to avoid archiving them and creating a duplicate under their new name
+        existing_repos = self._rename_repositories(existing_repos, current_repos, stats)
         # Process current repositories
         for repo_name, repo_data in current_repos.items():
             # Check if repository already exists
@@ -198,6 +210,94 @@ class OCARepositorySynchronizer(Component):
                 repo.active = repo.to_scan = False
                 stats["archived"] += 1
         return stats
+
+    def _rename_repositories(self, existing_repos, current_repos, stats):
+        """Rename local records of repositories renamed on GitHub.
+
+        GitHub keeps a permanent redirect on renamed repositories. Each
+        repository missing from the OCA configuration is queried on GitHub:
+        if the query is redirected, the repository was renamed, and the
+        local record is renamed accordingly to preserve its collected
+        data, instead of archiving it and creating a duplicate under the
+        new name.
+
+        The OCA configuration remains authoritative for the lifecycle of
+        a repository: a renamed record is archived by the regular sync
+        process until its new name is declared in the configuration, and
+        reactivated at that time only (see
+        '_prepare_oca_repository_update_vals').
+
+        Args:
+            existing_repos: Recordset of existing OCA repositories
+            current_repos: Dict of repository data from OCA configuration
+            stats: Dict of synchronization statistics to update
+
+        Returns:
+            recordset: The existing repositories, without any record
+                       deleted to merge duplicates of renamed ones
+        """
+        env = self.work.env
+        renames = []
+        for repo in existing_repos:
+            if repo.name in current_repos or not repo.active:
+                continue
+            # The repository is missing from the OCA configuration: ask
+            # GitHub about it. A redirected query means the repository
+            # was renamed (or transferred), and the returned payload
+            # describes the repository under its current name.
+            info = github.get_repo_info(env, "OCA", repo.name)
+            if not info:
+                # Repository deleted from GitHub: keep the archive process
+                continue
+            new_org, _, new_name = info.get("full_name", "").partition("/")
+            if not new_name or new_name == repo.name or new_org != "OCA":
+                # Not renamed, or transferred to another organization:
+                # keep the archive process
+                continue
+            renames.append((repo, new_name))
+        processed = set()
+        for repo, new_name in sorted(renames, key=lambda item: item[0].id):
+            # Chain of renames: several old repositories could redirect
+            # to the same new name. Only the first one is renamed.
+            if new_name in processed:
+                _logger.warning(
+                    "OCA repository %s was renamed to %s on GitHub, but "
+                    "another repository was already renamed to that name: "
+                    "archiving %s instead",
+                    repo.name,
+                    new_name,
+                    repo.name,
+                )
+                continue
+            target = (
+                env["odoo.repository"]
+                .with_context(active_test=False)
+                .search([("org_id", "=", repo.org_id.id), ("name", "=", new_name)])
+            )
+            if target:
+                # A record already exists under the new name. GitHub
+                # guarantees both records are the same repository.
+                # Raise an error, it has to be handled manually to not lose data.
+                raise UserError(
+                    self.env._(
+                        "OCA repository %(old_name)s was renamed to %(new_name)s "
+                        "on GitHub, but a record already exists under the new name.",
+                        old_name=repo.name,
+                        new_name=new_name,
+                    )
+                )
+            repo_url = f"https://github.com/OCA/{new_name}"
+            _logger.info(
+                "OCA repository %s was renamed to %s on GitHub: renaming "
+                "local record (%s)",
+                repo.name,
+                new_name,
+                repo.id,
+            )
+            repo.write({"name": new_name, "repo_url": repo_url, "clone_url": repo_url})
+            processed.add(new_name)
+            stats["renamed"] += 1
+        return existing_repos.exists()
 
     def _prepare_oca_repository_update_vals(self, repo_data):
         return {
