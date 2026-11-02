@@ -737,6 +737,14 @@ msgid "OCA Repository Blacklist"
 msgstr ""
 
 #. module: odoo_repository
+#. odoo-python
+#: code:addons/odoo_repository/components/oca_repository_synchronizer.py:0
+msgid ""
+"OCA repository %(old_name)s was renamed to %(new_name)s on GitHub, but a "
+"record already exists under the new name."
+msgstr ""
+
+#. module: odoo_repository
 #: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
 msgid "OCB,OpenUpgrade"
 msgstr ""
