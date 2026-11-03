@@ -14,6 +14,7 @@
         "views/odoo_module_branch_model.xml",
         "views/odoo_module_branch_model_field.xml",
         "views/odoo_module_branch_model_method.xml",
+        "views/odoo_module_branch_data.xml",
         "views/odoo_module_branch.xml",
     ],
     "installable": True,

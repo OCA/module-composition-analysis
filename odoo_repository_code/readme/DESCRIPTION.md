@@ -4,3 +4,4 @@ It will collect the following:
 - Odoo models
 - Fields
 - Methods with their signature and body
+- Data records from XML and CSV files
