@@ -36,6 +36,7 @@ It will collect the following:
 - Odoo models
 - Fields
 - Methods with their signature and body
+- Data records from XML and CSV files
 
 .. IMPORTANT::
    This is an alpha version, the data model and design can change at any time without warning.
