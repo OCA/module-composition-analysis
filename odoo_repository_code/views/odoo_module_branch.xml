@@ -17,6 +17,15 @@
                 >
                     <field string="Models" name="models_count" widget="statinfo" />
                 </button>
+                <button
+                    name="open_data"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-database"
+                    invisible="data_count == 0"
+                >
+                    <field string="Data" name="data_count" widget="statinfo" />
+                </button>
             </div>
         </field>
     </record>
@@ -28,6 +37,7 @@
         <field name="arch" type="xml">
             <field name="license_id" position="after">
                 <field name="model_ids" />
+                <field name="data_ids" />
             </field>
         </field>
     </record>

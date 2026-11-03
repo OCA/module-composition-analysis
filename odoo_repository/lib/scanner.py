@@ -1134,7 +1134,11 @@ class RepositoryScanner(BaseScanner):
         else:
             # Get current code analysis data
             full_module_path = self.path.joinpath(module_path)
-            parser = ModuleParser(full_module_path, scan_models=self.parse_code)
+            parser = ModuleParser(
+                full_module_path,
+                scan_models=self.parse_code,
+                scan_data=self.parse_code,
+            )
             data = parser.to_dict()
         # Append the history of versions
         versions = self._read_module_versions(

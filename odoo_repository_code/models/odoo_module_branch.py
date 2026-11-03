@@ -13,11 +13,22 @@ class OdooModuleBranch(models.Model):
         string="Models",
     )
     models_count = fields.Integer(compute="_compute_models_count")
+    data_ids = fields.One2many(
+        comodel_name="odoo.module.branch.data",
+        inverse_name="module_branch_id",
+        string="Data",
+    )
+    data_count = fields.Integer(compute="_compute_data_count")
 
     @api.depends("model_ids")
     def _compute_models_count(self):
         for rec in self:
-            rec.models_count = len(self.model_ids)
+            rec.models_count = len(rec.model_ids)
+
+    @api.depends("data_ids")
+    def _compute_data_count(self):
+        for rec in self:
+            rec.data_count = len(rec.data_ids)
 
     def open_models(self):
         self.ensure_one()
@@ -25,6 +36,15 @@ class OdooModuleBranch(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
         action["name"] = _("Models")
         action["domain"] = [("id", "in", self.model_ids.ids)]
+        action["context"] = {}
+        return action
+
+    def open_data(self):
+        self.ensure_one()
+        xml_id = "odoo_repository_code.odoo_module_branch_data_action"
+        action = self.env["ir.actions.actions"]._for_xml_id(xml_id)
+        action["name"] = _("Data")
+        action["domain"] = [("id", "in", self.data_ids.ids)]
         action["context"] = {}
         return action
 
@@ -40,6 +60,11 @@ class OdooModuleBranch(models.Model):
             self._import_code_odoo_models(data["models"])
         else:
             self._cleanup_code_odoo_models()
+        # Import module data (XML/CSV records) only if the module is installable
+        if (data.get("data") or data.get("demo")) and self.installable:
+            self._import_code_odoo_data(data.get("data") or {}, data.get("demo") or {})
+        else:
+            self._cleanup_code_odoo_data()
 
     def _import_code_odoo_models(self, data_models):
         self.ensure_one()
@@ -215,7 +240,83 @@ class OdooModuleBranch(models.Model):
             rec = model_.sudo().create(vals)
         return rec
 
+    # == data import ==
+
+    def _import_code_odoo_data(self, data_records, demo_records):
+        self.ensure_one()
+        # These are entries created/updated from scanned module
+        mb_data_ids = []
+        for data_type, records in (("data", data_records), ("demo", demo_records)):
+            for model_name, model_records in records.items():
+                odoo_model = self._get_or_create_odoo_model(model_name, None)
+                odoo_model_version = self._get_or_create_odoo_model_version(odoo_model)
+                for record in model_records:
+                    vals = self._prepare_odoo_module_branch_data_values(
+                        odoo_model_version, record, data_type
+                    )
+                    data_ = self._create_or_update_odoo_module_branch_data(vals)
+                    mb_data_ids.append(data_.id)
+        self._archive_code_data_elements(mb_data_ids)
+
+    def _cleanup_code_odoo_data(self):
+        self.ensure_one()
+        self.data_ids.sudo().unlink()
+
+    def _archive_code_data_elements(self, scanned_data_ids):
+        """Archive data elements that doesn't exist anymore."""
+        data = (
+            self.data_ids
+            - self.env["odoo.module.branch.data"].browse(scanned_data_ids).sudo()
+        )
+        data.active = False
+
+    def _prepare_odoo_module_branch_data_values(
+        self, odoo_model_version, record, data_type
+    ):
+        self.ensure_one()
+        return {
+            "module_branch_id": self.id,
+            "odoo_model_version_id": odoo_model_version.id,
+            "xml_id": record["id"],
+            "name": record.get("name") or record["id"],
+            "file_path": record.get("file_path"),
+            "data_type": data_type,
+            "loaded": record.get("loaded", False),
+            "noupdate": record.get("noupdate", False),
+            "data": record,
+            "active": True,
+        }
+
+    def _create_or_update_odoo_module_branch_data(self, vals):
+        self.ensure_one()
+        model_ = self.env["odoo.module.branch.data"].with_context(active_test=False)
+        rec = model_.search(
+            [
+                ("module_branch_id", "=", vals["module_branch_id"]),
+                ("odoo_model_version_id", "=", vals["odoo_model_version_id"]),
+                ("xml_id", "=", vals["xml_id"]),
+                ("data_type", "=", vals["data_type"]),
+            ],
+            limit=1,
+        )
+        if rec:
+            rec.sudo().write(vals)
+        else:
+            rec = model_.sudo().create(vals)
+        return rec
+
     def _to_dict(self):
         data = super()._to_dict()
         data["models"] = [model._to_dict() for model in self.model_ids]
+        # Group data records by type and model
+        for data_type in ("data", "demo"):
+            data_records = self.data_ids.filtered(
+                lambda rec, data_type=data_type: rec.data_type == data_type
+            )
+            if data_records:
+                data[data_type] = {}
+                for rec in data_records:
+                    data[data_type].setdefault(rec.odoo_model_name, []).append(
+                        rec._to_dict()
+                    )
         return data

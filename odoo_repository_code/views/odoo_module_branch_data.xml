@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Sebastien Alix <https://github.com/sebalix>
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_module_branch_data_view_form" model="ir.ui.view">
+        <field name="name">odoo.module.branch.data.form</field>
+        <field name="model">odoo.module.branch.data</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group name="info" string="Info">
+                        <group>
+                            <field name="module_branch_id" />
+                            <field name="odoo_model_version_id" string="Model" />
+                            <field name="full_xml_id" />
+                            <field name="overridden_id" invisible="not overridden_id" />
+                            <field name="is_override" invisible="overridden_id" />
+                            <field name="name" />
+                        </group>
+                        <group>
+                            <field name="data_type" />
+                            <field name="file_path" />
+                            <field name="loaded" />
+                            <field name="noupdate" />
+                            <field name="global_dependency_level" />
+                        </group>
+                    </group>
+                    <group name="data_json" string="Data">
+                        <field
+                            name="data_json"
+                            widget="ace"
+                            options="{'mode': 'javascript'}"
+                            readonly="1"
+                            nolabel="1"
+                            colspan="2"
+                        />
+                    </group>
+                    <group name="data_xml" string="XML">
+                        <field
+                            name="data_xml"
+                            widget="ace"
+                            options="{'mode': 'xml'}"
+                            readonly="1"
+                            nolabel="1"
+                            colspan="2"
+                            invisible="not data_xml"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_data_view_tree" model="ir.ui.view">
+        <field name="name">odoo.module.branch.data.list</field>
+        <field name="model">odoo.module.branch.data</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active or data_type == 'demo'">
+                <field name="odoo_version_id" optional="show" />
+                <field name="module_branch_id" optional="show" />
+                <field name="odoo_model_id" optional="show" />
+                <field name="name" optional="hide" />
+                <field name="full_xml_id" optional="show" />
+                <field name="is_override" optional="hide" />
+                <field name="data_type" optional="show" />
+                <field name="file_path" optional="hide" />
+                <field name="repository_id" optional="hide" />
+                <field name="global_dependency_level" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_data_view_search" model="ir.ui.view">
+        <field name="name">odoo.module.branch.data.search</field>
+        <field name="model">odoo.module.branch.data</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="full_xml_id" />
+                <field name="odoo_model_id" />
+                <field name="module_branch_id" />
+                <field name="odoo_version_id" />
+                <field name="repository_id" />
+                <field name="org_id" />
+                <filter
+                    name="data"
+                    string="Data"
+                    domain="[('data_type', '=', 'data')]"
+                />
+                <filter
+                    name="demo"
+                    string="Demo"
+                    domain="[('data_type', '=', 'demo')]"
+                />
+                <separator />
+                <filter
+                    name="is_override"
+                    string="Is Override"
+                    domain="[('is_override', '=', True)]"
+                />
+                <separator />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_module_name"
+                        string="Module"
+                        context="{'group_by': 'module_name'}"
+                    />
+                    <filter
+                        name="group_by_odoo_model_id"
+                        string="Model"
+                        context="{'group_by': 'odoo_model_id'}"
+                    />
+                    <filter
+                        name="group_by_data_type"
+                        string="Type"
+                        context="{'group_by': 'data_type'}"
+                    />
+                    <filter
+                        name="group_by_odoo_version_id"
+                        string="Odoo Version"
+                        context="{'group_by': 'odoo_version_id'}"
+                    />
+                    <filter
+                        name="group_by_org_id"
+                        string="Organization"
+                        context="{'group_by': 'org_id'}"
+                    />
+                    <filter
+                        name="group_by_repository_id"
+                        string="Repository"
+                        context="{'group_by': 'repository_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="odoo_module_branch_data_action" model="ir.actions.act_window">
+        <field name="name">Data</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">odoo.module.branch.data</field>
+        <field name="view_id" ref="odoo_module_branch_data_view_tree" />
+        <field
+            name="context"
+        >{'search_default_group_by_odoo_version_id': 1, 'search_default_group_by_module_name': 2, 'search_default_group_by_odoo_model_id': 3}</field>
+    </record>
+
+    <menuitem
+        id="odoo_module_branch_data_menu"
+        parent="code_odoo_repository_menu"
+        action="odoo_module_branch_data_action"
+        sequence="50"
+    />
+</odoo>
