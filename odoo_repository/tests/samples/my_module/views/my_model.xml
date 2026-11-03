@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Sébastien Alix
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl) -->
+<odoo>
+    <record id="my_model_view_form" model="ir.ui.view">
+        <field name="name">my_module.my_model.form</field>
+        <field name="model">my_module.my_model</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="name" />
+            </form>
+        </field>
+    </record>
+    <menuitem
+        id="my_model_menu"
+        name="My Model"
+    />
+</odoo>
