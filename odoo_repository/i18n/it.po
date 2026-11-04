@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-10-28 16:46+0000\n"
+"PO-Revision-Date: 2026-11-04 13:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -783,6 +783,8 @@ msgid ""
 "OCA repository %(old_name)s was renamed to %(new_name)s on GitHub, but a "
 "record already exists under the new name."
 msgstr ""
+"Il repository OCA %(old_name)s è stato rinominato in %(new_name)s su GitHub, "
+"ma esiste già un record con il nuovo nome."
 
 #. module: odoo_repository
 #: model_terms:ir.ui.view,arch_db:odoo_repository.res_config_settings_view_form
