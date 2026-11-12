@@ -42,47 +42,14 @@ class Common(TransactionCase, OdooRepoMixin):
         )
         # branch1
         cls.branch1_name = cls.source1.split("/")[1]
-        cls.branch = (
-            cls.env["odoo.branch"]
-            .with_context(active_test=False)
-            .search([("name", "=", cls.branch1_name)])
-        )
-        if not cls.branch:
-            cls.branch = cls.env["odoo.branch"].create(
-                {
-                    "name": cls.branch1_name,
-                }
-            )
-        cls.branch.active = True
+        cls.branch = cls._activate_odoo_branch(cls.branch1_name)
         cls._handle_cleanup()
         # branch2
         cls.branch2_name = cls.source2.split("/")[1]
-        cls.branch2 = (
-            cls.env["odoo.branch"]
-            .with_context(active_test=False)
-            .search([("name", "=", cls.branch2_name)])
-        )
-        if not cls.branch2:
-            cls.branch2 = cls.env["odoo.branch"].create(
-                {
-                    "name": cls.branch2_name,
-                }
-            )
-        cls.branch2.active = True
+        cls.branch2 = cls._activate_odoo_branch(cls.branch2_name)
         # branch3
         cls.branch3_name = cls.target2.split("/")[1]
-        cls.branch3 = (
-            cls.env["odoo.branch"]
-            .with_context(active_test=False)
-            .search([("name", "=", cls.branch3_name)])
-        )
-        if not cls.branch3:
-            cls.branch3 = cls.env["odoo.branch"].create(
-                {
-                    "name": cls.branch2_name,
-                }
-            )
-        cls.branch3.active = True
+        cls.branch3 = cls._activate_odoo_branch(cls.branch3_name)
         # technical module
         cls.module_name = cls.addon
         cls.module_branch_model = cls.env["odoo.module.branch"]
@@ -166,6 +133,23 @@ class Common(TransactionCase, OdooRepoMixin):
         }
         vals.update(values)
         return cls.env["odoo.module.branch"].create(vals)
+
+    @classmethod
+    def _activate_odoo_branch(cls, name):
+        """Return the `odoo.branch` record matching `name`.
+
+        The branch is created if it doesn't exist yet, and always activated
+        (branches are archived by default, except the most recent ones).
+        """
+        branch = (
+            cls.env["odoo.branch"]
+            .with_context(active_test=False)
+            .search([("name", "=", name)])
+        )
+        if not branch:
+            branch = cls.env["odoo.branch"].create({"name": name})
+        branch.active = True
+        return branch
 
     @classmethod
     def _handle_cleanup(cls):
