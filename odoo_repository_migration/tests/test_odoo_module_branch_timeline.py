@@ -80,13 +80,13 @@ class TestOdooModuleBranchTimeline(MigrationCommon):
             - Calling _get_related_timelines on any timeline should return all timelines
         """
         # Create timelines
-        timeline_b = self._create_timeline(
+        timeline_b = self._create_module_timeline(
             self.module_branch_a, self.module_b, "renamed"
         )
-        timeline_c = self._create_timeline(
+        timeline_c = self._create_module_timeline(
             self.module_branch_b, self.module_c, "replaced"
         )
-        timeline_d = self._create_timeline(
+        timeline_d = self._create_module_timeline(
             self.module_branch_c, self.module_d, "renamed"
         )
         # Test from first timeline (A -> B)
