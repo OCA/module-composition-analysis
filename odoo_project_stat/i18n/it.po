@@ -1,0 +1,181 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* odoo_project_stat
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__color
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__color
+msgid "Color"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__create_uid
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__create_date
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__date
+msgid "Date"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__display_name
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__domain
+msgid "Domain"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__id
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__id
+msgid "ID"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model,name:odoo_project_stat.model_odoo_project_import_modules
+msgid "Import modules for an Odoo project"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat____last_update
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__write_uid
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__write_date
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project__chart_sloc
+msgid "Lines of Code Chart"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__sloc
+msgid "Lines of code"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project__chart_modules_count
+msgid "Modules Chart"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__modules_count
+msgid "Modules Count"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model,name:odoo_project_stat.model_odoo_project
+msgid "Odoo Project"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model,name:odoo_project_stat.model_odoo_project_stat_config
+msgid "Odoo Project Stat Config"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model,name:odoo_project_stat.model_odoo_project_stat
+msgid "Odoo Project Stats"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.constraint,message:odoo_project_stat.constraint_odoo_project_stat_config_residual_uniq
+msgid "Only one configuration should exist for residual modules."
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__odoo_project_id
+msgid "Project"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__config_id
+msgid "Project Stat Configuration"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.actions.act_window,name:odoo_project_stat.odoo_project_stat_config_action
+#: model:ir.ui.menu,name:odoo_project_stat.odoo_project_stat_config_menu
+msgid "Project Stats"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model_terms:ir.ui.view,arch_db:odoo_project_stat.odoo_project_view_form
+msgid "Refresh"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__residual
+msgid "Residual"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__sequence
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project__stats_ids
+#: model_terms:ir.ui.view,arch_db:odoo_project_stat.odoo_project_view_form
+msgid "Stats"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.constraint,message:odoo_project_stat.constraint_odoo_project_stat_odoo_project_config_date_uniq
+msgid "This project stats record already exists."
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat__name
+#: model:ir.model.fields,field_description:odoo_project_stat.field_odoo_project_stat_config__name
+msgid "Title"
+msgstr ""
+
+#. module: odoo_project_stat
+#: model_terms:ir.ui.view,arch_db:odoo_project_stat.odoo_project_view_form
+msgid ""
+"Useful to get accurate figures if modules have been updated in their "
+"respective repositories."
+msgstr ""
+
+#. module: odoo_project_stat
+#: model:ir.model.fields,help:odoo_project_stat.field_odoo_project_stat_config__residual
+msgid ""
+"Will catch all modules that doesn't match other rules (domain field will be "
+"ignored if enabled)."
+msgstr ""
