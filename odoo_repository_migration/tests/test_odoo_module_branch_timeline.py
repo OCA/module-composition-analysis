@@ -10,17 +10,7 @@ class TestOdooModuleBranchTimeline(MigrationCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.branch4_name = str(float(cls.branch3.name) + 1)
-        cls.branch4 = (
-            cls.env["odoo.branch"]
-            .with_context(active_test=False)
-            .search([("name", "=", cls.branch4_name)])
-        )
-        if not cls.branch4:
-            cls.branch4 = cls.env["odoo.branch"].create(
-                {
-                    "name": cls.branch4_name,
-                }
-            )
+        cls.branch4 = cls._activate_odoo_branch(cls.branch4_name)
         cls.repo_branch4 = cls._create_odoo_repository_branch(
             cls.odoo_repository, cls.branch4
         )

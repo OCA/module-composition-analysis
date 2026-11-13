@@ -643,22 +643,21 @@ class OdooModuleBranch(models.Model):
             # (i.e. the branch has been started from a previous one), check if
             # it hasn't been imported already thanks to the related commit SHA
             version = self._get_existing_version(module, manifest_value, data["commit"])
+            commit = data["commit"]
             if version and module_branch:
-                # Skip if the version has already been imported for a
-                # previous Odoo release
+                # The version has already been imported for a previous Odoo
+                # release: the commit that introduced it is bound to that older
+                # branch only, as the current branch inherited this version.
                 if version.branch_id.sequence < module_branch.branch_id.sequence:
-                    continue
-                # Corner case: we scanned a version that was already imported
-                # through a newer Odoo branch. Downgrade the existing version
-                # to the current module branch.
-                if version.branch_id.sequence > module_branch.branch_id.sequence:
-                    version.write(
-                        {
-                            "module_branch_id": module_branch.id,
-                            "name": name,
-                        }
-                    )
-                    continue
+                    commit = False
+                # Corner case: the version has already been imported through a
+                # newer Odoo branch (e.g. this branch has been scanned after
+                # the newer one): the commit that introduced it belongs to the
+                # current branch, so reset it on the newer one. The version
+                # record is kept, as its 'has_migration_script' value is
+                # specific to each branch.
+                elif version.branch_id.sequence > module_branch.branch_id.sequence:
+                    version.commit = False
             module_version = module_branch.version_ids.filtered(
                 lambda v, name=name, manifest_value=manifest_value: (
                     v.name == name and v.manifest_value == manifest_value
@@ -667,7 +666,7 @@ class OdooModuleBranch(models.Model):
             values = {
                 "name": name,
                 "manifest_value": manifest_value,
-                "commit": data["commit"],
+                "commit": commit,
                 "has_migration_script": data.get("migration_script", False),
             }
             if module_version:
