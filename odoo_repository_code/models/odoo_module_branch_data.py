@@ -98,7 +98,13 @@ class OdooModuleBranchData(models.Model):
     )
     noupdate = fields.Boolean()
     data = fields.Serialized()
-    data_text = fields.Text(compute="_compute_data_text")
+    data_json = fields.Text(compute="_compute_data_json")
+    data_xml = fields.Text(
+        string="XML Source",
+        compute="_compute_data_xml",
+        help="Raw XML source of the record, as written in the file "
+        "(empty for CSV records).",
+    )
     active = fields.Boolean(default=True)
 
     @api.depends("odoo_model_name", "xml_id", "module_branch_id")
@@ -151,8 +157,19 @@ class OdooModuleBranchData(models.Model):
         return dict(self.data)
 
     @api.depends("data")
-    def _compute_data_text(self):
+    def _compute_data_json(self):
         for rec in self:
-            rec.data_text = (
-                json.dumps(rec.data, indent=4, sort_keys=True) if rec.data else False
+            # The raw XML source is displayed in the 'data_xml' field
+            data = (
+                {key: val for key, val in rec.data.items() if key != "xml"}
+                if rec.data
+                else False
             )
+            rec.data_json = (
+                json.dumps(data, indent=4, sort_keys=True) if data else False
+            )
+
+    @api.depends("data")
+    def _compute_data_xml(self):
+        for rec in self:
+            rec.data_xml = rec.data.get("xml", False) if rec.data else False

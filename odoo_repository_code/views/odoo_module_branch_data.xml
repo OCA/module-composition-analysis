@@ -25,14 +25,25 @@
                             <field name="global_dependency_level" />
                         </group>
                     </group>
-                    <group name="data" string="Data">
+                    <group name="data_json" string="Data">
                         <field
-                            name="data_text"
+                            name="data_json"
                             widget="ace"
                             options="{'mode': 'javascript'}"
                             readonly="1"
                             nolabel="1"
                             colspan="2"
+                        />
+                    </group>
+                    <group name="data_xml" string="XML">
+                        <field
+                            name="data_xml"
+                            widget="ace"
+                            options="{'mode': 'xml'}"
+                            readonly="1"
+                            nolabel="1"
+                            colspan="2"
+                            invisible="not data_xml"
                         />
                     </group>
                 </sheet>

@@ -122,7 +122,12 @@ class TestOdooModuleBranchData(Common):
         self.assertTrue(view.loaded)
         self.assertFalse(view.noupdate)
         self.assertEqual(view.data["target_model"], "my_module.my_model")
-        self.assertIn('"target_model": "my_module.my_model"', view.data_text)
+        self.assertIn('"target_model": "my_module.my_model"', view.data_json)
+        # The raw XML source is available in the 'xml' key of the data
+        self.assertIn('<record id="my_model_view_form"', view.data["xml"])
+        self.assertIn('<record id="my_model_view_form"', view.data_xml)
+        # ... and excluded from the JSON view of the data
+        self.assertNotIn('"xml"', view.data_json)
         # XML record (menu)
         menu = self._get_data(module_branch, "my_model_menu")
         self.assertEqual(menu.odoo_model_name, "ir.ui.menu")
@@ -132,6 +137,7 @@ class TestOdooModuleBranchData(Common):
         self.assertEqual(access.odoo_model_name, "ir.model.access")
         self.assertEqual(access.name, "access_my_module_my_model")
         self.assertEqual(access.file_path, "security/ir.model.access.csv")
+        self.assertFalse(access.data_xml)
         # Demo record
         demo = self._get_data(module_branch, "my_model_demo")
         self.assertEqual(demo.data_type, "demo")
