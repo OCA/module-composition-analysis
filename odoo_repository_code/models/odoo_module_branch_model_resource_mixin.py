@@ -21,6 +21,12 @@ class OdooModuleBranchModelResourceMixin(models.AbstractModel):
         store=True,
         index=True,
     )
+    module_id = fields.Many2one(
+        string="Module technical name",
+        related="module_branch_id.module_id",
+        store=True,
+        index=True,
+    )
     module_name = fields.Char(
         related="module_branch_model_id.module_name",
         string="Technical module name",

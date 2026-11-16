@@ -73,7 +73,7 @@
             <search>
                 <field name="name" />
                 <field name="odoo_model_id" />
-                <field name="module_branch_id" />
+                <field name="module_id" />
                 <field name="odoo_version_id" />
                 <field name="repository_id" />
                 <field name="org_id" />
