@@ -3,7 +3,8 @@
 # @author Sébastien Alix <sebastien.alix@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class OdooModuleBranchTimeline(models.Model):
@@ -81,6 +82,24 @@ class OdooModuleBranchTimeline(models.Model):
         help="Technical field telling if this timeline needs a migration scan.",
     )
     active = fields.Boolean(default=True)
+
+    _sql_constraints = [
+        (
+            "module_branch_uniq",
+            "UNIQUE (module_branch_id)",
+            "A timeline already exists for this module and version.",
+        ),
+    ]
+
+    @api.constrains("module_branch_id", "next_module_id")
+    def _check_next_module(self):
+        for rec in self:
+            if not rec.next_module_id:
+                raise ValidationError(_("A new module is required."))
+            if rec.next_module_id == rec.module_branch_id.module_id:
+                raise ValidationError(
+                    _("The new module must be different from the module.")
+                )
 
     @api.depends("odoo_version_id", "module_branch_id", "next_module_id")
     def _compute_display_name(self):

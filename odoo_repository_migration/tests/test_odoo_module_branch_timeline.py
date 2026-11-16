@@ -2,6 +2,11 @@
 # @author Sébastien Alix <sebastien.alix@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+import psycopg2
+
+from odoo.exceptions import ValidationError
+from odoo.tools import mute_logger
+
 from .common import MigrationCommon
 
 
@@ -102,3 +107,31 @@ class TestOdooModuleBranchTimeline(MigrationCommon):
         self.assertIn(timeline_c, related_timelines)
         self.assertIn(timeline_d, related_timelines)
         self.assertEqual(len(related_timelines), 3)
+
+    @mute_logger("odoo.sql_db")
+    def test_timeline_unicity(self):
+        """Only one timeline can exist for a given module branch."""
+        timeline = self._create_module_timeline(
+            self.module_branch_a, self.module_b, "renamed"
+        )
+        # A second timeline for the same module branch is rejected
+        with self.assertRaises(psycopg2.IntegrityError), self.env.cr.savepoint():
+            self._create_module_timeline(self.module_branch_a, self.module_c, "renamed")
+        # Archived timelines still hold the unicity slot
+        timeline.active = False
+        with self.assertRaises(psycopg2.IntegrityError), self.env.cr.savepoint():
+            self._create_module_timeline(self.module_branch_a, self.module_c, "renamed")
+
+    def test_next_module(self):
+        """The new module is required and different from the module."""
+        # The new module is required
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            self.env["odoo.module.branch.timeline"].create(
+                {"module_branch_id": self.module_branch_a.id, "state": "renamed"}
+            )
+        # The new module must be different from the module
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            self._create_module_timeline(self.module_branch_a, self.module_a, "renamed")
+        # The new module may already exist on the same version as the module
+        # (e.g. a module name reused across Odoo versions)
+        self._create_module_timeline(self.module_branch_a, self.module, "renamed")
