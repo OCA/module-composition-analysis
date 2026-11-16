@@ -50,12 +50,13 @@ class OdooModuleBranch(models.Model):
                 limit=1,
             )
             # Stop there if no renaming/relacement
-            if not rec.timeline_ids:
+            timelines = rec.timeline_ids.filtered("active")
+            if not timelines:
                 continue
             rec.next_odoo_version_module_branch_id = self.search(
                 [
                     ("branch_sequence", ">=", rec.branch_id.next_id.sequence),
-                    ("module_id", "=", rec.timeline_ids.next_module_id.id),
+                    ("module_id", "=", timelines.next_module_id.id),
                 ],
                 order="branch_sequence",
                 limit=1,
@@ -74,7 +75,7 @@ class OdooModuleBranch(models.Model):
         replaced_by = self.env["odoo.module"]
         next_ = self
         while next_ and next_.branch_sequence < target_branch.sequence:
-            timeline = next_.timeline_ids
+            timeline = next_.timeline_ids.filtered("active")
             if timeline.state == "replaced":
                 replaced_by = timeline.next_module_id
             next_ = next_.next_odoo_version_module_branch_id
@@ -97,7 +98,7 @@ class OdooModuleBranch(models.Model):
         renamed_to = self.env["odoo.module"]
         next_ = self
         while next_ and next_.branch_sequence < target_branch.sequence:
-            timeline = next_.timeline_ids
+            timeline = next_.timeline_ids.filtered("active")
             # As soon as the module has been replaced in the chain of versions
             # it cannot be considered as renamed anymore
             if timeline.state == "replaced":

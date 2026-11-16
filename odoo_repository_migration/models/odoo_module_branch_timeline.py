@@ -159,6 +159,13 @@ class OdooModuleBranchTimeline(models.Model):
         migrations = self.migration_ids
         res = super().write(vals)
         (self.migration_ids | migrations).force_update()
+        if "active" in vals:
+            # Archiving/unarchiving a timeline changes the next version
+            # resolution of the module branch (the archived timelines are
+            # not applied): invalidate the cached values
+            self.module_branch_id.invalidate_recordset(
+                ["next_odoo_version_module_branch_id"]
+            )
         return res
 
     def unlink(self):

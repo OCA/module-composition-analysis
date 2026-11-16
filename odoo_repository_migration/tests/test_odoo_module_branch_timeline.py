@@ -48,6 +48,21 @@ class TestOdooModuleBranchTimeline(MigrationCommon):
             last_scanned_commit="sha_d",
         )
 
+    def test_next_odoo_version_module_branch_archived_timeline(self):
+        """An archived timeline is not applied: the next version resolution
+        falls back to the same module."""
+        timeline = self._create_module_timeline(
+            self.module_branch_a, self.module_b, "renamed"
+        )
+        self.assertEqual(
+            self.module_branch_a.next_odoo_version_module_branch_id,
+            self.module_branch_b,
+        )
+        # Archive the timeline: the resolution falls back to the same module
+        # (module_a has no branch on the next versions)
+        timeline.active = False
+        self.assertFalse(self.module_branch_a.next_odoo_version_module_branch_id)
+
     def test_get_related_timelines(self):
         """Test _get_related_timelines returns all timelines in a chain.
 
