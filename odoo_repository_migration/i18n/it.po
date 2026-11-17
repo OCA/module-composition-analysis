@@ -22,6 +22,12 @@ msgid "<span>Next Versions</span>"
 msgstr "<span>Versioni successive</span>"
 
 #. module: odoo_repository_migration
+#. odoo-python
+#: code:addons/odoo_repository_migration/models/odoo_module_branch_timeline.py:0
+msgid "A new module is required."
+msgstr ""
+
+#. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid ""
 "A scan of related modules is required to update relevant migration data.  "
@@ -30,6 +36,11 @@ msgstr ""
 "È necessaria una scansione dei moduli correlati per aggiornare i dati di "
 "migrazione pertinenti.  Attendi la prossima scansione pianificata oppure "
 "avviane una manualmente."
+
+#. module: odoo_repository_migration
+#: model:ir.model.constraint,message:odoo_repository_migration.constraint_odoo_module_branch_timeline_module_branch_uniq
+msgid "A timeline already exists for this module and version."
+msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__active
@@ -66,6 +77,16 @@ msgid "Commits to Port"
 msgstr "Commit da trasferire"
 
 #. module: odoo_repository_migration
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
+msgid "Confirm"
+msgstr ""
+
+#. module: odoo_repository_migration
+#: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__state__confirmed
+msgid "Confirmed"
+msgstr ""
+
+#. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__create_uid
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__create_uid
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__create_uid
@@ -95,6 +116,12 @@ msgstr "Definisce un percorso di migrazione (da un ramo a un altro)"
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__display_name
 msgid "Display Name"
 msgstr "Nome visualizzato"
+
+#. module: odoo_repository_migration
+#: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__state__draft
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
+msgid "Draft"
+msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__fully_ported
@@ -317,6 +344,12 @@ msgid "Odoo Version"
 msgstr "Versione di Odoo"
 
 #. module: odoo_repository_migration
+#: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_timeline__state
+msgid ""
+"Only confirmed timelines are taken into account by the migration analysis."
+msgstr ""
+
+#. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__org_id
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__org_id
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_migration_view_search
@@ -350,7 +383,7 @@ msgid "Renamed to"
 msgstr "Rinominato in"
 
 #. module: odoo_repository_migration
-#: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_timeline__state
+#: model:ir.model.fields,help:odoo_repository_migration.field_odoo_module_branch_timeline__timeline_type
 msgid ""
 "Renamed: modules still share the same Git history (it allows to check "
 "commits that could be ported)\n"
@@ -407,6 +440,11 @@ msgstr "Scansiona"
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__odoo_version_sequence
 msgid "Sequence"
 msgstr "Sequenza"
+
+#. module: odoo_repository_migration
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
+msgid "Set to Draft"
+msgstr ""
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__module_branch_id
@@ -489,6 +527,12 @@ msgid "Technical name"
 msgstr "Nome tecnico"
 
 #. module: odoo_repository_migration
+#. odoo-python
+#: code:addons/odoo_repository_migration/models/odoo_module_branch_timeline.py:0
+msgid "The new module must be different from the module."
+msgstr ""
+
+#. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid ""
 "The selected module version is not the last one available.\n"
@@ -512,7 +556,8 @@ msgstr "Questo percorso di migrazione del modulo esiste già."
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_migration_path_view_form
 msgid "This operation will scan all relevant repositories. Are you sure?"
-msgstr "Questa operazione analizzerà tutti i repository pertinenti. Continuare?"
+msgstr ""
+"Questa operazione analizzerà tutti i repository pertinenti. Continuare?"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch__timeline_ids
@@ -543,11 +588,17 @@ msgid "To review"
 msgstr "Da esaminare"
 
 #. module: odoo_repository_migration
-#: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__state__renamed
+#: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__timeline_type
+#: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
+msgid "Type"
+msgstr ""
+
+#. module: odoo_repository_migration
+#: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__timeline_type__renamed
 msgid "has been renamed to"
 msgstr "è stato rinominato in"
 
 #. module: odoo_repository_migration
-#: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__state__replaced
+#: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__timeline_type__replaced
 msgid "has been replaced by"
 msgstr "è stato sostituito da"
