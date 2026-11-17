@@ -14,6 +14,7 @@
         "views/odoo_module_branch_timeline.xml",
         "views/odoo_module_branch_migration.xml",
         "views/odoo_project.xml",
+        "views/odoo_project_module.xml",
         "views/odoo_project_module_migration.xml",
         "wizards/generate_migration_data.xml",
         "wizards/export_migration_report.xml",

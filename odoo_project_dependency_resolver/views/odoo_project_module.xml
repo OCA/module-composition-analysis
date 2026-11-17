@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 ACSONE SA/NV (<https://acsone.eu>)
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="odoo_project_module_view_form" model="ir.ui.view">
+        <field name="name">odoo.project.module.form.dependency.resolver</field>
+        <field name="model">odoo.project.module</field>
+        <field name="inherit_id" ref="odoo_project.odoo_project_module_view_form" />
+        <field name="arch" type="xml">
+            <!-- The form of 'odoo.project.module' only keeps the buttons it can
+                 honour, so add this one next to the method forwarding it. -->
+            <div name="button_box" position="inside">
+                <button
+                    name="action_analyse_pinned_revision"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-refresh"
+                    invisible="not is_pinned"
+                >
+                    <span>Analyse Revision</span>
+                </button>
+            </div>
+            <field name="installed_version" position="after">
+                <field name="is_pinned" invisible="1" />
+                <field
+                    name="source_repository_id"
+                    options="{'no_create': True}"
+                    invisible="not is_pinned"
+                />
+                <field name="source_clone_url" invisible="not is_pinned" />
+                <field name="source_ref" invisible="not is_pinned" />
+                <field name="source_subdirectory" invisible="not is_pinned" />
+                <field name="analysed_ref" invisible="not is_pinned" />
+            </field>
+        </field>
+    </record>
+
+    <record id="odoo_project_module_view_tree" model="ir.ui.view">
+        <field name="name">odoo.project.module.list.dependency.resolver</field>
+        <field name="model">odoo.project.module</field>
+        <field name="inherit_id" ref="odoo_project.odoo_project_module_view_tree" />
+        <field name="arch" type="xml">
+            <field name="installed_version" position="after">
+                <field name="is_pinned" optional="show" />
+                <field name="source_repository_id" optional="hide" />
+                <field name="source_ref" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+    <record id="odoo_project_module_view_search" model="ir.ui.view">
+        <field name="name">odoo.project.module.search.dependency.resolver</field>
+        <field name="model">odoo.project.module</field>
+        <field name="inherit_id" ref="odoo_project.odoo_project_module_view_search" />
+        <field name="arch" type="xml">
+            <search position="inside">
+                <filter
+                    name="pinned"
+                    string="Pinned"
+                    domain="[('is_pinned', '=', True)]"
+                />
+            </search>
+        </field>
+    </record>
+</odoo>
