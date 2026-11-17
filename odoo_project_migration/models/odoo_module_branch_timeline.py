@@ -48,22 +48,38 @@ class OdooModuleBranchTimeline(models.Model):
     #     project migration data (17.0 -> 18.0, or 17.0 -> 19.0) will be aware
     #     of such change even if migration data are not collected on source
     #     repository.
+    #
+    # Only confirmed timelines are taken into account.
 
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
-        records.project_migration_ids.force_update()
+        records.filtered(
+            lambda r: r.state == "confirmed"
+        ).project_migration_ids.force_update()
         return records
 
     @api.model
     def write(self, vals):
-        project_migrations = self.project_migration_ids
+        # Keep the project migration records of the timelines confirmed before
+        # the write (their influence may be retracted if they become draft),
+        # and add the ones of the timelines confirmed by the write
+        project_migrations = self.filtered(
+            lambda r: r.state == "confirmed"
+        ).project_migration_ids
         res = super().write(vals)
-        (self.project_migration_ids | project_migrations).force_update()
+        project_migrations |= self.filtered(
+            lambda r: r.state == "confirmed"
+        ).project_migration_ids
+        project_migrations.force_update()
         return res
 
     def unlink(self):
-        project_migrations = self.project_migration_ids
+        # Only the confirmed timelines influenced the analysis: no project
+        # migration record has to be refreshed when a draft one is deleted
+        project_migrations = self.filtered(
+            lambda r: r.state == "confirmed"
+        ).project_migration_ids
         res = super().unlink()
         project_migrations.force_update()
         return res

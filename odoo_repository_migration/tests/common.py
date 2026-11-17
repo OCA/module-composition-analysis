@@ -73,11 +73,15 @@ class MigrationCommon(common.Common):
         )
 
     @classmethod
-    def _create_timeline(cls, module_branch, next_module, state):
-        return cls.env["odoo.module.branch.timeline"].create(
-            {
-                "module_branch_id": module_branch.id,
-                "state": state,
-                "next_module_id": next_module.id,
-            }
-        )
+    def _create_module_timeline(
+        cls, module_branch, next_module, timeline_type, **values
+    ):
+        """Create a timeline, confirmed by default."""
+        vals = {
+            "module_branch_id": module_branch.id,
+            "timeline_type": timeline_type,
+            "next_module_id": next_module.id,
+            "state": "confirmed",
+        }
+        vals.update(values)
+        return cls.env["odoo.module.branch.timeline"].create(vals)

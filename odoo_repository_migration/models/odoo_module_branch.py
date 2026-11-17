@@ -50,12 +50,15 @@ class OdooModuleBranch(models.Model):
                 limit=1,
             )
             # Stop there if no renaming/relacement
-            if not rec.timeline_ids:
+            timelines = rec.timeline_ids.filtered(
+                lambda t: t.active and t.state == "confirmed"
+            )
+            if not timelines:
                 continue
             rec.next_odoo_version_module_branch_id = self.search(
                 [
                     ("branch_sequence", ">=", rec.branch_id.next_id.sequence),
-                    ("module_id", "=", rec.timeline_ids.next_module_id.id),
+                    ("module_id", "=", timelines.next_module_id.id),
                 ],
                 order="branch_sequence",
                 limit=1,
@@ -74,8 +77,10 @@ class OdooModuleBranch(models.Model):
         replaced_by = self.env["odoo.module"]
         next_ = self
         while next_ and next_.branch_sequence < target_branch.sequence:
-            timeline = next_.timeline_ids
-            if timeline.state == "replaced":
+            timeline = next_.timeline_ids.filtered(
+                lambda t: t.active and t.state == "confirmed"
+            )
+            if timeline.timeline_type == "replaced":
                 replaced_by = timeline.next_module_id
             next_ = next_.next_odoo_version_module_branch_id
             # If a module has been renamed after been replaced, the module to
@@ -97,14 +102,16 @@ class OdooModuleBranch(models.Model):
         renamed_to = self.env["odoo.module"]
         next_ = self
         while next_ and next_.branch_sequence < target_branch.sequence:
-            timeline = next_.timeline_ids
+            timeline = next_.timeline_ids.filtered(
+                lambda t: t.active and t.state == "confirmed"
+            )
             # As soon as the module has been replaced in the chain of versions
             # it cannot be considered as renamed anymore
-            if timeline.state == "replaced":
+            if timeline.timeline_type == "replaced":
                 renamed_to = self.env["odoo.module"]
                 next_ = False
                 continue
-            if timeline.state == "renamed":
+            if timeline.timeline_type == "renamed":
                 renamed_to = timeline.next_module_id
             next_ = next_.next_odoo_version_module_branch_id
         return renamed_to

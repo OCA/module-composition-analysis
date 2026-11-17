@@ -55,7 +55,7 @@ class TestOdooProjectModuleMigration(ProjectMigrationCommon):
         self._generate_migration_data(self.project, self.migration_path)
         self.assertTrue(self.project.module_migration_ids)
         # Module has been renamed starting from X+1
-        self._create_timeline(self.module_branch, next_module, "renamed")
+        self._create_module_timeline(self.module_branch, next_module, "renamed")
         # Check migration data
         mig = self.project.module_migration_ids
         self.assertEqual(mig.renamed_to_module_id, next_module)
@@ -108,13 +108,13 @@ class TestOdooProjectModuleMigration(ProjectMigrationCommon):
         # Generate project_migration data records from X to X+2 (with a gap)
         self._generate_migration_data(self.project, self.migration_path)
         # Module has been renamed in X+1
-        self._create_timeline(self.module_branch, next_module, "renamed")
+        self._create_module_timeline(self.module_branch, next_module, "renamed")
         renamed_to_module = self.module_branch._renamed_to_module_in_target_version(
             self.next_branch
         )
         self.assertEqual(renamed_to_module, next_module)
         # Module has been renamed again in X+2
-        self._create_timeline(next_module_branch, target_module, "renamed")
+        self._create_module_timeline(next_module_branch, target_module, "renamed")
         renamed_to_module = self.module_branch._renamed_to_module_in_target_version(
             self.target_branch
         )

@@ -34,7 +34,7 @@ class TestOdooModuleBranch(MigrationCommon):
             last_scanned_commit="sha",
         )
         # Add timeline entry for renaming
-        self._create_timeline(self.module_branch, next_module, "renamed")
+        self._create_module_timeline(self.module_branch, next_module, "renamed")
         # Test next_odoo_version_module_branch_id follows renaming
         self.assertEqual(
             self.module_branch.next_odoo_version_module_branch_id, next_module_branch
@@ -339,7 +339,7 @@ class TestOdooModuleBranch(MigrationCommon):
             report={"process": "migrate", "results": {}},
         )
         # Module has been renamed starting from X+1
-        self._create_timeline(self.module_branch, new_module, "renamed")
+        self._create_module_timeline(self.module_branch, new_module, "renamed")
         renamed_to_module = self.module_branch._renamed_to_module_in_target_version(
             next_branch
         )
@@ -416,13 +416,13 @@ class TestOdooModuleBranch(MigrationCommon):
             report={"process": "migrate", "results": {}},
         )
         # Module has been renamed in X+1
-        self._create_timeline(self.module_branch, next_module, "renamed")
+        self._create_module_timeline(self.module_branch, next_module, "renamed")
         renamed_to_module = self.module_branch._renamed_to_module_in_target_version(
             next_branch
         )
         self.assertEqual(renamed_to_module, next_module)
         # Module has been renamed again in X+2
-        self._create_timeline(next_module_branch, target_module, "renamed")
+        self._create_module_timeline(next_module_branch, target_module, "renamed")
         renamed_to_module = next_module_branch._renamed_to_module_in_target_version(
             target_branch
         )
@@ -476,7 +476,7 @@ class TestOdooModuleBranch(MigrationCommon):
             report={"process": "migrate", "results": {}},
         )
         # New module is replacing current one starting from X+1
-        self._create_timeline(self.module_branch, new_module, "replaced")
+        self._create_module_timeline(self.module_branch, new_module, "replaced")
         replaced_by_module = self.module_branch._replaced_by_module_in_target_version(
             next_branch
         )
@@ -554,13 +554,13 @@ class TestOdooModuleBranch(MigrationCommon):
             report={"process": "migrate", "results": {}},
         )
         # Module has been replaced in X+1
-        self._create_timeline(self.module_branch, next_module, "replaced")
+        self._create_module_timeline(self.module_branch, next_module, "replaced")
         replaced_by_module = self.module_branch._replaced_by_module_in_target_version(
             next_branch
         )
         self.assertEqual(replaced_by_module, next_module)
         # Module has been replaced again in X+2
-        self._create_timeline(next_module_branch, target_module, "replaced")
+        self._create_module_timeline(next_module_branch, target_module, "replaced")
         replaced_by_module = next_module_branch._replaced_by_module_in_target_version(
             target_branch
         )
@@ -631,13 +631,13 @@ class TestOdooModuleBranch(MigrationCommon):
             report={"process": "migrate", "results": {}},
         )
         # Module has been renamed in X+1
-        self._create_timeline(self.module_branch, next_module, "renamed")
+        self._create_module_timeline(self.module_branch, next_module, "renamed")
         renamed_to_module = self.module_branch._renamed_to_module_in_target_version(
             next_branch
         )
         self.assertEqual(renamed_to_module, next_module)
         # Module has been replaced in X+2
-        self._create_timeline(next_module_branch, target_module, "replaced")
+        self._create_module_timeline(next_module_branch, target_module, "replaced")
         replaced_by_module = next_module_branch._replaced_by_module_in_target_version(
             target_branch
         )
@@ -707,13 +707,13 @@ class TestOdooModuleBranch(MigrationCommon):
             report={"process": "migrate", "results": {}},
         )
         # Module has been replaced in X+1
-        self._create_timeline(self.module_branch, next_module, "replaced")
+        self._create_module_timeline(self.module_branch, next_module, "replaced")
         replaced_by_module = self.module_branch._replaced_by_module_in_target_version(
             next_branch
         )
         self.assertEqual(replaced_by_module, next_module)
         # Module has been renamed in X+2
-        self._create_timeline(next_module_branch, target_module, "renamed")
+        self._create_module_timeline(next_module_branch, target_module, "renamed")
         renamed_to_module = next_module_branch._renamed_to_module_in_target_version(
             target_branch
         )

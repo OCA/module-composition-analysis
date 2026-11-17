@@ -3,7 +3,8 @@
 # @author Sébastien Alix <sebastien.alix@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class OdooModuleBranchTimeline(models.Model):
@@ -45,7 +46,8 @@ class OdooModuleBranchTimeline(models.Model):
         related="odoo_version_id.sequence",
         store=True,
     )
-    state = fields.Selection(
+    timeline_type = fields.Selection(
+        string="Type",
         selection=[
             ("renamed", "has been renamed to"),
             ("replaced", "has been replaced by"),
@@ -58,6 +60,19 @@ class OdooModuleBranchTimeline(models.Model):
             "check commits that could be ported)\n"
             "Replaced: module has been replaced (or merged) by another one that "
             "fulfill the same feature"
+        ),
+    )
+    state = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("confirmed", "Confirmed"),
+        ],
+        default="draft",
+        required=True,
+        index=True,
+        help=(
+            "Only confirmed timelines are taken into account by "
+            "the migration analysis."
         ),
     )
     next_module_id = fields.Many2one(
@@ -81,6 +96,24 @@ class OdooModuleBranchTimeline(models.Model):
         help="Technical field telling if this timeline needs a migration scan.",
     )
     active = fields.Boolean(default=True)
+
+    _sql_constraints = [
+        (
+            "module_branch_uniq",
+            "UNIQUE (module_branch_id)",
+            "A timeline already exists for this module and version.",
+        ),
+    ]
+
+    @api.constrains("module_branch_id", "next_module_id")
+    def _check_next_module(self):
+        for rec in self:
+            if not rec.next_module_id:
+                raise ValidationError(_("A new module is required."))
+            if rec.next_module_id == rec.module_branch_id.module_id:
+                raise ValidationError(
+                    _("The new module must be different from the module.")
+                )
 
     @api.depends("odoo_version_id", "module_branch_id", "next_module_id")
     def _compute_display_name(self):
@@ -147,25 +180,51 @@ class OdooModuleBranchTimeline(models.Model):
     #     if a module on 17.0 is set as renamed starting from 18.0, existing
     #     migration data (17.0 -> 18.0, or 17.0 -> 19.0) will be aware of such
     #     change and all related modules will have to be scanned again.
+    #
+    # Only confirmed timelines are taken into account.
 
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
-        records.migration_ids.force_update()
+        records.filtered(lambda r: r.state == "confirmed").migration_ids.force_update()
         return records
 
     @api.model
     def write(self, vals):
-        migrations = self.migration_ids
+        # Keep the migration records of the timelines confirmed before the
+        # write (their influence may be retracted if they become draft), and
+        # add the ones of the timelines confirmed by the write (a draft
+        # timeline becoming confirmed starts to influence the analysis)
+        confirmed_migrations = self.filtered(
+            lambda r: r.state == "confirmed"
+        ).migration_ids
         res = super().write(vals)
-        (self.migration_ids | migrations).force_update()
+        confirmed_migrations |= self.filtered(
+            lambda r: r.state == "confirmed"
+        ).migration_ids
+        confirmed_migrations.force_update()
+        if "active" in vals or "state" in vals:
+            # Archiving/unarchiving or confirming a timeline changes the next
+            # version resolution of the module branch (the archived and draft
+            # timelines are not applied): invalidate the cached values
+            self.module_branch_id.invalidate_recordset(
+                ["next_odoo_version_module_branch_id"]
+            )
         return res
 
     def unlink(self):
-        migrations = self.migration_ids
+        migrations = self.filtered(lambda r: r.state == "confirmed").migration_ids
         res = super().unlink()
         migrations.force_update()
         return res
+
+    def action_confirm(self):
+        """Confirm draft timelines."""
+        self.filtered(lambda r: r.state == "draft").write({"state": "confirmed"})
+
+    def action_draft(self):
+        """Send confirmed timelines back to draft."""
+        self.filtered(lambda r: r.state == "confirmed").write({"state": "draft"})
 
     def open_migrations(self):
         self.ensure_one()
@@ -179,7 +238,8 @@ class OdooModuleBranchTimeline(models.Model):
         return True
 
     def _get_related_timelines(self):
-        """Return timelines related to current ones regarding impacted modules.
+        """Return confirmed timelines related to current ones regarding
+        impacted modules.
 
         A module A could be renamed to a module B in version X, then renamed
         again to C in version X+1, etc.
@@ -188,6 +248,7 @@ class OdooModuleBranchTimeline(models.Model):
         impacted_modules = self._get_all_impacted_modules()
         return self.search(
             [
+                ("state", "=", "confirmed"),
                 "|",
                 ("module_branch_id.module_id", "in", impacted_modules.ids),
                 ("next_module_id", "in", impacted_modules.ids),
@@ -208,6 +269,7 @@ class OdooModuleBranchTimeline(models.Model):
             # Find previous timelines (current module is next_module_id)
             previous_timelines = self.search(
                 [
+                    ("state", "=", "confirmed"),
                     ("next_module_id", "=", rec.module_branch_id.module_id.id),
                 ]
             )
@@ -216,6 +278,7 @@ class OdooModuleBranchTimeline(models.Model):
             # Find next timelines (next_module_id is the module_branch_id)
             next_timelines = self.search(
                 [
+                    ("state", "=", "confirmed"),
                     ("module_branch_id.module_id", "=", rec.next_module_id.id),
                 ]
             )
