@@ -11,6 +11,24 @@
             <form>
                 <header>
                     <button
+                        string="Confirm"
+                        name="action_confirm"
+                        type="object"
+                        class="btn-primary"
+                        groups="odoo_repository.group_odoo_repository_manager"
+                        invisible="state != 'draft'"
+                        data-hotkey="c"
+                    />
+                    <button
+                        string="Set to Draft"
+                        name="action_draft"
+                        type="object"
+                        class="btn-secondary"
+                        groups="odoo_repository.group_odoo_repository_manager"
+                        invisible="state != 'confirmed'"
+                        data-hotkey="d"
+                    />
+                    <button
                         string="Restore"
                         name="toggle_active"
                         type="object"
@@ -24,6 +42,11 @@
                         class="btn-primary"
                         groups="odoo_repository.group_odoo_repository_manager"
                         invisible="not migration_scan"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,confirmed"
                     />
                 </header>
                 <sheet>
@@ -55,18 +78,26 @@
                         A scan of related modules is required to update relevant migration data.  Wait for the next scheduled scan, or trigger one manually.
                     </div>
                     <group name="info" string="Info">
-                        <field name="module_branch_id" />
+                        <field
+                            name="module_branch_id"
+                            readonly="state == 'confirmed'"
+                        />
                         <field name="last_known_module_branch_id" />
                         <field name="odoo_version_id" />
-                        <field name="state" />
-                        <field name="next_module_id" />
+                        <field name="timeline_type" readonly="state == 'confirmed'" />
+                        <field name="next_module_id" readonly="state == 'confirmed'" />
                         <field
                             name="next_module_branch_id"
                             invisible="not next_module_branch_id"
                         />
                     </group>
                     <group name="note" string="Notes">
-                        <field name="note" colspan="2" nolabel="1" />
+                        <field
+                            name="note"
+                            colspan="2"
+                            nolabel="1"
+                            readonly="state == 'confirmed'"
+                        />
                     </group>
                 </sheet>
             </form>
@@ -80,8 +111,9 @@
             <list>
                 <field name="odoo_version_id" />
                 <field name="module_branch_id" />
-                <field name="state" />
+                <field name="timeline_type" />
                 <field name="next_module_id" />
+                <field name="state" />
             </list>
         </field>
     </record>
@@ -96,17 +128,22 @@
                 <field name="module_branch_id" />
                 <field name="org_id" />
                 <field name="repository_id" />
-                <field name="state" />
+                <field name="timeline_type" />
                 <field name="next_module_id" />
+                <filter
+                    name="draft"
+                    string="Draft"
+                    domain="[('state', '=', 'draft')]"
+                />
                 <filter
                     name="renamed"
                     string="Renamed"
-                    domain="[('state', '=', 'renamed')]"
+                    domain="[('timeline_type', '=', 'renamed')]"
                 />
                 <filter
                     name="replaced"
                     string="Replaced"
-                    domain="[('state', '=', 'replaced')]"
+                    domain="[('timeline_type', '=', 'replaced')]"
                 />
                 <separator />
                 <filter
@@ -129,6 +166,11 @@
                         name="group_by_odoo_version_id"
                         string="Odoo Version"
                         context="{'group_by': 'odoo_version_id'}"
+                    />
+                    <filter
+                        name="group_by_timeline_type"
+                        string="Type"
+                        context="{'group_by': 'timeline_type'}"
                     />
                     <filter
                         name="group_by_state"

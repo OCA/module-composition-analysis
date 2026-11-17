@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ==============================
 Odoo Repository Migration Data
 ==============================
@@ -17,7 +13,7 @@ Odoo Repository Migration Data
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fmodule--composition--analysis-lightgray.png?logo=github
@@ -102,6 +98,11 @@ enabled on repositories (opt-in).
 To record what a module became starting from a given Odoo version, you
 should do it through the *Odoo Repositories / Data / Modules /
 Timelines* menu.
+
+A timeline is created as *draft*: it has no effect on the migration data
+until it is confirmed. Only confirmed timelines drive the analysis;
+drafts can be freely edited, confirmed ones become read-only (send them
+back to draft to edit them).
 
 Once the scheduled action ran, the migration data are available on each
 module in *Migration* tab, or through the *Odoo Repositories / Data /

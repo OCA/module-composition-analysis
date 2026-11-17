@@ -68,6 +68,61 @@ class TestOdooModuleBranchTimeline(MigrationCommon):
         timeline.active = False
         self.assertFalse(self.module_branch_a.next_odoo_version_module_branch_id)
 
+    def test_next_odoo_version_module_branch_draft_timeline(self):
+        """A draft timeline is not applied: the next version resolution is
+        unchanged until a user confirms it."""
+        timeline = self._create_module_timeline(
+            self.module_branch_a, self.module_b, "renamed", state="draft"
+        )
+        self.assertEqual(timeline.state, "draft")
+        self.assertFalse(self.module_branch_a.next_odoo_version_module_branch_id)
+        # Confirm the timeline: the renaming applies
+        timeline.action_confirm()
+        self.assertEqual(
+            self.module_branch_a.next_odoo_version_module_branch_id,
+            self.module_branch_b,
+        )
+        self.assertEqual(timeline.state, "confirmed")
+        # Send the timeline back to draft: the renaming is retracted
+        timeline.action_draft()
+        self.assertEqual(timeline.state, "draft")
+        self.assertFalse(self.module_branch_a.next_odoo_version_module_branch_id)
+
+    def test_draft_timeline_no_migration_refresh(self):
+        """Migration data are refreshed (scan reset) only once a timeline is
+        confirmed: drafts have no effect on them."""
+        self.odoo_repository.collect_migration_data = True
+        self.env["odoo.migration.path"].create(
+            {
+                "source_branch_id": self.branch.id,
+                "target_branch_id": self.branch2.id,
+            }
+        )
+        self._simulate_migration_scan(
+            "target_commit1",
+            source=self.branch,
+            target=self.branch2,
+            report={"process": "migrate", "results": {}},
+        )
+        migration = self.module_branch.migration_ids
+        self.assertEqual(migration.process, "migrate")
+        # A draft timeline renaming the module does not reset the scanned data
+        next_module = self.module.copy({"name": "module_draft"})
+        timeline = self._create_module_timeline(
+            self.module_branch, next_module, "renamed", state="draft"
+        )
+        self.assertEqual(migration.process, "migrate")
+        self.assertEqual(migration.last_target_scanned_commit, "target_commit1")
+        # Confirming the timeline resets the migration data: a new scan of
+        # the renamed module is required
+        timeline.action_confirm()
+        self.assertEqual(migration.renamed_to_module_id, next_module)
+        self.assertFalse(migration.process)
+        self.assertFalse(migration.last_target_scanned_commit)
+        # Sending the timeline back to draft retracts its effect
+        timeline.action_draft()
+        self.assertFalse(migration.renamed_to_module_id)
+
     def test_get_related_timelines(self):
         """Test _get_related_timelines returns all timelines in a chain.
 
@@ -108,6 +163,18 @@ class TestOdooModuleBranchTimeline(MigrationCommon):
         self.assertIn(timeline_d, related_timelines)
         self.assertEqual(len(related_timelines), 3)
 
+    def test_get_related_timelines_draft_ignored(self):
+        """Draft timelines are ignored by the chain walking."""
+        timeline_b = self._create_module_timeline(
+            self.module_branch_a, self.module_b, "renamed"
+        )
+        timeline_draft = self._create_module_timeline(
+            self.module_branch_b, self.module_c, "replaced", state="draft"
+        )
+        related_timelines = timeline_b._get_related_timelines()
+        self.assertIn(timeline_b, related_timelines)
+        self.assertNotIn(timeline_draft, related_timelines)
+
     @mute_logger("odoo.sql_db")
     def test_timeline_unicity(self):
         """Only one timeline can exist for a given module branch."""
@@ -121,13 +188,22 @@ class TestOdooModuleBranchTimeline(MigrationCommon):
         timeline.active = False
         with self.assertRaises(psycopg2.IntegrityError), self.env.cr.savepoint():
             self._create_module_timeline(self.module_branch_a, self.module_c, "renamed")
+        # Draft timelines also hold the unicity slot
+        self._create_module_timeline(
+            self.module_branch_b, self.module_c, "replaced", state="draft"
+        )
+        with self.assertRaises(psycopg2.IntegrityError), self.env.cr.savepoint():
+            self._create_module_timeline(self.module_branch_b, self.module_d, "renamed")
 
     def test_next_module(self):
         """The new module is required and different from the module."""
         # The new module is required
         with self.assertRaises(ValidationError), self.env.cr.savepoint():
             self.env["odoo.module.branch.timeline"].create(
-                {"module_branch_id": self.module_branch_a.id, "state": "renamed"}
+                {
+                    "module_branch_id": self.module_branch_a.id,
+                    "timeline_type": "renamed",
+                }
             )
         # The new module must be different from the module
         with self.assertRaises(ValidationError), self.env.cr.savepoint():
