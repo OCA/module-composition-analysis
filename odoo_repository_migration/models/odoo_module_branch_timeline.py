@@ -71,8 +71,7 @@ class OdooModuleBranchTimeline(models.Model):
         required=True,
         index=True,
         help=(
-            "Only confirmed timelines are taken into account by "
-            "the migration analysis."
+            "Only confirmed timelines are taken into account by the migration analysis."
         ),
     )
     next_module_id = fields.Many2one(
@@ -104,6 +103,16 @@ class OdooModuleBranchTimeline(models.Model):
             "A timeline already exists for this module and version.",
         ),
     ]
+
+    # Writes touching these fields invalidate the migration data; a note-only
+    # annotation must not trigger a migration rescan.
+    _MIGRATION_IMPACTING_FIELDS = {
+        "module_branch_id",
+        "next_module_id",
+        "timeline_type",
+        "state",
+        "active",
+    }
 
     @api.constrains("module_branch_id", "next_module_id")
     def _check_next_module(self):
@@ -191,6 +200,8 @@ class OdooModuleBranchTimeline(models.Model):
 
     @api.model
     def write(self, vals):
+        if not set(vals) & self._MIGRATION_IMPACTING_FIELDS:
+            return super().write(vals)
         # Keep the migration records of the timelines confirmed before the
         # write (their influence may be retracted if they become draft), and
         # add the ones of the timelines confirmed by the write (a draft
