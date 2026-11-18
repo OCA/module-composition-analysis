@@ -20,15 +20,19 @@
                         </button>
                     </div>
                     <group name="info" string="Info">
-                        <field name="module_branch_model_id" />
-                        <field name="name" />
-                        <field name="field_type" />
-                        <field
-                            name="comodel_name"
-                            invisible="not is_relational or comodel_id"
-                        />
-                        <field name="comodel_id" invisible="not comodel_id" />
-                        <field name="root_id" invisible="not root_id" />
+                        <group>
+                            <field name="module_branch_model_id" />
+                            <field name="name" />
+                            <field name="field_type" />
+                            <field
+                                name="comodel_name"
+                                invisible="not is_relational or comodel_id"
+                            />
+                            <field name="comodel_id" invisible="not comodel_id" />
+                        </group>
+                        <group>
+                            <field name="root_id" invisible="not root_id" />
+                        </group>
                     </group>
                     <group name="code" string="Code">
                         <field

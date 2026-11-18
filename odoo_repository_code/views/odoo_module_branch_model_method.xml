@@ -22,6 +22,8 @@
                     <group name="info" string="Info">
                         <field name="module_branch_model_id" />
                         <field name="name" />
+                    </group>
+                    <group>
                         <field name="root_id" invisible="not root_id" />
                     </group>
                     <group name="code" string="Code">
