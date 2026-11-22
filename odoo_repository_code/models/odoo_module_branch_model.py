@@ -85,6 +85,7 @@ class OdooModuleBranchModel(models.Model):
         selection=[
             ("AbstractModel", "AbstractModel"),
             ("Model", "Model"),
+            ("CachedModel", "CachedModel"),
             ("TransientModel", "TransientModel"),
             ("Other", "Other"),
         ],
