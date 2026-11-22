@@ -14,6 +14,10 @@ import git
 
 cache = threading.local()
 
+# Real Odoo module (located in 'tests/samples/') copied into the fixture Git
+# repository, and scanned by the tests
+FIXTURE_MODULE_PATH = Path(__file__).parent / "samples" / "my_module"
+
 
 class OdooRepoMixin(unittest.TestCase):
     @classmethod
@@ -124,31 +128,12 @@ class OdooRepoMixin(unittest.TestCase):
 
     @classmethod
     def _create_module(cls, module_path: Path):
-        manifest_lines = [
-            "# Copyright 2026 Sébastien Alix\n",
-            "# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)\n",
-            "{\n",
-            '    "name": "Test",\n',
-            '    "version": "1.0.0",\n',
-            '    "category": "Test Module",\n',
-            '    "author": "Odoo Community Association (OCA)",\n',
-            '    "website": "https://github.com/OCA/module-composition-analysis",\n',
-            '    "license": "AGPL-3",\n',
-            '    "depends": ["base"],\n',
-            '    "data": [],\n',
-            '    "demo": [],\n',
-            '    "installable": True,\n',
-            "}\n",
-        ]
-        module_path.mkdir(parents=True, exist_ok=True)
-        manifest_path = module_path / "__manifest__.py"
-        with open(manifest_path, "w") as manifest:
-            manifest.writelines(manifest_lines)
-        # Add a file which should not be checked out with sparse checkout
-        icon_path = module_path / "static" / "description" / "icon.png"
-        icon_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(icon_path, "wb") as icon:
-            icon.write(b"fake icon data")
+        shutil.copytree(
+            FIXTURE_MODULE_PATH,
+            module_path,
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns("__pycache__", "*.py[cod]"),
+        )
 
     @classmethod
     def tearDownClass(cls):
