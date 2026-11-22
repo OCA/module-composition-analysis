@@ -92,12 +92,7 @@
                         />
                     </group>
                     <group name="note" string="Notes">
-                        <field
-                            name="note"
-                            colspan="2"
-                            nolabel="1"
-                            readonly="state == 'confirmed'"
-                        />
+                        <field name="note" colspan="2" nolabel="1" />
                     </group>
                 </sheet>
             </form>
