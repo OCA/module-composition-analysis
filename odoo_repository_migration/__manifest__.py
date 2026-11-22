@@ -5,7 +5,7 @@
 {
     "name": "Odoo Repository Migration Data",
     "summary": "Collect modules migration data for Odoo Repositories.",
-    "version": "18.0.1.2.0",
+    "version": "18.0.1.3.0",
     "category": "Tools",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/module-composition-analysis",
