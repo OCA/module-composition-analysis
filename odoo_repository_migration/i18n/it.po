@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-10-28 16:47+0000\n"
+"PO-Revision-Date: 2026-11-23 10:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 2026.11.2\n"
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_view_form
@@ -25,7 +25,7 @@ msgstr "<span>Versioni successive</span>"
 #. odoo-python
 #: code:addons/odoo_repository_migration/models/odoo_module_branch_timeline.py:0
 msgid "A new module is required."
-msgstr ""
+msgstr "È richiesto un nuovo modulo."
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
@@ -40,7 +40,7 @@ msgstr ""
 #. module: odoo_repository_migration
 #: model:ir.model.constraint,message:odoo_repository_migration.constraint_odoo_module_branch_timeline_module_branch_uniq
 msgid "A timeline already exists for this module and version."
-msgstr ""
+msgstr "Esiste già una cronologia per questo modulo e versione."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__active
@@ -79,12 +79,12 @@ msgstr "Commit da trasferire"
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid "Confirm"
-msgstr ""
+msgstr "Conferma"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__state__confirmed
 msgid "Confirmed"
-msgstr ""
+msgstr "Confermato"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_migration_path__create_uid
@@ -121,7 +121,7 @@ msgstr "Nome visualizzato"
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__state__draft
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Draft"
-msgstr ""
+msgstr "Bozza"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_migration__state__fully_ported
@@ -348,6 +348,8 @@ msgstr "Versione di Odoo"
 msgid ""
 "Only confirmed timelines are taken into account by the migration analysis."
 msgstr ""
+"L'analisi di migrazione prende in considerazione solo le tempistiche "
+"confermate."
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__org_id
@@ -444,7 +446,7 @@ msgstr "Sequenza"
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
 msgid "Set to Draft"
-msgstr ""
+msgstr "Imposta a bozza"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_migration__module_branch_id
@@ -530,7 +532,7 @@ msgstr "Nome tecnico"
 #. odoo-python
 #: code:addons/odoo_repository_migration/models/odoo_module_branch_timeline.py:0
 msgid "The new module must be different from the module."
-msgstr ""
+msgstr "Il nuovo modulo deve essere diverso dal modulo."
 
 #. module: odoo_repository_migration
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_form
@@ -591,7 +593,7 @@ msgstr "Da esaminare"
 #: model:ir.model.fields,field_description:odoo_repository_migration.field_odoo_module_branch_timeline__timeline_type
 #: model_terms:ir.ui.view,arch_db:odoo_repository_migration.odoo_module_branch_timeline_view_search
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #. module: odoo_repository_migration
 #: model:ir.model.fields.selection,name:odoo_repository_migration.selection__odoo_module_branch_timeline__timeline_type__renamed
