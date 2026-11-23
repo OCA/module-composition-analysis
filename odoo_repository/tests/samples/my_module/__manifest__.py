@@ -12,6 +12,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/my_model.xml",
+        "data/res_partner.xml",
     ],
     "demo": [
         "demo/my_model.xml",
