@@ -107,22 +107,24 @@ class OdooModuleBranch(models.Model):
     ):
         """Archive code elements that doesn't exist anymore."""
         models = (
-            self.model_ids
+            self.sudo().model_ids
             - self.env["odoo.module.branch.model"].browse(scanned_model_ids).sudo()
         )
         fields = (
-            self.model_ids.field_ids
+            self.sudo().model_ids.field_ids
             - self.env["odoo.module.branch.model.field"]
             .browse(scanned_field_ids)
             .sudo()
         )
         methods = (
-            self.model_ids.method_ids
+            self.sudo().model_ids.method_ids
             - self.env["odoo.module.branch.model.method"]
             .browse(scanned_method_ids)
             .sudo()
         )
-        models.active = fields.active = methods.active = False
+        models.sudo().write({"active": False})
+        fields.sudo().write({"active": False})
+        methods.sudo().write({"active": False})
 
     def _prepare_odoo_module_branch_model_values(self, odoo_model_version, data):
         self.ensure_one()
@@ -265,10 +267,10 @@ class OdooModuleBranch(models.Model):
     def _archive_code_data_elements(self, scanned_data_ids):
         """Archive data elements that doesn't exist anymore."""
         data = (
-            self.data_ids
+            self.sudo().data_ids
             - self.env["odoo.module.branch.data"].browse(scanned_data_ids).sudo()
         )
-        data.active = False
+        data.sudo().write({"active": False})
 
     def _prepare_odoo_module_branch_data_values(
         self, odoo_model_version, record, data_type
