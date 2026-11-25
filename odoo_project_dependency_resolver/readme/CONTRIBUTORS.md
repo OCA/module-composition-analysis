@@ -1,0 +1,2 @@
+- ACSONE SA/NV
+  - Laurent Mignon \<laurent.mignon@acsone.eu\>
