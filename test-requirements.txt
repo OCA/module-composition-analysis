@@ -1,1 +1,3 @@
 oca-port
+odoo-addon-web-widget-plotly-chart @ git+https://github.com/OCA/web.git@refs/pull/3639/head#subdirectory=web_widget_plotly_chart
+odoo-addon-odoo-repository @ git+https://github.com/OCA/module-composition-analysis.git@refs/pull/158/head#subdirectory=odoo_repository
